@@ -1,5 +1,6 @@
 [build]
-buildCommand = "pnpm install --no-frozen-lockfile && pnpm build"
+installCommand = "pnpm install --no-frozen-lockfile"
+buildCommand = "pnpm build"
 
 [deploy]
 startCommand = "pnpm start"
