@@ -5,7 +5,8 @@
     "overrides": {
       "react": "^19.0.0",
       "react-dom": "^19.0.0"
-    }
+    },
+    "onlyBuiltDependencies": ["@prisma/client", "@prisma/engines", "esbuild", "prisma", "sharp", "unrs-resolver"]
   },
   "version": "0.1.0",
   "private": true,
