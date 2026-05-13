@@ -1,0 +1,570 @@
+{
+  "common": {
+    "appName": "ApexOil",
+    "language": "Til",
+    "theme": "Mavzu",
+    "dark": "Qorong'u",
+    "light": "Yorug'",
+    "cta": {
+      "getStarted": "Boshlash",
+      "signIn": "Kirish",
+      "submit": "Yuborish",
+      "cancel": "Bekor qilish",
+      "save": "Saqlash"
+    },
+    "nav": {
+      "features": "Imkoniyatlar",
+      "howItWorks": "Qanday ishlaydi",
+      "demo": "Demo",
+      "pricing": "Tariflar",
+      "contact": "Aloqa"
+    },
+    "ecosystem": {
+      "apexBank": "ApexBank",
+      "apexInsurance": "ApexInsurance uz"
+    }
+  },
+  "hero": {
+    "badge": "Toshkent · B2B",
+    "headline": "Zamonaviy avtoparklar uchun yoqilg'i boshqaruvi",
+    "subtext": "Yoqilg'i yetkazib berish, haydovchi so'rovlari, limitlar va avtomatik hisobotlar — bitta platformada.",
+    "cta": {
+      "primary": "Boshlash",
+      "secondary": "Kabinetga",
+      "learnMore": "Batafsil"
+    },
+    "highlights": {
+      "fuels": "AI-92 · AI-95",
+      "payment": "Hisob-faktura bo'yicha to'lov",
+      "limits": "Limit nazorati"
+    },
+    "chooseRole": "Qanday ishlashni xohlaysiz?",
+    "chooseRoleDesc": "Menejerlar va haydovchilar uchun alohida kabinetlar.",
+    "managerCabinet": "Menejer kabineti",
+    "managerCabinetDesc": "Mashinalar, limitlar va haydovchilarni boshqaring.",
+    "driverCabinet": "Haydovchi kabineti",
+    "driverCabinetDesc": "Ro'yxatdan o'tmasdan mashina raqami va telefon orqali buyurtma bering.",
+    "close": "Yopish",
+    "notificationApproved": "Yoqilg'i so'rovi tasdiqlandi",
+    "notificationScheduled": "Yetkazib berish rejalashtirildi",
+    "notificationLimitUpdated": "Yoqilg'i limiti yangilandi"
+  },
+  "features": {
+    "title": "Avtopark operatsiyalari uchun",
+    "limits": {
+      "title": "Yoqilg'i limitlari",
+      "desc": "Har bir mashina uchun byudjet belgilang va ortiqcha sarfni oldini oling."
+    },
+    "driverOrdering": {
+      "title": "Haydovchi buyurtmasi",
+      "desc": "Haydovchilar mashina raqami orqali buyurtma beradi — murakkab akkauntlar kerak emas."
+    },
+    "delivery": {
+      "title": "Yetkazib berish kuzatuvi",
+      "desc": "So'rovdan tugaguncha yetkazib berish holatini real vaqtda kuzating."
+    },
+    "invoices": {
+      "title": "Avtomatik hisob-fakturalar",
+      "desc": "Hisob-fakturalar va hisobotlarni avtomatik yarating."
+    },
+    "analytics": {
+      "title": "Analitika paneli",
+      "desc": "Yoqilg'i iste'moli va avtopark ishlashini bir nazarda kuzating."
+    }
+  },
+  "howItWorks": {
+    "title": "Qanday ishlaydi",
+    "step1": {
+      "title": "Haydovchi yoqilg'i so'raydi",
+      "desc": "Haydovchi mashina raqamini kiritadi va so'rov yuboradi."
+    },
+    "step2": {
+      "title": "Menejer limitni tasdiqlaydi",
+      "desc": "Avtopark menejeri limitlarni boshqaradi va buyurtmalarni tasdiqlaydi."
+    },
+    "step3": {
+      "title": "Yoqilg'i yetkaziladi",
+      "desc": "Yoqilg'i mashinaga to'g'ridan-to'g'ri yetkaziladi."
+    },
+    "step4": {
+      "title": "Hisobotlash",
+      "desc": "Yoqilg'i iste'moli avtomatik kuzatiladi va hisob-faktura yaratiladi."
+    }
+  },
+  "interactiveDemo": {
+    "title": "Interaktiv avtopark demo",
+    "vehicleLabel": "Mashina",
+    "fuelLimitLabel": "Yoqilg'i limiti",
+    "simulateRequest": "So'rovni simulyatsiya qilish",
+    "simulateDelivery": "Yetkazib berishni simulyatsiya qilish",
+    "notificationRequest": "Haydovchi {vehicle} {volume}L yoqilg'i so'radi",
+    "managerApproved": "Menejer so'rovni tasdiqladi",
+    "deliveryEta": "Yetkazib berish: {minutes} daqiqa",
+    "deliveryInProgress": "Yetkazib berilmoqda",
+    "remaining": "Qolgan",
+    "deliveryCompleted": "Yetkazib berish tugadi. Yoqilg'i balansi yangilandi.",
+    "demoHint": "Tizim bildirishnomasini ko'rish uchun \"So'rovni simulyatsiya qilish\"ni bosing, keyin \"Yetkazib berishni simulyatsiya qilish\"ni bosing."
+  },
+  "benefits": {
+    "title": "Nima uchun ApexOil tanlashadi",
+    "costControl": {
+      "title": "Yoqilg'i sarfini nazorat",
+      "desc": "Mashina bo'yicha limitlar ortiqcha sarfni oldini oladi."
+    },
+    "visibility": {
+      "title": "Avtopark ko'rinishi",
+      "desc": "Barcha mashinalar bo'yicha iste'molni real vaqtda kuzating."
+    },
+    "reports": {
+      "title": "Avtomatik hisobotlar",
+      "desc": "Hisob-fakturalar va hisobotlar avtomatik yaratiladi."
+    },
+    "delivery": {
+      "title": "Tez yetkazib berish",
+      "desc": "Yoqilg'i shahar bo'ylab mashinalarga to'g'ridan-to'g'ri yetkaziladi."
+    }
+  },
+  "dashboardPreview": {
+    "title": "Avtoparkingiz bir ko'rinishda",
+    "subtitle": "Mashinalar, limitlar va iste'mol bo'yicha aniq ma'lumot.",
+    "tableVehicle": "Mashina",
+    "tableFuelUsed": "Ishlatilgan",
+    "tableRemaining": "Qolgan limit",
+    "tableStatus": "Holat",
+    "statusActive": "Faol",
+    "statusPending": "Kutilmoqda",
+    "chartTitle": "Oylik iste'mol"
+  },
+  "socialProof": {
+    "title": "Avtopark operatorlari ishonadi",
+    "logistics": "Logistika",
+    "taxi": "Taksi",
+    "delivery": "Yetkazib berish",
+    "construction": "Qurilish"
+  },
+  "pricing": {
+    "title": "Har bir avtopark uchun rejalar",
+    "intro": "Narx avtopark hajmi va ehtiyojlarga qarab belgilanadi. Rejangizni tanlang.",
+    "starter": {
+      "name": "Starter",
+      "desc": "Kichik avtoparklar uchun.",
+      "price": "Suvora",
+      "features": "Avtopark uchun yoqilg'i yetkazib berish\nMashina bo'yicha limitlar\nHaydovchi hisoblari\nSo'rovlarni tasdiqlash\nAsosiy hisobotlar"
+    },
+    "business": {
+      "name": "Biznes",
+      "desc": "O'sayotgan kompaniyalar uchun.",
+      "price": "Suvora",
+      "features": "Starterdagi barcha imkoniyatlar\nYetkazib berish kuzatuvi\nHisobotlar va analitika\nHisob-faktura\nUstuvor qo'llab-quvvatlash"
+    },
+    "enterprise": {
+      "name": "Korporatsiya",
+      "desc": "Yirik logistika uchun.",
+      "price": "Suvora",
+      "features": "Cheksiz mashinalar\nShaxsiy menejer\nIntegratsiyalar\nAPI\n24/7 qo'llab-quvvatlash"
+    },
+    "cta": "Bog'lanish",
+    "popular": "Mashhur"
+  },
+  "contact": {
+    "title": "Biz bilan bog'laning",
+    "phone": "Telefon",
+    "telegram": "Telegram",
+    "email": "Qo'llab-quvvatlash",
+    "officeHours": "Ish vaqti",
+    "officeHoursValue": "Du-Ju, 9:00–18:00",
+    "submit": "Yuborish",
+    "sending": "Yuborilmoqda...",
+    "success": "Xabar yuborildi. Tez orada siz bilan bog'lanamiz.",
+    "error": "Yuborishda xato. Qaytadan urinib ko'ring yoki telefon orqali bog'laning.",
+    "form": {
+      "name": "Ism",
+      "company": "Kompaniya",
+      "phone": "Telefon",
+      "message": "Xabar"
+    }
+  },
+  "auth": {
+    "backToRoleSelection": "Rolni tanlashga",
+    "backToHomepage": "Bosh sahifaga",
+    "chooseRoleTitle": "Qanday kirmoqchisiz?",
+    "chooseRoleSubtitle": "Davom etish uchun rolni tanlang.",
+    "managerLogin": "Menejer kirishi",
+    "managerRoleDesc": "Avtopark, limitlar, buyurtmalar",
+    "driverLogin": "Haydovchi kirishi",
+    "driverRoleDesc": "Mashina va telefon orqali yoqilg'i",
+    "forgotPassword": "Parolni unutdingizmi?",
+    "noAccount": "Hisobingiz yo'qmi?",
+    "createOne": "Yaratish",
+    "errors": {
+      "invalidEmailPassword": "Noto'g'ri email yoki parol",
+      "accountNotFound": "Hisob topilmadi",
+      "incorrectRecoveryCode": "Noto'g'ri tiklash kodi",
+      "passwordsDoNotMatch": "Parollar mos kelmadi"
+    }
+  },
+  "managerLogin": {
+    "title": "Kompaniya menejeri kirishi",
+    "subtitle": "Avtoparkni boshqarish uchun kiring.",
+    "email": "Email",
+    "password": "Parol",
+    "submit": "Kirish",
+    "submitting": "Kirilmoqda...",
+    "demo": "Demo: admin@apexoil.uz / 123, company@apexoil.uz / company123"
+  },
+  "driverLogin": {
+    "title": "Haydovchi kirishi",
+    "subtitle": "Mashina raqami va telefon orqali yoqilg'i buyurtma qiling.",
+    "vehicleNumber": "Mashina raqami",
+    "phoneNumber": "Telefon",
+    "submit": "Kirish",
+    "submitting": "Kirilmoqda...",
+    "smsCode": "SMS kodi",
+    "errorPhoneCode": "Telefon va SMS kodini kiriting"
+  },
+  "login": {
+    "title": "Kirish",
+    "managerTitle": "Kompaniya menejeri kabineti",
+    "driverTitle": "Haydovchi kabineti",
+    "subtitle": "Shaxsiy kabinetingizga kiring.",
+    "managerSubtitle": "Kompaniya login va parolni kiriting.",
+    "driverSubtitle": "Kompaniya menejeri bergan ma'lumotlarni kiriting.",
+    "tabEmail": "Email orqali",
+    "tabManager": "Menejer",
+    "tabDriver": "Haydovchi",
+    "placeholderEmail": "Email",
+    "placeholderManagerEmail": "Kompaniya email (login)",
+    "placeholderPassword": "Parol",
+    "placeholderCarNumber": "Mashina raqami (masalan: 01A123BC)",
+    "placeholderDriverPhone": "Haydovchi telefoni",
+    "placeholderSmsCode": "SMS kodi",
+    "submit": "Kirish",
+    "submitting": "Kirilmoqda...",
+    "errorPhoneCode": "Telefon va SMS kodini kiriting",
+    "errorLoginPassword": "Login va parolni kiriting",
+    "errorInvalid": "Noto'g'ri email yoki parol",
+    "demo": "Demo: Super Admin — admin@apexoil.uz / 123, Company — company@apexoil.uz / company123"
+  },
+  "signup": {
+    "title": "Hisob yaratish",
+    "subtitle": "Kompaniya hisobini yaratish uchun ma'lumotlaringizni kiriting.",
+    "subtitleStep1": "Kompaniya hisobini yaratish uchun ma'lumotlaringizni kiriting.",
+    "fullName": "To'liq ism",
+    "companyName": "Kompaniya nomi",
+    "email": "Email",
+    "phone": "Telefon",
+    "password": "Parol",
+    "continue": "Davom etish",
+    "submitting": "Yuborilmoqda...",
+    "backToLogin": "Kirishga qaytish",
+    "step2Title": "Tasdiqlash usulini tanlang",
+    "step2Subtitle": "Tasdiqlash kodini qayerga yuborishni tanlang.",
+    "verifyByEmail": "Email orqali tasdiqlash",
+    "verifyByPhone": "Telefon orqali tasdiqlash",
+    "step3Title": "Tasdiqlash kodi",
+    "sentToEmail": "6 xonali kod emailingizga yuborildi.",
+    "sentToPhone": "6 xonali kod telefon raqamingizga yuborildi.",
+    "codePlaceholder": "6 xonali kodni kiriting",
+    "confirmCode": "Kodni tasdiqlash",
+    "resendCode": "Kodni qayta yuborish",
+    "resendSent": "Kod qayta yuborildi",
+    "back": "Orqaga",
+    "changeMethod": "Usulni o'zgartirish",
+    "success": "Hisob muvaffaqiyatli tasdiqlandi.",
+    "successSubtitle": "Endi tizimga kira olasiz.",
+    "redirecting": "Kirish sahifasiga yo'naltirilmoqda...",
+    "noEmailHint": "Email keldimi? Ishlab chiqish rejimida kod terminalda (npm run dev ishlayotgan joyda) chiqadi. Haqiqiy email olish uchun .env ga RESEND_API_KEY qo'shing — SETUP.md ga qarang.",
+    "validation": {
+      "emailInvalid": "To'g'ri email kiriting",
+      "passwordMin": "Parol kamida 8 belgidan iborat bo'lsin",
+      "requiredFields": "Barcha majburiy maydonlarni to'ldiring",
+      "emailInUse": "Bu email allaqachon ishlatilmoqda",
+      "invalidCode": "Noto'g'ri kod",
+      "codeExpired": "Kod muddati tugadi. Yangisini so'rang."
+    }
+  },
+  "forgotPassword": {
+    "title": "Parolni unutdingizmi?",
+    "subtitle": "Email kiriting — tiklash kodini yuboramiz.",
+    "email": "Email",
+    "submit": "Kod yuborish",
+    "submitting": "Yuborilmoqda...",
+    "success": "Kod yuborildi. Pochtani tekshiring.",
+    "backToLogin": "Kirishga qaytish",
+    "continueToReset": "Parolni tiklashga o'tish"
+  },
+  "resetPassword": {
+    "title": "Parolni tiklash",
+    "subtitle": "Pochta kodini va yangi parolni kiriting.",
+    "email": "Email",
+    "recoveryCode": "Tiklash kodi",
+    "newPassword": "Yangi parol",
+    "confirmPassword": "Parolni tasdiqlang",
+    "submit": "Parolni tiklash",
+    "submitting": "Tiklanmoqda...",
+    "success": "Parol yangilandi. Endi kira olasiz.",
+    "backToForgot": "Tiklashga qaytish",
+    "logIn": "Kirish",
+    "validation": {
+      "codeRequired": "Tiklash kodini kiriting",
+      "passwordMin": "Parol kamida 8 belgidan iborat bo'lsin",
+      "passwordsDoNotMatch": "Parollar mos kelmadi"
+    }
+  },
+  "dashboard": {
+    "title": "Umumiy ko'rinish",
+    "nav": {
+      "overview": "Umumiy ko'rinish",
+      "admin": "Admin",
+      "companies": "Kompaniyalar",
+      "cars": "Mashinalar",
+      "drivers": "Haydovchilar",
+      "orders": "Buyurtmalar",
+      "limits": "Limitlar",
+      "requests": "So'rovlar",
+      "deliveries": "Yetkazib berish",
+      "reports": "Hisobotlar",
+      "invoices": "Hisob-fakturalar",
+      "settings": "Sozlamalar",
+      "myCars": "Mashinalarim",
+      "myVehicle": "Mashinam",
+      "createOrder": "Buyurtma yaratish",
+      "myOrders": "Mening buyurtmalarim",
+      "myLimit": "Mening limitim",
+      "notifications": "Bildirishnomalar",
+      "dispatcherNewOrders": "Yangi buyurtmalar",
+      "dispatcherAssign": "Kuryer tayinlash",
+      "dispatcherActive": "Faol yetkazib berish",
+      "dispatcherCompleted": "Tugatilgan"
+    },
+    "logout": "Chiqish",
+    "subtitle": "Ushbu oy uchun asosiy ko'rsatkichlar",
+    "kpi": {
+      "remaining": "Qolgan litrlar",
+      "activeCars": "Faqat mashinalar",
+      "pendingApprovals": "Tasdiq kutilmoqda",
+      "deliveredToday": "Bugun yetkazilgan",
+      "used": "Ishlatilgan"
+    },
+    "pendingBanner": {
+      "text": "{count} tasdiq kutilmoqda",
+      "desc": "To'liq bak administrator tasdig'ini talab qiladi",
+      "link": "Ko'rish"
+    },
+    "perCar": {
+      "title": "Mashina bo'yicha limit"
+    },
+    "chart": {
+      "title": "Oylik iste'mol",
+      "noData": "Ushbu davr uchun ma'lumot yo'q"
+    },
+    "recentOrders": {
+      "title": "Oxirgi buyurtmalar",
+      "empty": "Hali buyurtmalar yo'q",
+      "emptyDesc": "Buyurtmalar shu yerda ko'rinadi",
+      "create": "Buyurtma yaratish",
+      "viewOrders": "Buyurtmalarga"
+    },
+    "addCar": "Mashina qo'shish",
+    "used": "Ishlatilgan",
+    "limitExhausted": "Limit tugadi"
+  },
+  "limits": {
+    "title": "Limitlar",
+    "subtitle": "Mashina bo'yicha yoqilg'i limitini belgilang yoki o'zgartiring. Yashil = norma, sariq = limitga yaqin, qizil = oshib ketgan.",
+    "vehicle": "Mashina",
+    "used": "Ishlatilgan",
+    "limit": "Limit",
+    "remaining": "Qolgan",
+    "status": "Holat",
+    "actions": "Amallar",
+    "statusWithin": "Normada",
+    "statusNear": "Limitga yaqin",
+    "statusExceeded": "Oshib ketgan",
+    "noCars": "Mashinalar yo'q",
+    "noCarsDesc": "Limitlarni belgilash uchun Mashinalar bo'limida qo'shing."
+  },
+  "admin": {
+    "title": "Admin panel",
+    "subtitle": "Kompaniyalar, mashinalar va buyurtmalar. Holat bo'yicha filtr.",
+    "noAccessCompanies": "Kompaniyalarni boshqarishga ruxsatingiz yo'q.",
+    "noAccessDrivers": "Haydovchilarni boshqarishga ruxsatingiz yo'q.",
+    "carLimitL": "limit {limit} l",
+    "companies": "Kompaniyalar",
+    "cars": "Mashinalar",
+    "orders": "Buyurtmalar",
+    "carsCount": "Mashinalar: {count}",
+    "usersCount": "Foydalanuvchilar: {count}",
+    "addressLabel": "Manzil",
+    "filterAll": "Barchasi",
+    "noOrders": "Filtrga mos buyurtmalar yo'q."
+  },
+  "myVehicle": {
+    "title": "Mashinam",
+    "subtitle": "Biriktirilgan transport ma'lumotlari. Tahrirlash mumkin emas.",
+    "noVehicle": "Sizga hali mashina tayinlanmagan. Menejerga murojaat qiling.",
+    "fuelType": "Yoqilg'i",
+    "monthlyLimit": "Oylik limit",
+    "usedThisMonth": "Bu oyda ishlatilgan",
+    "remaining": "Qolgan"
+  },
+  "myLimit": {
+    "title": "Mening limitim",
+    "subtitle": "Mashinalaringiz bo'yicha joriy oy uchun yoqilg'i sarfi.",
+    "used": "Ishlatilgan",
+    "remaining": "Qolgan",
+    "limit": "Limit",
+    "noVehicle": "Tayinlangan mashinalar yo'q.",
+    "perVehicle": "Mashina bo'yicha"
+  },
+  "driverDashboard": {
+    "title": "Haydovchi kabineti",
+    "subtitle": "Mashinalaringiz, limitlar va buyurtma yaratish.",
+    "createOrderTitle": "Buyurtma yaratish",
+    "remainingLiters": "qoldi {remaining} l",
+    "limitsPerMonth": "Oylik limitlar",
+    "noCarsAssigned": "Hali tayinlangan mashinalar yo'q.",
+    "recentOrders": "Oxirgi buyurtmalar",
+    "noOrdersYet": "Hali buyurtmalar yo'q."
+  },
+  "drivers": {
+    "addDriver": "Haydovchi qo'shish",
+    "name": "Ism",
+    "nameLabel": "Haydovchi ismi",
+    "namePlaceholder": "To'liq ism (ixtiyoriy)",
+    "phone": "Telefon",
+    "phoneLabel": "Haydovchi telefoni *",
+    "phonePlaceholder": "+998 90 000 00 00",
+    "passwordLabel": "Parol / SMS kodi *",
+    "passwordPlaceholder": "Kirish kodi",
+    "carLabel": "Mashina *",
+    "selectCar": "Mashinani tanlang",
+    "creating": "Yaratilmoqda...",
+    "error": "Xato"
+  },
+  "cars": {
+    "addCar": "Mashina qo'shish",
+    "noCompany": "Sizga kompaniya biriktirilmagan.",
+    "noCars": "Mashinalar yo'q",
+    "noCarsDesc": "Yoqilg'i va limitlarni hisoblash uchun birinchi mashinani qo'shing",
+    "used": "Ishlatilgan",
+    "limitExhausted": "Limit tugadi",
+    "remainingShort": "Qoldi: {remaining} l"
+  },
+  "addCarForm": {
+    "plateNumber": "Raqam",
+    "model": "Model",
+    "modelPlaceholder": "Chevrolet Lacetti",
+    "fuelType": "Yoqilg'i",
+    "ai92": "AI-92",
+    "ai95": "AI-95",
+    "monthlyLimit": "Oylik limit (l)",
+    "tankCapacity": "Bak hajmi (l)",
+    "add": "Qo'shish",
+    "saving": "Saqlanmoqda...",
+    "error": "Xato"
+  },
+  "createOrder": {
+    "car": "Mashina",
+    "carPlaceholder": "Mashinani tanlang",
+    "quantity": "Yoqilg'i miqdori",
+    "selected": "Tanlangan",
+    "remaining": "Mavjud",
+    "step": "Qadam",
+    "address": "Yetkazib berish manzili",
+    "addressPlaceholder": "Ko'cha, uy, ofis",
+    "notes": "Izoh",
+    "notesPlaceholder": "Ixtiyoriy",
+    "volume": "Hajm (l)",
+    "fullTank": "To'liq bak",
+    "submit": "Buyurtma berish",
+    "creating": "Yaratilmoqda...",
+    "cancel": "Bekor qilish",
+    "errors": {
+      "selectCarVolume": "Mashinani tanlang",
+      "limitExhausted": "Ushbu mashina uchun limit tugadi.",
+      "selectVolume": "Yoqilg'i miqdorini tanlang."
+    }
+  },
+  "orders": {
+    "title": "Buyurtmalar",
+    "requestsTitle": "Yoqilg'i so'rovlari",
+    "requestsSubtitle": "Haydovchi so'rovlarini tasdiqlang yoki rad eting. Tasdiqlanganlar yetkazib berishga o'tadi.",
+    "deliveriesTitle": "Yetkazib berish",
+    "deliveriesSubtitle": "Rejalashtirilgan, yo'lda yoki yetkazilgan holatini kuzating.",
+    "create": "Buyurtma yaratish",
+    "export": "CSV eksport",
+    "pendingRequests": "Tasdiq kutilmoqda",
+    "totalOrders": "Jami buyurtmalar",
+    "totalVolume": "Hajm",
+    "totalAmount": "Taxminiy to'lov",
+    "promptVolume": "Necha litr quyildi?",
+    "empty": {
+      "title": "Buyurtmalar yo'q",
+      "desc": "Mashinangiz uchun birinchi yoqilg'i buyurtmasini yarating"
+    },
+    "filters": {
+      "status": "Holat",
+      "product": "Yoqilg'i",
+      "deliveries": "Yetkazib berish"
+    },
+    "table": {
+      "date": "Sana",
+      "time": "Vaqt",
+      "plate": "Mashina",
+      "driver": "Haydovchi",
+      "fuel": "Yoqilg'i",
+      "volume": "Hajm",
+      "address": "Manzil",
+      "status": "Holat",
+      "actions": "Amallar"
+    },
+    "newOrders": "Yangi buyurtmalar",
+    "markReceived": "Qabul qilindi",
+    "assignCourier": "Kuryer tayinlash",
+    "inDelivery": "Yo'lda",
+    "markDelivered": "Yetkazildi",
+    "cancel": "Bekor qilish",
+    "enterCourierId": "Kuryer foydalanuvchi ID",
+    "status": {
+      "created": "Yaratilgan",
+      "received": "Qabul qilindi",
+      "pendingApproval": "Tasdiq kutilmoqda",
+      "courierAssigned": "Kuryer tayinlandi",
+      "inDelivery": "Yo'lda",
+      "delivered": "Yetkazilgan",
+      "cancelled": "Bekor qilindi",
+      "ASSIGNED": "Kuryer tayinlandi",
+      "PENDING_APPROVAL": "Tasdiq kutilmoqda",
+      "ON_ROUTE": "Yo'lda",
+      "CLOSED": "Yopilgan",
+      "REJECTED": "Rad etilgan"
+    },
+    "takeOrder": "Buyurtmani olish",
+    "deliver": "Yetkazish"
+  },
+  "dispatcher": {
+    "newOrders": "Yangi buyurtmalar",
+    "newOrdersDesc": "Qabul qilish va kuryer tayinlash kutilayotgan buyurtmalar.",
+    "courierAssignment": "Kuryer tayinlash",
+    "courierAssignmentDesc": "Buyurtmalarga kuryer tayinlang.",
+    "activeDeliveries": "Faol yetkazib berish",
+    "activeDeliveriesDesc": "Yo'ldagi buyurtmalar.",
+    "completedDeliveries": "Tugatilgan yetkazib berish",
+    "completedDeliveriesDesc": "Yetkazilgan va bekor qilingan buyurtmalar."
+  },
+  "notifications": {
+    "title": "Bildirishnomalar",
+    "subtitle": "Buyurtma tasdiqlari, yetkazib berish va limit o'zgarishlari",
+    "markAllRead": "Hammasini o'qildi deb belgilash",
+    "empty": "Bildirishnomalar yo'q",
+    "emptyHint": "Buyurtma holatini ApexOil dispetcheri o'zgartiradi. Buyurtma qabul qilinsa, kuryer tayinlansa yoki yetkazib berilsa — bildirishnomalar shu yerda va «Mening buyurtmalarim»da ko'rinadi."
+  },
+  "footer": {
+    "rights": "Barcha huquqlar himoyalangan",
+    "location": "Toshkent, O'zbekiston"
+  },
+  "loading": {
+    "default": "Yuklanmoqda..."
+  }
+}

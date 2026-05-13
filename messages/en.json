@@ -1,0 +1,570 @@
+{
+  "common": {
+    "appName": "ApexOil",
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "cta": {
+      "getStarted": "Get Started",
+      "signIn": "Sign In",
+      "submit": "Submit",
+      "cancel": "Cancel",
+      "save": "Save"
+    },
+    "nav": {
+      "features": "Features",
+      "howItWorks": "How It Works",
+      "demo": "Demo",
+      "pricing": "Pricing",
+      "contact": "Contact"
+    },
+    "ecosystem": {
+      "apexBank": "ApexBank",
+      "apexInsurance": "ApexInsurance uz"
+    }
+  },
+  "hero": {
+    "badge": "Tashkent · B2B",
+    "headline": "Fuel management for modern fleets",
+    "subtext": "Fuel delivery, driver requests, fleet limits, and automated reporting — all in one platform.",
+    "cta": {
+      "primary": "Get Started",
+      "secondary": "View Dashboard",
+      "learnMore": "Learn more"
+    },
+    "highlights": {
+      "fuels": "AI-92 · AI-95",
+      "payment": "Invoice payment",
+      "limits": "Limit control"
+    },
+    "chooseRole": "Choose how you want to work",
+    "chooseRoleDesc": "Managers and drivers have separate dashboards.",
+    "managerCabinet": "Manager dashboard",
+    "managerCabinetDesc": "Manage vehicles, limits, and drivers for your company.",
+    "driverCabinet": "Driver dashboard",
+    "driverCabinetDesc": "Order fuel by vehicle number and phone—no registration required.",
+    "close": "Close",
+    "notificationApproved": "Fuel request approved",
+    "notificationScheduled": "Delivery scheduled",
+    "notificationLimitUpdated": "Fuel limit updated"
+  },
+  "features": {
+    "title": "Built for fleet operations",
+    "limits": {
+      "title": "Fleet fuel limits",
+      "desc": "Set per-vehicle fuel budgets and prevent overruns."
+    },
+    "driverOrdering": {
+      "title": "Driver ordering",
+      "desc": "Drivers request fuel by vehicle number — no complex accounts."
+    },
+    "delivery": {
+      "title": "Delivery tracking",
+      "desc": "Track delivery status in real time from request to completion."
+    },
+    "invoices": {
+      "title": "Automated invoices",
+      "desc": "Generate invoices and usage reports automatically."
+    },
+    "analytics": {
+      "title": "Analytics dashboard",
+      "desc": "Monitor fuel usage and fleet performance at a glance."
+    }
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "step1": {
+      "title": "Driver requests fuel",
+      "desc": "Driver enters vehicle number and submits a fuel request."
+    },
+    "step2": {
+      "title": "Manager approves",
+      "desc": "Fleet manager controls limits and approvals."
+    },
+    "step3": {
+      "title": "Fuel is delivered",
+      "desc": "Fuel truck delivers directly to the vehicle."
+    },
+    "step4": {
+      "title": "Reporting",
+      "desc": "Fuel usage automatically tracked and invoiced."
+    }
+  },
+  "interactiveDemo": {
+    "title": "Interactive Fleet Demo",
+    "vehicleLabel": "Vehicle",
+    "fuelLimitLabel": "Fuel limit",
+    "simulateRequest": "Simulate Fuel Request",
+    "simulateDelivery": "Simulate Delivery",
+    "notificationRequest": "Driver {vehicle} requested {volume}L fuel",
+    "managerApproved": "Manager approved request",
+    "deliveryEta": "Delivery ETA: {minutes} minutes",
+    "deliveryInProgress": "Delivery in progress",
+    "remaining": "Remaining",
+    "deliveryCompleted": "Delivery completed. Fuel balance updated.",
+    "demoHint": "Click \"Simulate Fuel Request\" to see a system notification, then \"Simulate Delivery\" to run the flow."
+  },
+  "benefits": {
+    "title": "Why fleet operators choose ApexOil",
+    "costControl": {
+      "title": "Fuel Cost Control",
+      "desc": "Prevent fuel abuse with vehicle-level limits."
+    },
+    "visibility": {
+      "title": "Fleet Visibility",
+      "desc": "Track consumption across all vehicles in real time."
+    },
+    "reports": {
+      "title": "Automated Reports",
+      "desc": "Invoices and fuel reports generated automatically."
+    },
+    "delivery": {
+      "title": "Fast Fuel Delivery",
+      "desc": "Fuel delivered directly to vehicles anywhere in the city."
+    }
+  },
+  "dashboardPreview": {
+    "title": "Your fleet at a glance",
+    "subtitle": "Real-time visibility into vehicles, limits, and usage.",
+    "tableVehicle": "Vehicle",
+    "tableFuelUsed": "Fuel used",
+    "tableRemaining": "Remaining limit",
+    "tableStatus": "Status",
+    "statusActive": "Active",
+    "statusPending": "Pending",
+    "chartTitle": "Monthly usage"
+  },
+  "socialProof": {
+    "title": "Trusted by Fleet Operators",
+    "logistics": "Logistics",
+    "taxi": "Taxi service",
+    "delivery": "Delivery",
+    "construction": "Construction"
+  },
+  "pricing": {
+    "title": "Plans for every fleet size",
+    "intro": "Pricing depends on fleet size and business needs. Choose the plan that fits your operations.",
+    "starter": {
+      "name": "Starter",
+      "desc": "For small fleets.",
+      "price": "Custom",
+      "features": "Fuel delivery for company fleets\nVehicle-level fuel limits\nDriver account management\nRequest approval workflow\nBasic usage reports"
+    },
+    "business": {
+      "name": "Business",
+      "desc": "For growing companies.",
+      "price": "Custom",
+      "features": "Everything in Starter\nDelivery tracking\nUsage reports and analytics\nInvoice-ready reporting\nPriority support"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "desc": "For large logistics operations.",
+      "price": "Custom",
+      "features": "Unlimited vehicles\nDedicated account manager\nCustom integrations\nAPI access\n24/7 priority support"
+    },
+    "cta": "Contact sales",
+    "popular": "Popular"
+  },
+  "contact": {
+    "title": "Get in touch",
+    "phone": "Phone",
+    "telegram": "Telegram",
+    "email": "Support email",
+    "officeHours": "Office hours",
+    "officeHoursValue": "Mon–Fri, 9:00–18:00",
+    "submit": "Submit",
+    "sending": "Sending...",
+    "success": "Message sent. We'll get back to you shortly.",
+    "error": "Send failed. Try again or contact us by phone.",
+    "form": {
+      "name": "Name",
+      "company": "Company",
+      "phone": "Phone",
+      "message": "Message"
+    }
+  },
+  "auth": {
+    "backToRoleSelection": "Back to role selection",
+    "backToHomepage": "Back to homepage",
+    "chooseRoleTitle": "How do you want to sign in?",
+    "chooseRoleSubtitle": "Select your role to continue.",
+    "managerLogin": "Company Manager Login",
+    "managerRoleDesc": "Manage fleet, limits, orders",
+    "driverLogin": "Driver Access",
+    "driverRoleDesc": "Order fuel by vehicle & phone",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "createOne": "Create one",
+    "errors": {
+      "invalidEmailPassword": "Invalid email or password",
+      "accountNotFound": "Account not found",
+      "incorrectRecoveryCode": "Incorrect recovery code",
+      "passwordsDoNotMatch": "Passwords do not match"
+    }
+  },
+  "managerLogin": {
+    "title": "Company Manager Login",
+    "subtitle": "Sign in to manage your company fleet.",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "demo": "Demo: admin@apexoil.uz / 123, company@apexoil.uz / company123"
+  },
+  "driverLogin": {
+    "title": "Driver Access",
+    "subtitle": "Order fuel using your vehicle and phone number.",
+    "vehicleNumber": "Vehicle number",
+    "phoneNumber": "Phone number",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "smsCode": "SMS code",
+    "errorPhoneCode": "Enter phone number and SMS code"
+  },
+  "login": {
+    "title": "Sign in",
+    "managerTitle": "Company manager dashboard",
+    "driverTitle": "Driver dashboard",
+    "subtitle": "Sign in to your account.",
+    "managerSubtitle": "Enter your company login and password.",
+    "driverSubtitle": "Enter the details provided by your company manager.",
+    "tabEmail": "Email sign in",
+    "tabManager": "Manager",
+    "tabDriver": "Driver",
+    "placeholderEmail": "Email",
+    "placeholderManagerEmail": "Company email (login)",
+    "placeholderPassword": "Password",
+    "placeholderCarNumber": "Vehicle number (e.g. 01A123BC)",
+    "placeholderDriverPhone": "Driver phone number",
+    "placeholderSmsCode": "SMS code",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "errorPhoneCode": "Enter phone number and SMS code",
+    "errorLoginPassword": "Enter login and password",
+    "errorInvalid": "Invalid email or password",
+    "demo": "Demo: Super Admin — admin@apexoil.uz / 123, Company — company@apexoil.uz / company123"
+  },
+  "signup": {
+    "title": "Create account",
+    "subtitle": "Enter your details to create a company account.",
+    "subtitleStep1": "Enter your details to create a company account.",
+    "fullName": "Full name",
+    "companyName": "Company name",
+    "email": "Email",
+    "phone": "Phone number",
+    "password": "Password",
+    "continue": "Continue",
+    "submitting": "Sending...",
+    "backToLogin": "Back to login",
+    "step2Title": "Choose verification method",
+    "step2Subtitle": "Choose where to send your verification code.",
+    "verifyByEmail": "Verify by email",
+    "verifyByPhone": "Verify by phone number",
+    "step3Title": "Verification code",
+    "sentToEmail": "We sent a 6-digit verification code to your email.",
+    "sentToPhone": "We sent a 6-digit verification code to your phone number.",
+    "codePlaceholder": "Enter 6-digit code",
+    "confirmCode": "Confirm code",
+    "resendCode": "Resend code",
+    "resendSent": "Code sent again",
+    "back": "Back",
+    "changeMethod": "Change verification method",
+    "success": "Account verified successfully.",
+    "successSubtitle": "You can now sign in.",
+    "redirecting": "Redirecting to sign in...",
+    "noEmailHint": "No email? In development the code is printed in the terminal where you run npm run dev. To receive real emails, add RESEND_API_KEY to .env — see SETUP.md.",
+    "validation": {
+      "emailInvalid": "Enter a valid email address",
+      "passwordMin": "Password must be at least 8 characters",
+      "requiredFields": "Please fill in all required fields",
+      "emailInUse": "This email is already in use",
+      "invalidCode": "Invalid code",
+      "codeExpired": "Code expired. Request a new one."
+    }
+  },
+  "forgotPassword": {
+    "title": "Forgot password?",
+    "subtitle": "Enter your email and we'll send you a recovery code.",
+    "email": "Email",
+    "submit": "Send recovery code",
+    "submitting": "Sending...",
+    "success": "Recovery code sent. Check your email.",
+    "backToLogin": "Back to login",
+    "continueToReset": "Continue to reset password"
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "subtitle": "Enter the code from your email and choose a new password.",
+    "email": "Email",
+    "recoveryCode": "Recovery code",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "submit": "Reset password",
+    "submitting": "Resetting...",
+    "success": "Password successfully updated. You can now log in.",
+    "backToForgot": "Back to forgot password",
+    "logIn": "Log in",
+    "validation": {
+      "codeRequired": "Enter the recovery code",
+      "passwordMin": "Password must be at least 8 characters",
+      "passwordsDoNotMatch": "Passwords do not match"
+    }
+  },
+  "dashboard": {
+    "title": "Overview",
+    "nav": {
+      "overview": "Overview",
+      "admin": "Admin",
+      "companies": "Companies",
+      "cars": "Vehicles",
+      "drivers": "Drivers",
+      "orders": "Orders",
+      "limits": "Limits",
+      "requests": "Requests",
+      "deliveries": "Deliveries",
+      "reports": "Reports",
+      "invoices": "Invoices",
+      "settings": "Settings",
+      "myCars": "My vehicles",
+      "myVehicle": "My vehicle",
+      "createOrder": "Create order",
+      "myOrders": "My orders",
+      "myLimit": "My limit",
+      "notifications": "Notifications",
+      "dispatcherNewOrders": "New orders",
+      "dispatcherAssign": "Courier assignment",
+      "dispatcherActive": "Active deliveries",
+      "dispatcherCompleted": "Completed"
+    },
+    "logout": "Sign out",
+    "subtitle": "Key metrics for this month",
+    "kpi": {
+      "remaining": "Remaining liters",
+      "activeCars": "Active cars",
+      "pendingApprovals": "Pending approvals",
+      "deliveredToday": "Delivered today",
+      "used": "Used"
+    },
+    "pendingBanner": {
+      "text": "{count} pending approval",
+      "desc": "Full tank requires admin confirmation",
+      "link": "View"
+    },
+    "perCar": {
+      "title": "Limit per car"
+    },
+    "chart": {
+      "title": "Usage by month",
+      "noData": "No data for this period"
+    },
+    "recentOrders": {
+      "title": "Recent orders",
+      "empty": "No orders yet",
+      "emptyDesc": "Orders will appear here",
+      "create": "Create order",
+      "viewOrders": "View orders"
+    },
+    "addCar": "Add car",
+    "used": "Used",
+    "limitExhausted": "Limit exhausted"
+  },
+  "limits": {
+    "title": "Limits",
+    "subtitle": "Set and edit fuel limits per vehicle. Green = within limit, yellow = near limit, red = exceeded.",
+    "vehicle": "Vehicle",
+    "used": "Used",
+    "limit": "Limit",
+    "remaining": "Remaining",
+    "status": "Status",
+    "actions": "Actions",
+    "statusWithin": "Within limit",
+    "statusNear": "Near limit",
+    "statusExceeded": "Exceeded",
+    "noCars": "No vehicles",
+    "noCarsDesc": "Add vehicles in the Vehicles section to set limits."
+  },
+  "admin": {
+    "title": "Admin dashboard",
+    "subtitle": "Companies, cars, and orders. Filter by status.",
+    "noAccessCompanies": "You do not have access to manage companies.",
+    "noAccessDrivers": "You do not have access to manage drivers.",
+    "carLimitL": "limit {limit} L",
+    "companies": "Companies",
+    "cars": "Cars",
+    "orders": "Orders",
+    "carsCount": "Cars: {count}",
+    "usersCount": "Users: {count}",
+    "addressLabel": "Address",
+    "filterAll": "All",
+    "noOrders": "No orders match the filter."
+  },
+  "myVehicle": {
+    "title": "My vehicle",
+    "subtitle": "Assigned vehicle details. Editing is not available.",
+    "noVehicle": "No vehicle assigned yet. Contact your manager.",
+    "fuelType": "Fuel type",
+    "monthlyLimit": "Monthly limit",
+    "usedThisMonth": "Used this month",
+    "remaining": "Remaining"
+  },
+  "myLimit": {
+    "title": "My limit",
+    "subtitle": "Fuel usage for your vehicles this month.",
+    "used": "Used",
+    "remaining": "Remaining",
+    "limit": "Limit",
+    "noVehicle": "No vehicles assigned.",
+    "perVehicle": "Per vehicle"
+  },
+  "driverDashboard": {
+    "title": "Driver dashboard",
+    "subtitle": "Your vehicles, limits, and order creation.",
+    "createOrderTitle": "Create order",
+    "remainingLiters": "remaining {remaining} L",
+    "limitsPerMonth": "Monthly limits",
+    "noCarsAssigned": "You have no vehicles assigned yet.",
+    "recentOrders": "Recent orders",
+    "noOrdersYet": "No orders yet."
+  },
+  "drivers": {
+    "addDriver": "Add driver",
+    "name": "Name",
+    "nameLabel": "Driver name",
+    "namePlaceholder": "Full name (optional)",
+    "phone": "Phone",
+    "phoneLabel": "Driver phone *",
+    "phonePlaceholder": "+998 90 000 00 00",
+    "passwordLabel": "Password / SMS code *",
+    "passwordPlaceholder": "Choose a sign-in code",
+    "carLabel": "Car *",
+    "selectCar": "Select car",
+    "creating": "Creating...",
+    "error": "Error"
+  },
+  "cars": {
+    "addCar": "Add car",
+    "noCompany": "You have no company assigned.",
+    "noCars": "No cars",
+    "noCarsDesc": "Add your first car to start tracking fuel and limits",
+    "used": "Used",
+    "limitExhausted": "Limit exhausted",
+    "remainingShort": "Remaining: {remaining} L"
+  },
+  "addCarForm": {
+    "plateNumber": "Plate number",
+    "model": "Model",
+    "modelPlaceholder": "Chevrolet Lacetti",
+    "fuelType": "Fuel type",
+    "ai92": "AI-92",
+    "ai95": "AI-95",
+    "monthlyLimit": "Monthly limit (L)",
+    "tankCapacity": "Tank capacity (L)",
+    "add": "Add",
+    "saving": "Saving...",
+    "error": "Error"
+  },
+  "createOrder": {
+    "car": "Vehicle",
+    "carPlaceholder": "Select vehicle",
+    "quantity": "Fuel quantity",
+    "selected": "Selected",
+    "remaining": "Available",
+    "step": "Step",
+    "address": "Delivery address",
+    "addressPlaceholder": "Street, building, office",
+    "notes": "Comment",
+    "notesPlaceholder": "Optional",
+    "volume": "Volume (L)",
+    "fullTank": "Full tank",
+    "submit": "Create order",
+    "creating": "Creating...",
+    "cancel": "Cancel",
+    "errors": {
+      "selectCarVolume": "Select vehicle",
+      "limitExhausted": "Limit exhausted for this vehicle.",
+      "selectVolume": "Select fuel quantity."
+    }
+  },
+  "orders": {
+    "title": "Orders",
+    "requestsTitle": "Fuel requests",
+    "requestsSubtitle": "Approve or reject driver fuel requests. Approved requests become deliveries.",
+    "deliveriesTitle": "Deliveries",
+    "deliveriesSubtitle": "Track delivery status: scheduled, in progress, or completed.",
+    "create": "Create order",
+    "export": "Export CSV",
+    "pendingRequests": "Pending approval",
+    "totalOrders": "Total orders",
+    "totalVolume": "Volume",
+    "totalAmount": "Est. amount",
+    "promptVolume": "How many liters delivered?",
+    "empty": {
+      "title": "No orders",
+      "desc": "Create your first fuel order for your car"
+    },
+    "filters": {
+      "status": "Status",
+      "product": "Fuel",
+      "deliveries": "Deliveries"
+    },
+    "table": {
+      "date": "Date",
+      "time": "Time",
+      "plate": "Vehicle",
+      "driver": "Driver",
+      "fuel": "Fuel",
+      "volume": "Volume",
+      "address": "Address",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "newOrders": "New orders",
+    "markReceived": "Mark received",
+    "assignCourier": "Assign courier",
+    "inDelivery": "In delivery",
+    "markDelivered": "Mark delivered",
+    "cancel": "Cancel",
+    "enterCourierId": "Courier user ID",
+    "status": {
+      "created": "Created",
+      "received": "Received",
+      "pendingApproval": "Pending approval",
+      "courierAssigned": "Courier assigned",
+      "inDelivery": "In delivery",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled",
+      "ASSIGNED": "Courier assigned",
+      "PENDING_APPROVAL": "Pending approval",
+      "ON_ROUTE": "On route",
+      "CLOSED": "Closed",
+      "REJECTED": "Rejected"
+    },
+    "takeOrder": "Take order",
+    "deliver": "Deliver"
+  },
+  "dispatcher": {
+    "newOrders": "New orders",
+    "newOrdersDesc": "Orders awaiting receipt and courier assignment.",
+    "courierAssignment": "Courier assignment",
+    "courierAssignmentDesc": "Assign courier to orders.",
+    "activeDeliveries": "Active deliveries",
+    "activeDeliveriesDesc": "Orders in progress.",
+    "completedDeliveries": "Completed deliveries",
+    "completedDeliveriesDesc": "Delivered and cancelled orders."
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Order approvals, deliveries and limit updates",
+    "markAllRead": "Mark all read",
+    "empty": "No notifications",
+    "emptyHint": "Order status is updated by ApexOil dispatcher. When your order is accepted, a courier is assigned, or delivery is completed, you'll see it here and in My Orders."
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "location": "Tashkent, Uzbekistan"
+  },
+  "loading": {
+    "default": "Loading..."
+  }
+}

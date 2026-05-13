@@ -1,0 +1,570 @@
+{
+  "common": {
+    "appName": "ApexOil",
+    "language": "Язык",
+    "theme": "Тема",
+    "dark": "Тёмная",
+    "light": "Светлая",
+    "cta": {
+      "getStarted": "Начать работу",
+      "signIn": "Войти",
+      "submit": "Отправить",
+      "cancel": "Отмена",
+      "save": "Сохранить"
+    },
+    "nav": {
+      "features": "Возможности",
+      "howItWorks": "Как это работает",
+      "demo": "Демо",
+      "pricing": "Тарифы",
+      "contact": "Контакты"
+    },
+    "ecosystem": {
+      "apexBank": "ApexBank",
+      "apexInsurance": "ApexInsurance uz"
+    }
+  },
+  "hero": {
+    "badge": "Ташкент · B2B",
+    "headline": "Управление топливом для современного автопарка",
+    "subtext": "Доставка топлива, заявки водителей, лимиты по парку и автоматическая отчётность — в одной платформе.",
+    "cta": {
+      "primary": "Начать работу",
+      "secondary": "В кабинет",
+      "learnMore": "Подробнее"
+    },
+    "highlights": {
+      "fuels": "AI-92 · AI-95",
+      "payment": "Оплата по счёту",
+      "limits": "Контроль лимитов"
+    },
+    "chooseRole": "Выберите, как вы хотите работать",
+    "chooseRoleDesc": "Для менеджеров компаний и водителей предусмотрены разные кабинеты.",
+    "managerCabinet": "Кабинет менеджера",
+    "managerCabinetDesc": "Управляйте машинами, лимитами и водителями вашей компании.",
+    "driverCabinet": "Кабинет водителя",
+    "driverCabinetDesc": "Заказывайте топливо по номеру машины и телефону без регистрации.",
+    "close": "Закрыть",
+    "notificationApproved": "Заявка на топливо одобрена",
+    "notificationScheduled": "Доставка запланирована",
+    "notificationLimitUpdated": "Лимит топлива обновлён"
+  },
+  "features": {
+    "title": "Для управления автопарком",
+    "limits": {
+      "title": "Лимиты по топливу",
+      "desc": "Устанавливайте лимиты по машинам и исключайте перерасход."
+    },
+    "driverOrdering": {
+      "title": "Заявки водителей",
+      "desc": "Водители заказывают топливо по номеру машины — без сложных аккаунтов."
+    },
+    "delivery": {
+      "title": "Отслеживание доставки",
+      "desc": "Статус доставки в реальном времени от заявки до выполнения."
+    },
+    "invoices": {
+      "title": "Автосчета и отчёты",
+      "desc": "Счета и отчёты по расходу формируются автоматически."
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "desc": "Контроль расхода топлива и работы парка в одном дашборде."
+    }
+  },
+  "howItWorks": {
+    "title": "Как это работает",
+    "step1": {
+      "title": "Водитель подаёт заявку",
+      "desc": "Водитель вводит номер машины и отправляет заявку на топливо."
+    },
+    "step2": {
+      "title": "Менеджер утверждает",
+      "desc": "Менеджер парка контролирует лимиты и заявки."
+    },
+    "step3": {
+      "title": "Доставка топлива",
+      "desc": "Топливозаправщик привозит топливо прямо к машине."
+    },
+    "step4": {
+      "title": "Отчётность",
+      "desc": "Расход топлива учитывается и выставляется в счёт автоматически."
+    }
+  },
+  "interactiveDemo": {
+    "title": "Интерактивная демо-панель",
+    "vehicleLabel": "Машина",
+    "fuelLimitLabel": "Лимит топлива",
+    "simulateRequest": "Симулировать заявку",
+    "simulateDelivery": "Симулировать доставку",
+    "notificationRequest": "Водитель {vehicle} запросил {volume} л топлива",
+    "managerApproved": "Менеджер одобрил заявку",
+    "deliveryEta": "Доставка через {minutes} мин",
+    "deliveryInProgress": "Доставка в пути",
+    "remaining": "Остаток",
+    "deliveryCompleted": "Доставка выполнена. Баланс топлива обновлён.",
+    "demoHint": "Нажмите «Симулировать заявку», чтобы увидеть уведомление, затем «Симулировать доставку» для полного сценария."
+  },
+  "benefits": {
+    "title": "Почему выбирают ApexOil",
+    "costControl": {
+      "title": "Контроль расхода",
+      "desc": "Лимиты по машинам предотвращают перерасход топлива."
+    },
+    "visibility": {
+      "title": "Видимость парка",
+      "desc": "Учёт расхода по всем машинам в реальном времени."
+    },
+    "reports": {
+      "title": "Автоотчёты",
+      "desc": "Счета и отчёты по топливу формируются автоматически."
+    },
+    "delivery": {
+      "title": "Быстрая доставка",
+      "desc": "Топливо доставляется к машинам в любую точку города."
+    }
+  },
+  "dashboardPreview": {
+    "title": "Ваш парк в одном экране",
+    "subtitle": "Актуальные данные по машинам, лимитам и расходу.",
+    "tableVehicle": "Машина",
+    "tableFuelUsed": "Использовано",
+    "tableRemaining": "Остаток лимита",
+    "tableStatus": "Статус",
+    "statusActive": "Активна",
+    "statusPending": "Ожидает",
+    "chartTitle": "Расход по месяцам"
+  },
+  "socialProof": {
+    "title": "Нам доверяют операторы автопарков",
+    "logistics": "Логистика",
+    "taxi": "Такси",
+    "delivery": "Доставка",
+    "construction": "Строительство"
+  },
+  "pricing": {
+    "title": "Тарифы под любой парк",
+    "intro": "Стоимость зависит от размера парка и потребностей. Выберите план под ваши задачи.",
+    "starter": {
+      "name": "Старт",
+      "desc": "Для небольших парков.",
+      "price": "По запросу",
+      "features": "Доставка топлива для парка\nЛимиты по машинам\nУчёт водителей\nСогласование заявок\nБазовые отчёты"
+    },
+    "business": {
+      "name": "Бизнес",
+      "desc": "Для растущих компаний.",
+      "price": "По запросу",
+      "features": "Всё из Старта\nОтслеживание доставки\nОтчёты и аналитика\nСчета для бухгалтерии\nПриоритетная поддержка"
+    },
+    "enterprise": {
+      "name": "Корпорация",
+      "desc": "Для крупной логистики.",
+      "price": "По запросу",
+      "features": "Безлимит машин\nПерсональный менеджер\nИнтеграции\nAPI\nПоддержка 24/7"
+    },
+    "cta": "Связаться с нами",
+    "popular": "Популярный"
+  },
+  "contact": {
+    "title": "Связаться с нами",
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "email": "Поддержка",
+    "officeHours": "Режим работы",
+    "officeHoursValue": "Пн–Пт, 9:00–18:00",
+    "submit": "Отправить",
+    "sending": "Отправка...",
+    "success": "Сообщение отправлено. Мы свяжемся с вами в ближайшее время.",
+    "error": "Ошибка отправки. Попробуйте позже или свяжитесь по телефону.",
+    "form": {
+      "name": "Имя",
+      "company": "Компания",
+      "phone": "Телефон",
+      "message": "Сообщение"
+    }
+  },
+  "auth": {
+    "backToRoleSelection": "К выбору роли",
+    "backToHomepage": "На главную",
+    "chooseRoleTitle": "Как вы хотите войти?",
+    "chooseRoleSubtitle": "Выберите роль для продолжения.",
+    "managerLogin": "Вход для менеджера",
+    "managerRoleDesc": "Парк, лимиты, заказы",
+    "driverLogin": "Доступ водителя",
+    "driverRoleDesc": "Топливо по машине и телефону",
+    "forgotPassword": "Забыли пароль?",
+    "noAccount": "Нет аккаунта?",
+    "createOne": "Создать",
+    "errors": {
+      "invalidEmailPassword": "Неверный email или пароль",
+      "accountNotFound": "Аккаунт не найден",
+      "incorrectRecoveryCode": "Неверный код восстановления",
+      "passwordsDoNotMatch": "Пароли не совпадают"
+    }
+  },
+  "managerLogin": {
+    "title": "Вход для менеджера компании",
+    "subtitle": "Войдите, чтобы управлять парком компании.",
+    "email": "Email",
+    "password": "Пароль",
+    "submit": "Войти",
+    "submitting": "Вход...",
+    "demo": "Демо: admin@apexoil.uz / 123, company@apexoil.uz / company123"
+  },
+  "driverLogin": {
+    "title": "Доступ водителя",
+    "subtitle": "Заказывайте топливо по номеру машины и телефону.",
+    "vehicleNumber": "Номер машины",
+    "phoneNumber": "Телефон",
+    "submit": "Войти",
+    "submitting": "Вход...",
+    "smsCode": "Код из SMS",
+    "errorPhoneCode": "Укажите телефон и код из SMS"
+  },
+  "login": {
+    "title": "Вход",
+    "managerTitle": "Кабинет менеджера компании",
+    "driverTitle": "Кабинет водителя",
+    "subtitle": "Войдите в личный кабинет.",
+    "managerSubtitle": "Введите логин компании и пароль.",
+    "driverSubtitle": "Введите данные, выданные вам менеджером компании.",
+    "tabEmail": "Вход по email",
+    "tabManager": "Менеджер",
+    "tabDriver": "Водитель",
+    "placeholderEmail": "Email",
+    "placeholderManagerEmail": "Email компании (логин)",
+    "placeholderPassword": "Пароль",
+    "placeholderCarNumber": "Номер машины (пример: 01A123BC)",
+    "placeholderDriverPhone": "Номер телефона водителя",
+    "placeholderSmsCode": "Код из SMS",
+    "submit": "Войти",
+    "submitting": "Вход...",
+    "errorPhoneCode": "Укажите номер телефона и код из SMS",
+    "errorLoginPassword": "Укажите логин и пароль",
+    "errorInvalid": "Неверный email или пароль",
+    "demo": "Демо: Super Admin — admin@apexoil.uz / 123, Company — company@apexoil.uz / company123"
+  },
+  "signup": {
+    "title": "Создать аккаунт",
+    "subtitle": "Введите данные для регистрации компании.",
+    "subtitleStep1": "Введите данные для регистрации компании.",
+    "fullName": "ФИО",
+    "companyName": "Название компании",
+    "email": "Email",
+    "phone": "Телефон",
+    "password": "Пароль",
+    "continue": "Продолжить",
+    "submitting": "Отправка...",
+    "backToLogin": "Вернуться ко входу",
+    "step2Title": "Способ подтверждения",
+    "step2Subtitle": "Выберите, куда отправить код подтверждения.",
+    "verifyByEmail": "Подтвердить по email",
+    "verifyByPhone": "Подтвердить по телефону",
+    "step3Title": "Код подтверждения",
+    "sentToEmail": "Мы отправили 6-значный код на вашу почту.",
+    "sentToPhone": "Мы отправили 6-значный код на ваш номер телефона.",
+    "codePlaceholder": "Введите 6-значный код",
+    "confirmCode": "Подтвердить код",
+    "resendCode": "Отправить код повторно",
+    "resendSent": "Код отправлен повторно",
+    "back": "Назад",
+    "changeMethod": "Изменить способ",
+    "success": "Аккаунт успешно подтверждён.",
+    "successSubtitle": "Теперь вы можете войти в систему.",
+    "redirecting": "Перенаправление на страницу входа...",
+    "noEmailHint": "Не пришло письмо? В режиме разработки код выводится в терминал (где запущен npm run dev). Чтобы получать письма на почту, добавьте RESEND_API_KEY в .env — см. SETUP.md.",
+    "validation": {
+      "emailInvalid": "Введите корректный email",
+      "passwordMin": "Пароль не менее 8 символов",
+      "requiredFields": "Заполните все обязательные поля",
+      "emailInUse": "Этот email уже используется",
+      "invalidCode": "Неверный код",
+      "codeExpired": "Код истёк. Запросите новый."
+    }
+  },
+  "forgotPassword": {
+    "title": "Забыли пароль?",
+    "subtitle": "Введите email — мы отправим код восстановления.",
+    "email": "Email",
+    "submit": "Отправить код",
+    "submitting": "Отправка...",
+    "success": "Код отправлен. Проверьте почту.",
+    "backToLogin": "Вернуться ко входу",
+    "continueToReset": "Перейти к сбросу пароля"
+  },
+  "resetPassword": {
+    "title": "Сброс пароля",
+    "subtitle": "Введите код из письма и задайте новый пароль.",
+    "email": "Email",
+    "recoveryCode": "Код восстановления",
+    "newPassword": "Новый пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "submit": "Сбросить пароль",
+    "submitting": "Сброс...",
+    "success": "Пароль успешно обновлён. Можете войти.",
+    "backToForgot": "Назад к восстановлению",
+    "logIn": "Войти",
+    "validation": {
+      "codeRequired": "Введите код восстановления",
+      "passwordMin": "Пароль не менее 8 символов",
+      "passwordsDoNotMatch": "Пароли не совпадают"
+    }
+  },
+  "dashboard": {
+    "title": "Обзор",
+    "nav": {
+      "overview": "Обзор",
+      "admin": "Админ",
+      "companies": "Компании",
+      "cars": "Машины",
+      "drivers": "Водители",
+      "orders": "Заказы",
+      "limits": "Лимиты",
+      "requests": "Заявки",
+      "deliveries": "Доставки",
+      "reports": "Отчёты",
+      "invoices": "Счета",
+      "settings": "Настройки",
+      "myCars": "Мои машины",
+      "myVehicle": "Моя машина",
+      "createOrder": "Создать заказ",
+      "myOrders": "Мои заказы",
+      "myLimit": "Мой лимит",
+      "notifications": "Уведомления",
+      "dispatcherNewOrders": "Новые заказы",
+      "dispatcherAssign": "Назначение курьера",
+      "dispatcherActive": "Активные доставки",
+      "dispatcherCompleted": "Завершённые"
+    },
+    "logout": "Выйти",
+    "subtitle": "Ключевые показатели за этот месяц",
+    "kpi": {
+      "remaining": "Остаток литров",
+      "activeCars": "Машин в парке",
+      "pendingApprovals": "На согласовании",
+      "deliveredToday": "Доставлено сегодня",
+      "used": "Использовано"
+    },
+    "pendingBanner": {
+      "text": "{count} на согласовании",
+      "desc": "Полный бак требует подтверждения администратора",
+      "link": "Посмотреть"
+    },
+    "perCar": {
+      "title": "Лимит по машинам"
+    },
+    "chart": {
+      "title": "Расход по месяцам",
+      "noData": "Нет данных за этот период"
+    },
+    "recentOrders": {
+      "title": "Последние заказы",
+      "empty": "Пока нет заказов",
+      "emptyDesc": "Заказы появятся здесь",
+      "create": "Создать заказ",
+      "viewOrders": "К заказам"
+    },
+    "addCar": "Добавить машину",
+    "used": "Использовано",
+    "limitExhausted": "Лимит исчерпан"
+  },
+  "limits": {
+    "title": "Лимиты",
+    "subtitle": "Установите и измените лимит топлива по машинам. Зелёный = в норме, жёлтый = близко к лимиту, красный = превышен.",
+    "vehicle": "Машина",
+    "used": "Использовано",
+    "limit": "Лимит",
+    "remaining": "Остаток",
+    "status": "Статус",
+    "actions": "Действия",
+    "statusWithin": "В норме",
+    "statusNear": "Близко к лимиту",
+    "statusExceeded": "Превышен",
+    "noCars": "Нет машин",
+    "noCarsDesc": "Добавьте машины в разделе «Машины», чтобы задать лимиты."
+  },
+  "admin": {
+    "title": "Админ-панель",
+    "subtitle": "Компании, машины и заказы. Фильтр по статусу.",
+    "noAccessCompanies": "У вас нет доступа к управлению компаниями.",
+    "noAccessDrivers": "У вас нет доступа к управлению водителями.",
+    "carLimitL": "лимит {limit} л",
+    "companies": "Компании",
+    "cars": "Машины",
+    "orders": "Заказы",
+    "carsCount": "Машин: {count}",
+    "usersCount": "Пользователей: {count}",
+    "addressLabel": "Адрес",
+    "filterAll": "Все",
+    "noOrders": "Нет заказов по фильтру."
+  },
+  "myVehicle": {
+    "title": "Моя машина",
+    "subtitle": "Данные по привязанному транспорту. Редактирование недоступно.",
+    "noVehicle": "Вам пока не назначена машина. Обратитесь к менеджеру.",
+    "fuelType": "Топливо",
+    "monthlyLimit": "Лимит в месяц",
+    "usedThisMonth": "Использовано в этом месяце",
+    "remaining": "Остаток"
+  },
+  "myLimit": {
+    "title": "Мой лимит",
+    "subtitle": "Расход топлива по вашим машинам за текущий месяц.",
+    "used": "Использовано",
+    "remaining": "Остаток",
+    "limit": "Лимит",
+    "noVehicle": "Нет привязанных машин.",
+    "perVehicle": "По машинам"
+  },
+  "driverDashboard": {
+    "title": "Кабинет водителя",
+    "subtitle": "Ваши машины, лимиты и создание заказа.",
+    "createOrderTitle": "Создать заказ",
+    "remainingLiters": "осталось {remaining} л",
+    "limitsPerMonth": "Лимиты за месяц",
+    "noCarsAssigned": "У вас пока нет привязанных машин.",
+    "recentOrders": "Последние заказы",
+    "noOrdersYet": "Заказов пока нет."
+  },
+  "drivers": {
+    "addDriver": "Добавить водителя",
+    "name": "Имя",
+    "nameLabel": "Имя водителя",
+    "namePlaceholder": "ФИО (необязательно)",
+    "phone": "Телефон",
+    "phoneLabel": "Телефон водителя *",
+    "phonePlaceholder": "+998 90 000 00 00",
+    "passwordLabel": "Пароль / SMS-код *",
+    "passwordPlaceholder": "Придумайте код для входа",
+    "carLabel": "Машина *",
+    "selectCar": "Выберите машину",
+    "creating": "Создание...",
+    "error": "Ошибка"
+  },
+  "cars": {
+    "addCar": "Добавить машину",
+    "noCompany": "У вас нет привязанной компании.",
+    "noCars": "Нет машин",
+    "noCarsDesc": "Добавьте первую машину, чтобы начать учёт топлива и лимитов",
+    "used": "Использовано",
+    "limitExhausted": "Лимит исчерпан",
+    "remainingShort": "Осталось: {remaining} л"
+  },
+  "addCarForm": {
+    "plateNumber": "Гос. номер",
+    "model": "Модель",
+    "modelPlaceholder": "Chevrolet Lacetti",
+    "fuelType": "Топливо",
+    "ai92": "АИ-92",
+    "ai95": "АИ-95",
+    "monthlyLimit": "Лимит в месяц (л)",
+    "tankCapacity": "Объём бака (л)",
+    "add": "Добавить",
+    "saving": "Сохранение...",
+    "error": "Ошибка"
+  },
+  "createOrder": {
+    "car": "Машина",
+    "carPlaceholder": "Выберите машину",
+    "quantity": "Количество топлива",
+    "selected": "Выбрано",
+    "remaining": "Доступно",
+    "step": "Шаг",
+    "address": "Адрес доставки",
+    "addressPlaceholder": "Улица, дом, офис",
+    "notes": "Комментарий",
+    "notesPlaceholder": "Необязательно",
+    "volume": "Объём (л)",
+    "fullTank": "Полный бак",
+    "submit": "Заказать",
+    "creating": "Создание...",
+    "cancel": "Отмена",
+    "errors": {
+      "selectCarVolume": "Выберите машину",
+      "limitExhausted": "Лимит по этой машине исчерпан.",
+      "selectVolume": "Укажите количество топлива."
+    }
+  },
+  "orders": {
+    "title": "Заказы",
+    "requestsTitle": "Заявки на топливо",
+    "requestsSubtitle": "Утверждайте или отклоняйте заявки водителей. Утверждённые становятся доставками.",
+    "deliveriesTitle": "Доставки",
+    "deliveriesSubtitle": "Статусы: запланировано, в пути, доставлено.",
+    "create": "Создать заказ",
+    "export": "Экспорт CSV",
+    "pendingRequests": "Ожидают подтверждения",
+    "totalOrders": "Всего заказов",
+    "totalVolume": "Объём",
+    "totalAmount": "Примерно к оплате",
+    "promptVolume": "Сколько литров залили?",
+    "empty": {
+      "title": "Нет заказов",
+      "desc": "Создайте первый заказ топлива для вашей машины"
+    },
+    "filters": {
+      "status": "Статус",
+      "product": "Топливо",
+      "deliveries": "Доставки"
+    },
+    "table": {
+      "date": "Дата",
+      "time": "Время",
+      "plate": "Машина",
+      "driver": "Водитель",
+      "fuel": "Топливо",
+      "volume": "Объём",
+      "address": "Адрес",
+      "status": "Статус",
+      "actions": "Действия"
+    },
+    "newOrders": "Новые заказы",
+    "markReceived": "Принят",
+    "assignCourier": "Назначить курьера",
+    "inDelivery": "В пути",
+    "markDelivered": "Доставлен",
+    "cancel": "Отменить",
+    "enterCourierId": "ID курьера (User ID)",
+    "status": {
+      "created": "Создан",
+      "received": "Принят",
+      "pendingApproval": "На согласовании",
+      "courierAssigned": "Курьер назначен",
+      "inDelivery": "В пути",
+      "delivered": "Доставлен",
+      "cancelled": "Отменён",
+      "ASSIGNED": "Курьер назначен",
+      "PENDING_APPROVAL": "На согласовании",
+      "ON_ROUTE": "В пути",
+      "CLOSED": "Закрыт",
+      "REJECTED": "Отклонён"
+    },
+    "takeOrder": "Взять заказ",
+    "deliver": "Доставить"
+  },
+  "dispatcher": {
+    "newOrders": "Новые заказы",
+    "newOrdersDesc": "Заказы, ожидающие приёма и назначения курьера.",
+    "courierAssignment": "Назначение курьера",
+    "courierAssignmentDesc": "Назначьте курьера на заказы.",
+    "activeDeliveries": "Активные доставки",
+    "activeDeliveriesDesc": "Заказы в пути.",
+    "completedDeliveries": "Завершённые доставки",
+    "completedDeliveriesDesc": "Доставлено и отменённые заказы."
+  },
+  "notifications": {
+    "title": "Уведомления",
+    "subtitle": "Подтверждения заказов, доставки и изменения лимитов",
+    "markAllRead": "Прочитать всё",
+    "empty": "Нет уведомлений",
+    "emptyHint": "Статус заказов меняет диспетчер ApexOil. Когда заказ примут, назначат курьера или доставят — уведомления появятся здесь, актуальный статус можно смотреть в «Мои заказы»."
+  },
+  "footer": {
+    "rights": "Все права защищены",
+    "location": "Ташкент, Узбекистан"
+  },
+  "loading": {
+    "default": "Загрузка..."
+  }
+}

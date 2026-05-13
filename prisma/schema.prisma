@@ -1,0 +1,217 @@
+// Fuelflow - B2B Fuel Delivery Platform
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  COMPANY_ADMIN
+  DRIVER
+  COURIER
+  DISPATCHER
+}
+
+enum FuelType {
+  AI_92
+  AI_95
+}
+
+enum OrderStatus {
+  CREATED
+  PENDING_APPROVAL
+  ASSIGNED
+  ON_ROUTE
+  DELIVERED
+  CLOSED
+  REJECTED
+  CANCELLED
+  RECEIVED           // received by dispatcher (new flow)
+  COURIER_ASSIGNED
+  IN_DELIVERY
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  phone         String?   @unique
+  driverPassword String?
+  role          Role
+  companyId     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  company       Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driverCars    DriverCar[]
+  ordersCreated Order[]   @relation("CreatedBy")
+  ordersAssigned Order[]  @relation("AssignedTo")
+  accounts      Account[]
+  sessions      Session[]
+  notifications Notification[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// 6-digit verification codes for signup and password reset (email/SMS)
+model VerificationCode {
+  id         String   @id @default(cuid())
+  identifier String   // email or phone (E.164)
+  code       String   // 6-digit plain (short-lived)
+  purpose    String   // signup | password_reset
+  meta       Json?    // for signup: { fullName, companyName, email, phone, passwordHash }
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime @default(now())
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  address   String?
+  phone     String?
+  telegram  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  cars      Car[]
+  invoices  Invoice[]
+}
+
+model Car {
+  id           String   @id @default(cuid())
+  companyId    String
+  plateNumber  String
+  model        String?
+  fuelType     FuelType
+  tankCapacity Int      @default(80) // liters
+  monthlyLimit Int      // liters per month
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  company      Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  driverCars   DriverCar[]
+  orders       Order[]
+  usage        CarUsage[]
+
+  @@unique([companyId, plateNumber])
+}
+
+model DriverCar {
+  id        String   @id @default(cuid())
+  driverId  String
+  carId     String
+  createdAt DateTime @default(now())
+
+  driver User @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  car    Car  @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@unique([driverId, carId])
+}
+
+model Order {
+  id         String      @id @default(cuid())
+  carId      String
+  fuelType   FuelType
+  volume     Int         // liters
+  isFullTank Boolean     @default(false)
+  status     OrderStatus @default(CREATED)
+  address    String?
+  notes      String?
+  createdById String?
+  assignedToId String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  deliveredAt DateTime?
+
+  car         Car   @relation(fields: [carId], references: [id], onDelete: Cascade)
+  createdBy   User? @relation("CreatedBy", fields: [createdById], references: [id])
+  assignedTo  User? @relation("AssignedTo", fields: [assignedToId], references: [id])
+}
+
+model Price {
+  id        String   @id @default(cuid())
+  fuelType  FuelType @unique
+  priceUzs  Int      // per liter
+  updatedAt DateTime @updatedAt
+}
+
+model Invoice {
+  id         String   @id @default(cuid())
+  companyId  String
+  month      Int
+  year       Int
+  totalUzs   Int
+  paidAt     DateTime?
+  createdAt  DateTime @default(now())
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, month, year])
+}
+
+model CarUsage {
+  id        String   @id @default(cuid())
+  carId     String
+  month     Int
+  year      Int
+  usedLiters Int     @default(0)
+
+  car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
+
+  @@unique([carId, month, year])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // LOW_LIMIT | FULL_TANK_PENDING | COURIER_ASSIGNED | ORDER_DELIVERED
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  orderId   String?
+  carId     String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
