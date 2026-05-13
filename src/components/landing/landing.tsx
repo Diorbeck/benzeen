@@ -8,7 +8,6 @@ import { Benefits } from './benefits';
 import { InteractiveDemo } from './interactive-demo';
 import { DashboardPreview } from './dashboard-preview';
 import { SocialProof } from './social-proof';
-import { Pricing } from './pricing';
 import { Contact } from './contact';
 import { Footer } from './footer';
 import { Header } from './header';
@@ -47,7 +46,6 @@ export function Landing() {
           <InteractiveDemo />
           <DashboardPreview />
           <SocialProof />
-          <Pricing />
           <Contact />
           <Footer />
         </main>

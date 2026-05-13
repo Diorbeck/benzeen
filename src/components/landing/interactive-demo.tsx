@@ -88,7 +88,7 @@ export function InteractiveDemo() {
               <span className="h-2 w-2 rounded-full bg-amber-500/80" />
               <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
             </div>
-            <span className="ml-2 text-xs text-gray-500">Demo · ApexOil Fleet</span>
+            <span className="ml-2 text-xs text-gray-500">Demo · NeoOil Fleet</span>
           </div>
 
           <div className="grid gap-6 p-6 lg:grid-cols-[1fr_320px]">

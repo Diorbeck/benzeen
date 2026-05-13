@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "ApexOil",
+    "appName": "NeoOil",
     "language": "Til",
     "theme": "Mavzu",
     "dark": "Qorong'u",
@@ -19,10 +19,7 @@
       "pricing": "Tariflar",
       "contact": "Aloqa"
     },
-    "ecosystem": {
-      "apexBank": "ApexBank",
-      "apexInsurance": "ApexInsurance uz"
-    }
+    "ecosystem": {}
   },
   "hero": {
     "badge": "Toshkent · B2B",
@@ -106,7 +103,7 @@
     "demoHint": "Tizim bildirishnomasini ko'rish uchun \"So'rovni simulyatsiya qilish\"ni bosing, keyin \"Yetkazib berishni simulyatsiya qilish\"ni bosing."
   },
   "benefits": {
-    "title": "Nima uchun ApexOil tanlashadi",
+    "title": "Nima uchun NeoOil tanlashadi",
     "costControl": {
       "title": "Yoqilg'i sarfini nazorat",
       "desc": "Mashina bo'yicha limitlar ortiqcha sarfni oldini oladi."
@@ -558,7 +555,7 @@
     "subtitle": "Buyurtma tasdiqlari, yetkazib berish va limit o'zgarishlari",
     "markAllRead": "Hammasini o'qildi deb belgilash",
     "empty": "Bildirishnomalar yo'q",
-    "emptyHint": "Buyurtma holatini ApexOil dispetcheri o'zgartiradi. Buyurtma qabul qilinsa, kuryer tayinlansa yoki yetkazib berilsa — bildirishnomalar shu yerda va «Mening buyurtmalarim»da ko'rinadi."
+    "emptyHint": "Buyurtma holatini NeoOil dispetcheri o'zgartiradi. Buyurtma qabul qilinsa, kuryer tayinlansa yoki yetkazib berilsa — bildirishnomalar shu yerda va «Mening buyurtmalarim»da ko'rinadi."
   },
   "footer": {
     "rights": "Barcha huquqlar himoyalangan",

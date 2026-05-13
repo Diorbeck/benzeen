@@ -16,7 +16,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'hero' });
-  const title = `${t('headline')} | ApexOil`;
+  const title = `${t('headline')} | NeoOil`;
   const description = t('subtext');
   return {
     title,

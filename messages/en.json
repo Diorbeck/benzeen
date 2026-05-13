@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "ApexOil",
+    "appName": "NeoOil",
     "language": "Language",
     "theme": "Theme",
     "dark": "Dark",
@@ -19,10 +19,7 @@
       "pricing": "Pricing",
       "contact": "Contact"
     },
-    "ecosystem": {
-      "apexBank": "ApexBank",
-      "apexInsurance": "ApexInsurance uz"
-    }
+    "ecosystem": {}
   },
   "hero": {
     "badge": "Tashkent · B2B",
@@ -106,7 +103,7 @@
     "demoHint": "Click \"Simulate Fuel Request\" to see a system notification, then \"Simulate Delivery\" to run the flow."
   },
   "benefits": {
-    "title": "Why fleet operators choose ApexOil",
+    "title": "Why fleet operators choose NeoOil",
     "costControl": {
       "title": "Fuel Cost Control",
       "desc": "Prevent fuel abuse with vehicle-level limits."
@@ -558,7 +555,7 @@
     "subtitle": "Order approvals, deliveries and limit updates",
     "markAllRead": "Mark all read",
     "empty": "No notifications",
-    "emptyHint": "Order status is updated by ApexOil dispatcher. When your order is accepted, a courier is assigned, or delivery is completed, you'll see it here and in My Orders."
+    "emptyHint": "Order status is updated by NeoOil dispatcher. When your order is accepted, a courier is assigned, or delivery is completed, you'll see it here and in My Orders."
   },
   "footer": {
     "rights": "All rights reserved",

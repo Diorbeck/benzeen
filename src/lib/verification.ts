@@ -57,8 +57,8 @@ export async function createAndSendCode(params: {
     const from = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
     const subject =
       purpose === 'signup'
-        ? 'Your ApexOil verification code'
-        : 'Your ApexOil password reset code';
+        ? 'Your NeoOil verification code'
+        : 'Your NeoOil password reset code';
     const text = `Your verification code is: ${code}\n\nIt expires in ${CODE_EXPIRY_MINUTES} minutes.`;
     const { error } = await resend.emails.send({
       from,
@@ -87,7 +87,7 @@ export async function createAndSendCode(params: {
       const twilio = (await import('twilio')).default;
       const client = twilio(sid, token);
       await client.messages.create({
-        body: `ApexOil: Your verification code is ${code}. Valid for ${CODE_EXPIRY_MINUTES} minutes.`,
+        body: `NeoOil: Your verification code is ${code}. Valid for ${CODE_EXPIRY_MINUTES} minutes.`,
         from: fromNumber,
         to: identifier.trim(),
       });

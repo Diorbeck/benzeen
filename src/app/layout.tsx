@@ -11,8 +11,8 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'ApexOil — Fuel delivery for business',
-    template: '%s | ApexOil',
+    default: 'NeoOil — Fuel delivery for business',
+    template: '%s | NeoOil',
   },
   description:
     'B2B fuel delivery platform in Tashkent. Limit control, fleet management, fast delivery.',

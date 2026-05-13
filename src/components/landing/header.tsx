@@ -14,7 +14,6 @@ const navLinks = [
   { href: '#features', key: 'features' as const },
   { href: '#how-it-works', key: 'howItWorks' as const },
   { href: '#interactive-demo', key: 'demo' as const },
-  { href: '#pricing', key: 'pricing' as const },
   { href: '#contact', key: 'contact' as const },
 ] as const;
 
@@ -58,21 +57,10 @@ export function Header() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-1.5 sm:flex">
-            <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 transition hover:border-gray-300 hover:text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-300">
-              {t('ecosystem.apexBank')}
-            </span>
-            <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 transition hover:border-gray-300 hover:text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-gray-300">
-              {t('ecosystem.apexInsurance')}
-            </span>
-          </div>
           <LanguageSwitcher className="hidden sm:block" />
           <ThemeToggle className="hidden sm:flex" />
           <Button variant="secondary" size="sm" className="hidden border-gray-200 bg-gray-100 text-gray-900 hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:inline-flex" asChild>
             <Link href={`/${locale}/login`}>{t('cta.signIn')}</Link>
-          </Button>
-          <Button size="sm" className="hidden bg-primary-500 text-white hover:bg-primary-400 sm:inline-flex" asChild>
-            <Link href={`/${locale}`}>{t('cta.getStarted')}</Link>
           </Button>
 
           <button
@@ -97,14 +85,6 @@ export function Header() {
             className="overflow-hidden border-t border-gray-200 dark:border-white/5 md:hidden"
           >
             <div className="flex flex-col gap-1 bg-white px-4 py-4 dark:bg-gray-950 transition-colors duration-300">
-              <div className="flex flex-wrap gap-1.5 pb-2 sm:hidden">
-                <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400">
-                  {t('ecosystem.apexBank')}
-                </span>
-                <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400">
-                  {t('ecosystem.apexInsurance')}
-                </span>
-              </div>
               {navLinks.map(({ href, key }) => (
                 <Link
                   key={key}
@@ -122,11 +102,6 @@ export function Header() {
               <Button variant="secondary" className="mt-2 w-full border-gray-200 bg-gray-100 text-gray-900 hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10" asChild>
                 <Link href={`/${locale}/login`} onClick={() => setMobileOpen(false)}>
                   {t('cta.signIn')}
-                </Link>
-              </Button>
-              <Button className="w-full bg-primary-500 text-white hover:bg-primary-400" asChild>
-                <Link href={`/${locale}`} onClick={() => setMobileOpen(false)}>
-                  {t('cta.getStarted')}
                 </Link>
               </Button>
             </div>

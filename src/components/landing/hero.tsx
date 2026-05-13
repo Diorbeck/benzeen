@@ -1,28 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, BriefcaseBusiness, Car, Fuel, TrendingUp } from 'lucide-react';
+import { Car, Fuel, TrendingUp } from 'lucide-react';
 
 export function Hero() {
   const t = useTranslations('hero');
   const pathname = usePathname() ?? '';
-  const router = useRouter();
   const locale = pathname.startsWith('/en') ? 'en' : pathname.startsWith('/uz') ? 'uz' : 'ru';
-  const [open, setOpen] = useState(false);
-
-  const handleSelect = (mode: 'manager' | 'driver') => {
-    setOpen(false);
-    if (mode === 'manager') {
-      router.push(`/${locale}/manager-login`);
-    } else {
-      router.push(`/${locale}/driver-login`);
-    }
-  };
 
   return (
     <section
@@ -71,15 +59,6 @@ export function Hero() {
               transition={{ duration: 0.5, delay: 0.15 }}
               className="mt-10 flex flex-wrap items-center gap-4"
             >
-              <Button
-                size="lg"
-                className="group rounded-xl bg-primary-500 px-6 py-6 text-base font-semibold text-white shadow-lg shadow-primary-500/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-400 hover:shadow-xl hover:shadow-primary-500/30"
-                type="button"
-                onClick={() => setOpen(true)}
-              >
-                {t('cta.primary')}
-                <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </Button>
               <Button
                 variant="secondary"
                 size="lg"
@@ -207,64 +186,6 @@ export function Hero() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
-            onClick={() => setOpen(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 10, scale: 0.98 }}
-              transition={{ duration: 0.2 }}
-              className="relative w-full max-w-lg rounded-2xl border border-white/10 bg-gray-900 p-6 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="mb-4 text-lg font-semibold text-white">{t('chooseRole')}</h2>
-              <p className="mb-6 text-sm text-gray-400">{t('chooseRoleDesc')}</p>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => handleSelect('manager')}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary-500/50 hover:bg-white/10"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400">
-                    <BriefcaseBusiness className="h-6 w-6" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-semibold text-white">{t('managerCabinet')}</p>
-                    <p className="mt-1 text-xs text-gray-400">{t('managerCabinetDesc')}</p>
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSelect('driver')}
-                  className="group flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary-500/50 hover:bg-white/10"
-                >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400">
-                    <Car className="h-6 w-6" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-semibold text-white">{t('driverCabinet')}</p>
-                    <p className="mt-1 text-xs text-gray-400">{t('driverCabinetDesc')}</p>
-                  </div>
-                </button>
-              </div>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="mt-4 text-xs text-gray-500 underline-offset-2 hover:text-gray-400 hover:underline"
-              >
-                {t('close')}
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </section>
   );
 }
