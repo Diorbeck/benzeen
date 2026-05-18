@@ -1,8 +1,11 @@
 #!/bin/sh
 set -e
 
+echo "▶ Clearing any failed migration state..."
+npx prisma migrate resolve --rolled-back 20250228000000_add_notifications 2>/dev/null || true
+
 echo "▶ Running database migrations..."
-./node_modules/.bin/prisma migrate deploy
+npx prisma migrate deploy
 
 echo "▶ Checking seed status..."
 USER_COUNT=$(node -e "
@@ -17,10 +20,10 @@ echo "   Users in DB: $USER_COUNT"
 
 if [ "$USER_COUNT" = "0" ]; then
   echo "▶ Database empty — running seed..."
-  ./node_modules/.bin/prisma db seed
+  npx prisma db seed
 else
   echo "▶ Database already seeded — skipping"
 fi
 
 echo "▶ Starting Next.js..."
-exec ./node_modules/.bin/next start
+exec npx next start
