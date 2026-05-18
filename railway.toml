@@ -1,8 +1,8 @@
 [build]
 installCommand = "pnpm install --no-frozen-lockfile"
-buildCommand = "pnpm build"
+buildCommand = "pnpm build && chmod +x scripts/start.sh"
 
 [deploy]
-startCommand = "pnpm start"
+startCommand = "sh scripts/start.sh"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 3
