@@ -46,10 +46,10 @@ export function Contact() {
               <div>
                 <p className="text-sm font-medium text-gray-500">{t('phone')}</p>
                 <a
-                  href="tel:+998901234567"
+                  href="tel:+998970808880"
                   className="font-medium text-gray-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
                 >
-                  +998 90 123 45 67
+                  +998 97 080 88 80
                 </a>
               </div>
             </div>
@@ -60,12 +60,12 @@ export function Contact() {
               <div>
                 <p className="text-sm font-medium text-gray-500">{t('telegram')}</p>
                 <a
-                  href="https://t.me/apexoil"
+                  href="https://t.me/benzeen"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="font-medium text-gray-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
                 >
-                  @apexoil
+                  @benzeen
                 </a>
               </div>
             </div>
@@ -76,10 +76,10 @@ export function Contact() {
               <div>
                 <p className="text-sm font-medium text-gray-500">{t('email')}</p>
                 <a
-                  href="mailto:support@apexoil.uz"
+                  href="mailto:info@benzeen.uz"
                   className="font-medium text-gray-900 hover:text-primary-600 dark:text-white dark:hover:text-primary-400"
                 >
-                  support@apexoil.uz
+                  info@benzeen.uz
                 </a>
               </div>
             </div>

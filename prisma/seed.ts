@@ -36,9 +36,9 @@ async function main() {
 
   // Users
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@apexoil.uz' },
+    where: { email: 'admin@benzeen.uz' },
     create: {
-      email: 'admin@apexoil.uz',
+      email: 'admin@benzeen.uz',
       name: 'Super Admin',
       passwordHash: adminHash,
       role: 'SUPER_ADMIN',
@@ -49,9 +49,9 @@ async function main() {
   });
 
   const companyAdmin = await prisma.user.upsert({
-    where: { email: 'company@apexoil.uz' },
+    where: { email: 'company@benzeen.uz' },
     create: {
-      email: 'company@apexoil.uz',
+      email: 'company@benzeen.uz',
       name: 'Company Admin',
       passwordHash: companyHash,
       role: 'COMPANY_ADMIN',
@@ -63,9 +63,9 @@ async function main() {
   });
 
   const driver = await prisma.user.upsert({
-    where: { email: 'driver@apexoil.uz' },
+    where: { email: 'driver@benzeen.uz' },
     create: {
-      email: 'driver@apexoil.uz',
+      email: 'driver@benzeen.uz',
       name: 'Driver',
       passwordHash: driverHash,
       phone: '+998901112233',
@@ -79,9 +79,9 @@ async function main() {
   });
 
   const courier = await prisma.user.upsert({
-    where: { email: 'courier@apexoil.uz' },
+    where: { email: 'courier@benzeen.uz' },
     create: {
-      email: 'courier@apexoil.uz',
+      email: 'courier@benzeen.uz',
       name: 'Courier',
       passwordHash: courierHash,
       role: 'COURIER',
@@ -141,10 +141,10 @@ async function main() {
   });
 
   console.log('Seed completed:');
-  console.log('  Admin:    admin@apexoil.uz / 123');
-  console.log('  Company:  company@apexoil.uz / company123');
-  console.log('  Driver:   driver@apexoil.uz / driver123');
-  console.log('  Courier:  courier@apexoil.uz / courier123');
+  console.log('  Admin:    admin@benzeen.uz / 123');
+  console.log('  Company:  company@benzeen.uz / company123');
+  console.log('  Driver:   driver@benzeen.uz / driver123');
+  console.log('  Courier:  courier@benzeen.uz / courier123');
 }
 
 main()

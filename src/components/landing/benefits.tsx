@@ -2,7 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { Shield, Eye, FileText, Truck } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const benefits = [
   { icon: Shield, key: 'costControl' as const },
@@ -60,6 +62,24 @@ export function Benefits() {
               <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-300">{t(`${key}.desc`)}</p>
             </motion.div>
           ))}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-16 flex flex-col items-center gap-5 rounded-2xl border border-primary-500/20 bg-primary-500/5 px-6 py-10 text-center"
+        >
+          <p className="max-w-2xl text-xl font-semibold text-gray-900 dark:text-white">
+            {t('ctaTitle')}
+          </p>
+          <Button
+            size="lg"
+            className="rounded-xl bg-primary-500 px-8 py-6 text-base font-semibold text-white shadow-lg shadow-primary-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-400"
+            asChild
+          >
+            <Link href="#contact">{t('ctaButton')}</Link>
+          </Button>
         </motion.div>
       </div>
     </section>

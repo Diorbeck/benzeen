@@ -11,12 +11,12 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'NeoOil — Fuel delivery for business',
-    template: '%s | NeoOil',
+    default: 'Benzeen — Fuel delivery for business',
+    template: '%s | Benzeen',
   },
   description:
-    'B2B fuel delivery platform in Tashkent. Limit control, fleet management, fast delivery.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://apexoil.uz'),
+    'B2B fuel delivery platform for fleets in Tashkent. Cut fuel costs up to 30% with driver requests, per-vehicle limits, next-day delivery and automated reports.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://benzeen.uz'),
   openGraph: {
     type: 'website',
   },

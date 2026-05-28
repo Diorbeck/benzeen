@@ -12,7 +12,7 @@ const RouteProgress = dynamic(() => import('./route-progress').then((m) => ({ de
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="apexoil-theme">
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="benzeen-theme">
         <RouteProgress />
         <QueryProvider>{children}</QueryProvider>
       </ThemeProvider>

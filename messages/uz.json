@@ -1,12 +1,12 @@
 {
   "common": {
-    "appName": "NeoOil",
+    "appName": "Benzeen",
     "language": "Til",
     "theme": "Mavzu",
     "dark": "Qorong'u",
     "light": "Yorug'",
     "cta": {
-      "getStarted": "Boshlash",
+      "getStarted": "Demo so'rash",
       "signIn": "Kirish",
       "submit": "Yuborish",
       "cancel": "Bekor qilish",
@@ -24,9 +24,9 @@
   "hero": {
     "badge": "Toshkent · B2B",
     "headline": "Zamonaviy avtoparklar uchun yoqilg'i boshqaruvi",
-    "subtext": "Yoqilg'i yetkazib berish, haydovchi so'rovlari, limitlar va avtomatik hisobotlar — bitta platformada.",
+    "subtext": "Yoqilg'i va yetkazib berish xarajatlari to'liq nazoratda. Tezlikni yo'qotmasdan 30% gacha tejang — buyurtmalar, limitlar va hisobotlar bitta platformada.",
     "cta": {
-      "primary": "Boshlash",
+      "primary": "Demo so'rash",
       "secondary": "Kabinetga",
       "learnMore": "Batafsil"
     },
@@ -50,23 +50,23 @@
     "title": "Avtopark operatsiyalari uchun",
     "limits": {
       "title": "Yoqilg'i limitlari",
-      "desc": "Har bir mashina uchun byudjet belgilang va ortiqcha sarfni oldini oling."
+      "desc": "Har bir mashina sarfini nazorat qiling va ortiqcha sarfni bir bosishda to'xtating."
     },
     "driverOrdering": {
       "title": "Haydovchi buyurtmasi",
-      "desc": "Haydovchilar mashina raqami orqali buyurtma beradi — murakkab akkauntlar kerak emas."
+      "desc": "Haydovchi mashina raqami orqali so'rov beradi — menejer soniyalarda tasdiqlaydi."
     },
     "delivery": {
       "title": "Yetkazib berish kuzatuvi",
-      "desc": "So'rovdan tugaguncha yetkazib berish holatini real vaqtda kuzating."
+      "desc": "Yetkazib berish holatini real vaqtda ko'ring — so'rovdan bakkacha."
     },
     "invoices": {
       "title": "Avtomatik hisob-fakturalar",
-      "desc": "Hisob-fakturalar va hisobotlarni avtomatik yarating."
+      "desc": "Tayyor hisob-fakturalar va hisobotlarni avtomatik oling — qo'lda ish yo'q."
     },
     "analytics": {
       "title": "Analitika paneli",
-      "desc": "Yoqilg'i iste'moli va avtopark ishlashini bir nazarda kuzating."
+      "desc": "Butun yoqilg'i sarfi va avtopark ishlashi bitta panelda."
     }
   },
   "howItWorks": {
@@ -103,22 +103,24 @@
     "demoHint": "Tizim bildirishnomasini ko'rish uchun \"So'rovni simulyatsiya qilish\"ni bosing, keyin \"Yetkazib berishni simulyatsiya qilish\"ni bosing."
   },
   "benefits": {
-    "title": "Nima uchun NeoOil tanlashadi",
+    "title": "Nima uchun Benzeen tanlashadi",
+    "ctaTitle": "Benzeen bilan parkingiz qancha tejashini bilib oling",
+    "ctaButton": "Demo so'rash",
     "costControl": {
-      "title": "Yoqilg'i sarfini nazorat",
-      "desc": "Mashina bo'yicha limitlar ortiqcha sarfni oldini oladi."
+      "title": "Yoqilg'i xarajatlarini kamaytiring",
+      "desc": "Har bir mashina limiti ortiqcha sarfni to'xtatadi — 30% gacha tejash."
     },
     "visibility": {
-      "title": "Avtopark ko'rinishi",
-      "desc": "Barcha mashinalar bo'yicha iste'molni real vaqtda kuzating."
+      "title": "Butun parkni real vaqtda ko'ring",
+      "desc": "Har bir mashina sarfini qo'ng'iroq va jadvallarsiz nazorat qiling."
     },
     "reports": {
-      "title": "Avtomatik hisobotlar",
-      "desc": "Hisob-fakturalar va hisobotlar avtomatik yaratiladi."
+      "title": "Hisobotlar soatlar emas, daqiqalarda",
+      "desc": "Hisob-fakturalar avtomatik yaratiladi — oyni tezroq yoping."
     },
     "delivery": {
-      "title": "Tez yetkazib berish",
-      "desc": "Yoqilg'i shahar bo'ylab mashinalarga to'g'ridan-to'g'ri yetkaziladi."
+      "title": "Yoqilg'i kerakli joyda",
+      "desc": "Shahar bo'ylab mashinalarga ertasi kuni yetkaziladi."
     }
   },
   "dashboardPreview": {
@@ -134,6 +136,13 @@
   },
   "socialProof": {
     "title": "Avtopark operatorlari ishonadi",
+    "metricsTitle": "Bu parkingizga nima beradi",
+    "metrics": {
+      "saving": { "value": "30% gacha", "label": "yoqilg'i tejash" },
+      "delivery": { "value": "ertasi kun", "label": "mashinalarga yetkazish" },
+      "control": { "value": "24/7", "label": "sarflash nazorati" },
+      "reports": { "value": "daqiqalar", "label": "hisobotlar uchun, soatlar emas" }
+    },
     "logistics": "Logistika",
     "taxi": "Taksi",
     "delivery": "Yetkazib berish",
@@ -207,7 +216,7 @@
     "password": "Parol",
     "submit": "Kirish",
     "submitting": "Kirilmoqda...",
-    "demo": "Demo: admin@apexoil.uz / 123, company@apexoil.uz / company123"
+    "demo": "Demo: admin@benzeen.uz / 123, company@benzeen.uz / company123"
   },
   "driverLogin": {
     "title": "Haydovchi kirishi",
@@ -240,7 +249,7 @@
     "errorPhoneCode": "Telefon va SMS kodini kiriting",
     "errorLoginPassword": "Login va parolni kiriting",
     "errorInvalid": "Noto'g'ri email yoki parol",
-    "demo": "Demo: Super Admin — admin@apexoil.uz / 123, Company — company@apexoil.uz / company123"
+    "demo": "Demo: Super Admin — admin@benzeen.uz / 123, Company — company@benzeen.uz / company123"
   },
   "signup": {
     "title": "Hisob yaratish",
@@ -555,7 +564,7 @@
     "subtitle": "Buyurtma tasdiqlari, yetkazib berish va limit o'zgarishlari",
     "markAllRead": "Hammasini o'qildi deb belgilash",
     "empty": "Bildirishnomalar yo'q",
-    "emptyHint": "Buyurtma holatini NeoOil dispetcheri o'zgartiradi. Buyurtma qabul qilinsa, kuryer tayinlansa yoki yetkazib berilsa — bildirishnomalar shu yerda va «Mening buyurtmalarim»da ko'rinadi."
+    "emptyHint": "Buyurtma holatini Benzeen dispetcheri o'zgartiradi. Buyurtma qabul qilinsa, kuryer tayinlansa yoki yetkazib berilsa — bildirishnomalar shu yerda va «Mening buyurtmalarim»da ko'rinadi."
   },
   "footer": {
     "rights": "Barcha huquqlar himoyalangan",

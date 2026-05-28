@@ -30,7 +30,7 @@ export function Footer() {
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-500">
                 <Fuel className="h-4 w-4 text-white" aria-hidden />
               </div>
-              <span className="font-semibold text-gray-900 dark:text-white">NeoOil</span>
+              <span className="font-semibold text-gray-900 dark:text-white">Benzeen</span>
             </Link>
             <p className="text-sm text-gray-500">{t('location')}</p>
           </div>
@@ -51,7 +51,7 @@ export function Footer() {
         </div>
         <div className="mt-8 flex flex-col gap-2 border-t border-gray-200 dark:border-white/5 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs text-gray-500">
-            © {new Date().getFullYear()} NeoOil. {t('rights')}
+            © {new Date().getFullYear()} Benzeen. {t('rights')}
           </p>
         </div>
       </div>

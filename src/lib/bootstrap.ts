@@ -2,12 +2,12 @@ import { prisma } from '@/lib/prisma';
 import * as bcrypt from 'bcryptjs';
 
 const globalForBootstrap = globalThis as unknown as {
-  __apexoil_bootstrap_ran__?: boolean;
+  __benzeen_bootstrap_ran__?: boolean;
 };
 
 export async function ensureSuperAdminFromEnv() {
-  if (globalForBootstrap.__apexoil_bootstrap_ran__) return;
-  globalForBootstrap.__apexoil_bootstrap_ran__ = true;
+  if (globalForBootstrap.__benzeen_bootstrap_ran__) return;
+  globalForBootstrap.__benzeen_bootstrap_ran__ = true;
 
   const email = process.env.SUPER_ADMIN_EMAIL?.trim().toLowerCase();
   const password = process.env.SUPER_ADMIN_PASSWORD?.trim();

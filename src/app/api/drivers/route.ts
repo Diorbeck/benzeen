@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     const passwordHash = await bcrypt.hash(data.password, 10);
     const sanitized = phone.replace(/\D/g, '');
-    const driverEmail = `driver+${sanitized}@apexoil.local`;
+    const driverEmail = `driver+${sanitized}@benzeen.local`;
 
     const user = await prisma.user.create({
       data: {

@@ -1,12 +1,12 @@
 {
   "common": {
-    "appName": "NeoOil",
+    "appName": "Benzeen",
     "language": "Language",
     "theme": "Theme",
     "dark": "Dark",
     "light": "Light",
     "cta": {
-      "getStarted": "Get Started",
+      "getStarted": "Get a demo",
       "signIn": "Sign In",
       "submit": "Submit",
       "cancel": "Cancel",
@@ -24,9 +24,9 @@
   "hero": {
     "badge": "Tashkent · B2B",
     "headline": "Fuel management for modern fleets",
-    "subtext": "Fuel delivery, driver requests, fleet limits, and automated reporting — all in one platform.",
+    "subtext": "Full control over fuel and delivery costs. Save up to 30% without losing speed — orders, limits and reports in one platform.",
     "cta": {
-      "primary": "Get Started",
+      "primary": "Get a demo",
       "secondary": "View Dashboard",
       "learnMore": "Learn more"
     },
@@ -50,23 +50,23 @@
     "title": "Built for fleet operations",
     "limits": {
       "title": "Fleet fuel limits",
-      "desc": "Set per-vehicle fuel budgets and prevent overruns."
+      "desc": "Control every vehicle's consumption and stop overruns in one click."
     },
     "driverOrdering": {
       "title": "Driver ordering",
-      "desc": "Drivers request fuel by vehicle number — no complex accounts."
+      "desc": "Drivers request fuel by vehicle number — managers approve in seconds."
     },
     "delivery": {
       "title": "Delivery tracking",
-      "desc": "Track delivery status in real time from request to completion."
+      "desc": "Watch delivery status in real time — from request to the tank."
     },
     "invoices": {
       "title": "Automated invoices",
-      "desc": "Generate invoices and usage reports automatically."
+      "desc": "Get ready-made invoices and usage reports automatically — no manual work."
     },
     "analytics": {
       "title": "Analytics dashboard",
-      "desc": "Monitor fuel usage and fleet performance at a glance."
+      "desc": "All your fuel spend and fleet performance in one dashboard."
     }
   },
   "howItWorks": {
@@ -103,22 +103,24 @@
     "demoHint": "Click \"Simulate Fuel Request\" to see a system notification, then \"Simulate Delivery\" to run the flow."
   },
   "benefits": {
-    "title": "Why fleet operators choose NeoOil",
+    "title": "Why fleet operators choose Benzeen",
+    "ctaTitle": "See how much your fleet can save with Benzeen",
+    "ctaButton": "Get a demo",
     "costControl": {
-      "title": "Fuel Cost Control",
-      "desc": "Prevent fuel abuse with vehicle-level limits."
+      "title": "Cut your fuel spend",
+      "desc": "Per-vehicle limits stop overspending — save up to 30%."
     },
     "visibility": {
-      "title": "Fleet Visibility",
-      "desc": "Track consumption across all vehicles in real time."
+      "title": "See your whole fleet in real time",
+      "desc": "Track every vehicle's consumption without calls or spreadsheets."
     },
     "reports": {
-      "title": "Automated Reports",
-      "desc": "Invoices and fuel reports generated automatically."
+      "title": "Reports in minutes, not hours",
+      "desc": "Invoices and reports generated automatically — close the month faster."
     },
     "delivery": {
-      "title": "Fast Fuel Delivery",
-      "desc": "Fuel delivered directly to vehicles anywhere in the city."
+      "title": "Fuel where you need it",
+      "desc": "Delivered to your vehicles anywhere in the city, next day."
     }
   },
   "dashboardPreview": {
@@ -134,6 +136,13 @@
   },
   "socialProof": {
     "title": "Trusted by Fleet Operators",
+    "metricsTitle": "What it means for your fleet",
+    "metrics": {
+      "saving": { "value": "up to 30%", "label": "fuel savings" },
+      "delivery": { "value": "next day", "label": "delivery to vehicles" },
+      "control": { "value": "24/7", "label": "fuel control" },
+      "reports": { "value": "minutes", "label": "on reports, not hours" }
+    },
     "logistics": "Logistics",
     "taxi": "Taxi service",
     "delivery": "Delivery",
@@ -207,7 +216,7 @@
     "password": "Password",
     "submit": "Sign in",
     "submitting": "Signing in...",
-    "demo": "Demo: admin@apexoil.uz / 123, company@apexoil.uz / company123"
+    "demo": "Demo: admin@benzeen.uz / 123, company@benzeen.uz / company123"
   },
   "driverLogin": {
     "title": "Driver Access",
@@ -240,7 +249,7 @@
     "errorPhoneCode": "Enter phone number and SMS code",
     "errorLoginPassword": "Enter login and password",
     "errorInvalid": "Invalid email or password",
-    "demo": "Demo: Super Admin — admin@apexoil.uz / 123, Company — company@apexoil.uz / company123"
+    "demo": "Demo: Super Admin — admin@benzeen.uz / 123, Company — company@benzeen.uz / company123"
   },
   "signup": {
     "title": "Create account",
@@ -555,7 +564,7 @@
     "subtitle": "Order approvals, deliveries and limit updates",
     "markAllRead": "Mark all read",
     "empty": "No notifications",
-    "emptyHint": "Order status is updated by NeoOil dispatcher. When your order is accepted, a courier is assigned, or delivery is completed, you'll see it here and in My Orders."
+    "emptyHint": "Order status is updated by Benzeen dispatcher. When your order is accepted, a courier is assigned, or delivery is completed, you'll see it here and in My Orders."
   },
   "footer": {
     "rights": "All rights reserved",

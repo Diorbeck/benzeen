@@ -47,7 +47,7 @@ export function DashboardPreview() {
               <span className="h-2 w-2 rounded-full bg-amber-500/80" />
               <span className="h-2 w-2 rounded-full bg-emerald-500/80" />
             </div>
-            <span className="ml-2 text-xs text-gray-500">NeoOil · Fleet dashboard</span>
+            <span className="ml-2 text-xs text-gray-500">Benzeen · Fleet dashboard</span>
           </div>
 
           <div className="grid gap-6 p-6 lg:grid-cols-3">

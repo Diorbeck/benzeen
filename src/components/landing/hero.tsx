@@ -60,9 +60,16 @@ export function Hero() {
               className="mt-10 flex flex-wrap items-center gap-4"
             >
               <Button
+                size="lg"
+                className="rounded-xl bg-primary-500 px-8 py-6 text-base font-semibold text-white shadow-lg shadow-primary-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-400"
+                asChild
+              >
+                <Link href="#contact">{t('cta.primary')}</Link>
+              </Button>
+              <Button
                 variant="secondary"
                 size="lg"
-                className="rounded-xl border-white/10 bg-white/5 px-6 py-6 text-base font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10"
+                className="rounded-xl border-white/10 bg-white/5 px-6 py-6 text-base font-semibold text-gray-900 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/10 dark:text-white"
                 asChild
               >
                 <Link href="#dashboard-preview">{t('cta.secondary')}</Link>

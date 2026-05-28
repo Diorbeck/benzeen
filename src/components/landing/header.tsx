@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Fuel, Menu, X } from 'lucide-react';
+import { Fuel, Menu, X, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -59,8 +59,18 @@ export function Header() {
         <div className="flex items-center gap-2">
           <LanguageSwitcher className="hidden sm:block" />
           <ThemeToggle className="hidden sm:flex" />
+          <a
+            href="tel:+998970808880"
+            className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:text-primary-600 lg:inline-flex dark:text-gray-300 dark:hover:text-primary-400"
+          >
+            <Phone className="h-4 w-4" aria-hidden />
+            +998 97 080 88 80
+          </a>
           <Button variant="secondary" size="sm" className="hidden border-gray-200 bg-gray-100 text-gray-900 hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:inline-flex" asChild>
             <Link href={`/${locale}/login`}>{t('cta.signIn')}</Link>
+          </Button>
+          <Button size="sm" className="hidden bg-primary-500 font-semibold text-white hover:bg-primary-400 sm:inline-flex" asChild>
+            <Link href="#contact">{t('cta.getStarted')}</Link>
           </Button>
 
           <button
@@ -99,9 +109,22 @@ export function Header() {
                 <LanguageSwitcher />
                 <ThemeToggle />
               </div>
+              <a
+                href="tel:+998970808880"
+                onClick={() => setMobileOpen(false)}
+                className="mt-2 flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5 transition-colors"
+              >
+                <Phone className="h-4 w-4" aria-hidden />
+                +998 97 080 88 80
+              </a>
               <Button variant="secondary" className="mt-2 w-full border-gray-200 bg-gray-100 text-gray-900 hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10" asChild>
                 <Link href={`/${locale}/login`} onClick={() => setMobileOpen(false)}>
                   {t('cta.signIn')}
+                </Link>
+              </Button>
+              <Button className="mt-2 w-full bg-primary-500 font-semibold text-white hover:bg-primary-400" asChild>
+                <Link href="#contact" onClick={() => setMobileOpen(false)}>
+                  {t('cta.getStarted')}
                 </Link>
               </Button>
             </div>

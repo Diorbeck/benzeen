@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 
-const LAST_CAR_KEY = 'apexoil_last_car_id';
-const LAST_ADDRESS_KEY = 'apexoil_last_address';
+const LAST_CAR_KEY = 'benzeen_last_car_id';
+const LAST_ADDRESS_KEY = 'benzeen_last_address';
 
 export function CreateOrderForm() {
   const router = useRouter();
