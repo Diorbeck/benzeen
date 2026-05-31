@@ -4,9 +4,19 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
-const patchSchema = z.object({
-  monthlyLimit: z.number().int().min(1).max(10000),
-});
+const patchSchema = z
+  .object({
+    monthlyLimit: z.number().int().min(1).max(10000).optional(),
+    model: z.string().max(100).nullable().optional(),
+    plateNumber: z.string().min(1).max(20).optional(),
+  })
+  .refine(
+    (d) =>
+      d.monthlyLimit !== undefined ||
+      d.model !== undefined ||
+      d.plateNumber !== undefined,
+    { message: 'Nothing to update' }
+  );
 
 export async function PATCH(
   req: Request,
@@ -36,9 +46,58 @@ export async function PATCH(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    const updateData: {
+      monthlyLimit?: number;
+      model?: string | null;
+      plateNumber?: string;
+    } = {};
+
+    if (data.monthlyLimit !== undefined) {
+      const now = new Date();
+      const usage = await prisma.carUsage.findUnique({
+        where: {
+          carId_month_year: {
+            carId: id,
+            month: now.getMonth() + 1,
+            year: now.getFullYear(),
+          },
+        },
+      });
+      const used = usage?.usedLiters ?? 0;
+      if (data.monthlyLimit < used) {
+        return NextResponse.json(
+          { error: 'LIMIT_BELOW_USED', minimum: used },
+          { status: 400 }
+        );
+      }
+      updateData.monthlyLimit = data.monthlyLimit;
+    }
+
+    if (data.model !== undefined) {
+      const trimmed = data.model?.trim();
+      updateData.model = trimmed ? trimmed : null;
+    }
+
+    if (data.plateNumber !== undefined) {
+      const plate = data.plateNumber.trim().toUpperCase();
+      if (!plate) {
+        return NextResponse.json({ error: 'Invalid plate' }, { status: 400 });
+      }
+      const dup = await prisma.car.findFirst({
+        where: { companyId: car.companyId, plateNumber: plate, NOT: { id } },
+      });
+      if (dup) {
+        return NextResponse.json(
+          { error: 'PLATE_EXISTS' },
+          { status: 400 }
+        );
+      }
+      updateData.plateNumber = plate;
+    }
+
     const updated = await prisma.car.update({
       where: { id },
-      data: { monthlyLimit: data.monthlyLimit },
+      data: updateData,
     });
     return NextResponse.json(updated);
   } catch (e) {

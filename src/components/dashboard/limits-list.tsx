@@ -29,32 +29,43 @@ export function LimitsList({ cars }: { cars: CarLimit[] }) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState<string>('');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string>('');
 
   const startEdit = (car: CarLimit) => {
     setEditingId(car.id);
     setEditValue(String(car.monthlyLimit));
+    setError('');
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setEditValue('');
+    setError('');
   };
 
-  const saveLimit = async () => {
+  const saveLimit = async (car: CarLimit) => {
     if (!editingId) return;
     const value = parseInt(editValue, 10);
     if (!value || value < 1 || value > 10000) return;
+    if (value < car.usedLiters) {
+      setError(t('errorBelowUsed', { used: car.usedLiters }));
+      return;
+    }
     setSaving(true);
+    setError('');
     try {
       const res = await fetch(`/api/cars/${editingId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ monthlyLimit: value }),
       });
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setEditingId(null);
         setEditValue('');
         router.refresh();
+      } else if (data.error === 'LIMIT_BELOW_USED') {
+        setError(t('errorBelowUsed', { used: data.minimum ?? car.usedLiters }));
       }
     } finally {
       setSaving(false);
@@ -119,30 +130,37 @@ export function LimitsList({ cars }: { cars: CarLimit[] }) {
                   </td>
                   <td className="px-6 py-4">
                     {isEditing ? (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min={1}
-                          max={10000}
-                          value={editValue}
-                          onChange={(e) => setEditValue(e.target.value)}
-                          className="h-9 w-24 rounded-lg border border-gray-200 bg-white px-2 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white"
-                        />
-                        <button
-                          type="button"
-                          onClick={saveLimit}
-                          disabled={saving}
-                          className="rounded p-1 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400"
-                        >
-                          <Check className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={cancelEdit}
-                          className="rounded p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min={car.usedLiters}
+                            max={10000}
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            className="h-9 w-24 rounded-lg border border-gray-200 bg-white px-2 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => saveLimit(car)}
+                            disabled={saving}
+                            className="rounded p-1 text-emerald-600 hover:bg-emerald-500/10 dark:text-emerald-400"
+                          >
+                            <Check className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={cancelEdit}
+                            className="rounded p-1 text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                        {error && (
+                          <p className="max-w-[220px] text-xs text-red-600 dark:text-red-400">
+                            {error}
+                          </p>
+                        )}
                       </div>
                     ) : (
                       <span className="font-medium text-gray-900 dark:text-white">

@@ -76,7 +76,6 @@ const navByRole: Record<
     { path: '/drivers', labelKey: 'drivers', icon: Users },
     { path: '/limits', labelKey: 'limits', icon: Gauge },
     { path: '/orders', labelKey: 'orders', icon: Package },
-    { path: '/invoices', labelKey: 'reports', icon: BarChart3 },
     { path: '/settings', labelKey: 'settings', icon: Settings },
   ],
   DISPATCHER: [

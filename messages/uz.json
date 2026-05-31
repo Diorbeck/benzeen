@@ -138,10 +138,22 @@
     "title": "Avtopark operatorlari ishonadi",
     "metricsTitle": "Bu parkingizga nima beradi",
     "metrics": {
-      "saving": { "value": "30% gacha", "label": "yoqilg'i tejash" },
-      "delivery": { "value": "ertasi kun", "label": "mashinalarga yetkazish" },
-      "control": { "value": "24/7", "label": "sarflash nazorati" },
-      "reports": { "value": "daqiqalar", "label": "hisobotlar uchun, soatlar emas" }
+      "saving": {
+        "value": "30% gacha",
+        "label": "yoqilg'i tejash"
+      },
+      "delivery": {
+        "value": "ertasi kun",
+        "label": "mashinalarga yetkazish"
+      },
+      "control": {
+        "value": "24/7",
+        "label": "sarflash nazorati"
+      },
+      "reports": {
+        "value": "daqiqalar",
+        "label": "hisobotlar uchun, soatlar emas"
+      }
     },
     "logistics": "Logistika",
     "taxi": "Taksi",
@@ -226,7 +238,9 @@
     "submit": "Kirish",
     "submitting": "Kirilmoqda...",
     "smsCode": "SMS kodi",
-    "errorPhoneCode": "Telefon va SMS kodini kiriting"
+    "errorPhoneCode": "Telefon va SMS kodini kiriting",
+    "password": "Parol",
+    "errorPhonePassword": "Telefon va parolni kiriting"
   },
   "login": {
     "title": "Kirish",
@@ -388,7 +402,8 @@
     "statusNear": "Limitga yaqin",
     "statusExceeded": "Oshib ketgan",
     "noCars": "Mashinalar yo'q",
-    "noCarsDesc": "Limitlarni belgilash uchun Mashinalar bo'limida qo'shing."
+    "noCarsDesc": "Limitlarni belgilash uchun Mashinalar bo'limida qo'shing.",
+    "errorBelowUsed": "Limit quyilgan litrlardan kam bo'lishi mumkin emas ({used} l)"
   },
   "admin": {
     "title": "Admin panel",
@@ -436,17 +451,29 @@
   "drivers": {
     "addDriver": "Haydovchi qo'shish",
     "name": "Ism",
-    "nameLabel": "Haydovchi ismi",
-    "namePlaceholder": "To'liq ism (ixtiyoriy)",
+    "nameLabel": "Haydovchi to'liq ismi *",
+    "namePlaceholder": "To'liq ism",
     "phone": "Telefon",
     "phoneLabel": "Haydovchi telefoni *",
     "phonePlaceholder": "+998 90 000 00 00",
-    "passwordLabel": "Parol / SMS kodi *",
-    "passwordPlaceholder": "Kirish kodi",
+    "passwordLabel": "Parol *",
+    "passwordPlaceholder": "Kirish uchun parol o'ylab toping",
     "carLabel": "Mashina *",
     "selectCar": "Mashinani tanlang",
     "creating": "Yaratilmoqda...",
-    "error": "Xato"
+    "error": "Xato",
+    "edit": "Tahrirlash",
+    "delete": "O'chirish",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "confirmDelete": "Haydovchi o'chirilsinmi?",
+    "manageCars": "Haydovchi mashinalari",
+    "noDrivers": "Haydovchilar yo'q",
+    "noDriversDesc": "Buyurtma yarata olishlari uchun haydovchilarni qo'shing",
+    "linkedCars": "Bog'langan mashinalar:",
+    "noLinkedCars": "Bog'langan mashinalar yo'q",
+    "updateError": "Saqlab bo'lmadi",
+    "nameRequired": "Haydovchi to'liq ismini kiriting"
   },
   "cars": {
     "addCar": "Mashina qo'shish",
@@ -455,7 +482,15 @@
     "noCarsDesc": "Yoqilg'i va limitlarni hisoblash uchun birinchi mashinani qo'shing",
     "used": "Ishlatilgan",
     "limitExhausted": "Limit tugadi",
-    "remainingShort": "Qoldi: {remaining} l"
+    "remainingShort": "Qoldi: {remaining} l",
+    "edit": "Tahrirlash",
+    "save": "Saqlash",
+    "cancel": "Bekor qilish",
+    "plateLabel": "Davlat raqami",
+    "modelLabel": "Model",
+    "saveError": "Saqlab bo'lmadi",
+    "plateExists": "Bunday raqam allaqachon mavjud",
+    "plateRequired": "Raqamni kiriting"
   },
   "addCarForm": {
     "plateNumber": "Raqam",
@@ -572,5 +607,20 @@
   },
   "loading": {
     "default": "Yuklanmoqda..."
+  },
+  "settings": {
+    "editCompany": "Kompaniya ma'lumotlari",
+    "companyName": "Kompaniya nomi",
+    "address": "Manzil",
+    "phone": "Telefon",
+    "telegram": "Telegram",
+    "edit": "Tahrirlash",
+    "save": "Saqlash",
+    "saving": "Saqlanmoqda...",
+    "cancel": "Bekor qilish",
+    "saved": "Saqlandi",
+    "error": "Saqlab bo'lmadi",
+    "role": "Rol",
+    "nameRequired": "Kompaniya nomini kiriting"
   }
 }

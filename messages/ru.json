@@ -138,10 +138,22 @@
     "title": "Нам доверяют операторы автопарков",
     "metricsTitle": "Что это даёт вашему парку",
     "metrics": {
-      "saving": { "value": "до 30%", "label": "экономия на топливе" },
-      "delivery": { "value": "след. день", "label": "доставка к машинам" },
-      "control": { "value": "24/7", "label": "контроль расхода" },
-      "reports": { "value": "минуты", "label": "на отчёты вместо часов" }
+      "saving": {
+        "value": "до 30%",
+        "label": "экономия на топливе"
+      },
+      "delivery": {
+        "value": "след. день",
+        "label": "доставка к машинам"
+      },
+      "control": {
+        "value": "24/7",
+        "label": "контроль расхода"
+      },
+      "reports": {
+        "value": "минуты",
+        "label": "на отчёты вместо часов"
+      }
     },
     "logistics": "Логистика",
     "taxi": "Такси",
@@ -226,7 +238,9 @@
     "submit": "Войти",
     "submitting": "Вход...",
     "smsCode": "Код из SMS",
-    "errorPhoneCode": "Укажите телефон и код из SMS"
+    "errorPhoneCode": "Укажите телефон и код из SMS",
+    "password": "Пароль",
+    "errorPhonePassword": "Укажите телефон и пароль"
   },
   "login": {
     "title": "Вход",
@@ -388,7 +402,8 @@
     "statusNear": "Близко к лимиту",
     "statusExceeded": "Превышен",
     "noCars": "Нет машин",
-    "noCarsDesc": "Добавьте машины в разделе «Машины», чтобы задать лимиты."
+    "noCarsDesc": "Добавьте машины в разделе «Машины», чтобы задать лимиты.",
+    "errorBelowUsed": "Лимит не может быть меньше залитых литров ({used} л)"
   },
   "admin": {
     "title": "Админ-панель",
@@ -436,17 +451,29 @@
   "drivers": {
     "addDriver": "Добавить водителя",
     "name": "Имя",
-    "nameLabel": "Имя водителя",
-    "namePlaceholder": "ФИО (необязательно)",
+    "nameLabel": "ФИО водителя *",
+    "namePlaceholder": "ФИО",
     "phone": "Телефон",
     "phoneLabel": "Телефон водителя *",
     "phonePlaceholder": "+998 90 000 00 00",
-    "passwordLabel": "Пароль / SMS-код *",
-    "passwordPlaceholder": "Придумайте код для входа",
+    "passwordLabel": "Пароль *",
+    "passwordPlaceholder": "Придумайте пароль для входа",
     "carLabel": "Машина *",
     "selectCar": "Выберите машину",
     "creating": "Создание...",
-    "error": "Ошибка"
+    "error": "Ошибка",
+    "edit": "Изменить",
+    "delete": "Удалить",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "confirmDelete": "Удалить водителя?",
+    "manageCars": "Машины водителя",
+    "noDrivers": "Нет водителей",
+    "noDriversDesc": "Добавьте водителей, чтобы они могли создавать заказы",
+    "linkedCars": "Привязанные машины:",
+    "noLinkedCars": "Нет привязанных машин",
+    "updateError": "Не удалось сохранить",
+    "nameRequired": "Укажите ФИО водителя"
   },
   "cars": {
     "addCar": "Добавить машину",
@@ -455,7 +482,15 @@
     "noCarsDesc": "Добавьте первую машину, чтобы начать учёт топлива и лимитов",
     "used": "Использовано",
     "limitExhausted": "Лимит исчерпан",
-    "remainingShort": "Осталось: {remaining} л"
+    "remainingShort": "Осталось: {remaining} л",
+    "edit": "Редактировать",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "plateLabel": "Гос. номер",
+    "modelLabel": "Модель",
+    "saveError": "Не удалось сохранить",
+    "plateExists": "Такой номер уже есть",
+    "plateRequired": "Укажите номер"
   },
   "addCarForm": {
     "plateNumber": "Гос. номер",
@@ -572,5 +607,20 @@
   },
   "loading": {
     "default": "Загрузка..."
+  },
+  "settings": {
+    "editCompany": "Данные компании",
+    "companyName": "Название компании",
+    "address": "Адрес",
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "edit": "Редактировать",
+    "save": "Сохранить",
+    "saving": "Сохранение...",
+    "cancel": "Отмена",
+    "saved": "Сохранено",
+    "error": "Не удалось сохранить",
+    "role": "Роль",
+    "nameRequired": "Укажите название компании"
   }
 }

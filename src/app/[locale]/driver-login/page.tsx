@@ -18,22 +18,22 @@ function DriverLoginForm() {
 
   const [vehicleNumber, setVehicleNumber] = useState('');
   const [phone, setPhone] = useState('');
-  const [smsCode, setSmsCode] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    if (!phone.trim() || !smsCode.trim()) {
-      setError(t('errorPhoneCode'));
+    if (!phone.trim() || !password.trim()) {
+      setError(t('errorPhonePassword'));
       return;
     }
     setLoading(true);
     try {
       const res = await signIn('credentials', {
         identifier: phone.trim(),
-        password: smsCode,
+        password,
         mode: 'driver',
         vehicleNumber: vehicleNumber.trim(),
         redirect: false,
@@ -95,18 +95,18 @@ function DriverLoginForm() {
         </div>
 
         <div>
-          <label htmlFor="driver-code" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
-            {t('smsCode')}
+          <label htmlFor="driver-password" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            {t('password')}
           </label>
           <input
-            id="driver-code"
+            id="driver-password"
             type="password"
-            placeholder="SMS code"
-            value={smsCode}
-            onChange={(e) => setSmsCode(e.target.value)}
+            placeholder={t('password')}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
             className={inputClass}
-            autoComplete="one-time-code"
+            autoComplete="current-password"
             disabled={loading}
           />
         </div>

@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 const schema = z.object({
-  name: z.string().max(200).optional(),
+  name: z.string().min(1).max(200),
   phone: z.string().min(1).max(50),
   password: z.string().min(1).max(200),
   carId: z.string().min(1),
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
     const user = await prisma.user.create({
       data: {
         email: driverEmail,
-        name: data.name?.trim() || null,
+        name: data.name.trim(),
         phone,
         passwordHash,
         role: 'DRIVER',

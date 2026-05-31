@@ -53,6 +53,7 @@ export function OrdersList({
   const canCreate = role === 'DRIVER';
   const canExport = role === 'COMPANY_ADMIN' || role === 'SUPER_ADMIN';
   const isCourier = role === 'COURIER';
+  const isCompany = role === 'COMPANY_ADMIN';
   const canAssignOrUpdate = role === 'DISPATCHER' || role === 'SUPER_ADMIN';
 
   const [statusFilter, setStatusFilter] = useState<string>(defaultStatusFilter ?? 'all');
@@ -201,18 +202,30 @@ export function OrdersList({
     }
   };
 
+  const csvCell = (value: string | number) => {
+    const s = String(value ?? '');
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+
   const handleExport = () => {
-    const headers = ['ID', 'Plate', 'Fuel', 'Volume', 'Status', 'Date'];
+    const headers = [
+      t('table.plate'),
+      t('table.volume'),
+      t('table.fuel'),
+      t('table.date'),
+      t('table.address'),
+    ];
     const rows = filteredOrders.map((o) => [
-      o.id,
       o.plateNumber,
-      o.fuelType.replace('_', '-'),
       o.volume,
-      o.status,
+      o.fuelType.replace('_', '-'),
       new Date(o.createdAt).toISOString().slice(0, 10),
+      o.address ?? '',
     ]);
-    const csv = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const csv = [headers, ...rows]
+      .map((r) => r.map(csvCell).join(','))
+      .join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `orders-${dateFrom || 'all'}-${dateTo || 'all'}.csv`;
@@ -223,6 +236,7 @@ export function OrdersList({
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {!isCompany && (
         <div className="flex flex-wrap items-center gap-2">
           <select
             value={statusFilter}
@@ -283,6 +297,7 @@ export function OrdersList({
             className="h-9 rounded-lg border border-gray-200 bg-white px-3 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white"
           />
         </div>
+        )}
         <div className="flex flex-wrap items-center justify-end gap-2">
           {canAssignOrUpdate && (
             <Button
@@ -320,7 +335,7 @@ export function OrdersList({
           <span>
             {t('totalVolume')}: <span className="font-semibold text-gray-900 dark:text-white">{totalLiters} L</span>
           </span>
-          {totalSum > 0 && (
+          {!isCompany && totalSum > 0 && (
             <span>
               {t('totalAmount')}:{' '}
               <span className="font-semibold text-gray-900 dark:text-white">

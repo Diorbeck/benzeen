@@ -2,18 +2,23 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Users, Car } from 'lucide-react';
+import { Users, Car, Pencil, Trash2, Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+type Driver = { id: string; name: string; email: string; carIds: string[] };
+type CarOption = { id: string; plateNumber: string };
 
 export function DriversSection({
   drivers,
   cars,
 }: {
-  drivers: { id: string; name: string; email: string; carIds: string[] }[];
-  cars: { id: string; plateNumber: string }[];
+  drivers: Driver[];
+  cars: CarOption[];
 }) {
   const t = useTranslations('drivers');
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({
@@ -22,6 +27,12 @@ export function DriversSection({
     password: '',
     carId: '',
   });
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCarIds, setEditCarIds] = useState<string[]>([]);
+  const [rowSaving, setRowSaving] = useState(false);
+  const [rowError, setRowError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +43,7 @@ export function DriversSection({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: form.name || undefined,
+          name: form.name.trim(),
           phone: form.phone.trim(),
           password: form.password,
           carId: form.carId.trim(),
@@ -46,11 +57,70 @@ export function DriversSection({
         setError(data.error || t('error'));
         return;
       }
-      if (typeof window !== 'undefined') {
-        window.location.reload();
-      }
+      router.refresh();
+      setForm({ name: '', phone: '', password: '', carId: '' });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const startEdit = (driver: Driver) => {
+    setEditingId(driver.id);
+    setEditName(driver.name);
+    setEditCarIds(driver.carIds);
+    setRowError('');
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setRowError('');
+  };
+
+  const toggleCar = (carId: string) => {
+    setEditCarIds((ids) =>
+      ids.includes(carId) ? ids.filter((id) => id !== carId) : [...ids, carId]
+    );
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    if (!editName.trim()) {
+      setRowError(t('nameRequired'));
+      return;
+    }
+    setRowSaving(true);
+    setRowError('');
+    try {
+      const res = await fetch(`/api/drivers/${editingId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName.trim(), carIds: editCarIds }),
+      });
+      if (!res.ok) {
+        setRowError(t('updateError'));
+        return;
+      }
+      setEditingId(null);
+      router.refresh();
+    } finally {
+      setRowSaving(false);
+    }
+  };
+
+  const deleteDriver = async (driverId: string) => {
+    if (typeof window !== 'undefined' && !window.confirm(t('confirmDelete'))) return;
+    setRowSaving(true);
+    setRowError('');
+    try {
+      const res = await fetch(`/api/drivers/${driverId}`, { method: 'DELETE' });
+      if (!res.ok) {
+        setRowError(t('updateError'));
+        return;
+      }
+      setEditingId(null);
+      router.refresh();
+    } finally {
+      setRowSaving(false);
     }
   };
 
@@ -74,6 +144,7 @@ export function DriversSection({
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               placeholder={t('namePlaceholder')}
+              required
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
             />
           </div>
@@ -137,62 +208,153 @@ export function DriversSection({
             <Users className="h-14 w-14 text-primary-600 dark:text-primary-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Нет водителей
+            {t('noDrivers')}
           </h3>
           <p className="mt-2 max-w-[280px] text-sm text-gray-500 dark:text-gray-400">
-            Добавьте водителей через настройки компании, чтобы они могли создавать заказы
+            {t('noDriversDesc')}
           </p>
         </motion.div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {drivers.map((driver, i) => (
-            <motion.div
-              key={driver.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="card-premium p-6"
-            >
-              <div className="mb-4 flex items-center gap-3">
-                <div className="rounded-xl bg-primary-500/10 p-2">
-                  <Users className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+          {drivers.map((driver, i) => {
+            const isEditing = editingId === driver.id;
+            return (
+              <motion.div
+                key={driver.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="card-premium p-6"
+              >
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-xl bg-primary-500/10 p-2">
+                      <Users className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 dark:text-white">
+                        {driver.name}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {driver.email}
+                      </p>
+                    </div>
+                  </div>
+                  {!isEditing && (
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEdit(driver)}
+                        className="text-gray-500 dark:text-gray-400"
+                        aria-label={t('edit')}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteDriver(driver.id)}
+                        disabled={rowSaving}
+                        className="text-red-600 dark:text-red-400"
+                        aria-label={t('delete')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">
-                    {driver.name}
-                  </p>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {driver.email}
-                  </p>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Привязанные машины:
-                </p>
-                {driver.carIds.length === 0 ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Нет привязанных машин
-                  </p>
+
+                {isEditing ? (
+                  <div className="space-y-3">
+                    {rowError && (
+                      <p className="rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-600 dark:text-red-400">
+                        {rowError}
+                      </p>
+                    )}
+                    <div>
+                      <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
+                        {t('nameLabel')}
+                      </label>
+                      <input
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <p className="mb-1 text-xs font-medium text-gray-600 dark:text-gray-300">
+                        {t('manageCars')}
+                      </p>
+                      <div className="max-h-40 space-y-1 overflow-y-auto rounded-lg border border-gray-200 p-2 dark:border-white/10">
+                        {cars.length === 0 ? (
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {t('noLinkedCars')}
+                          </p>
+                        ) : (
+                          cars.map((c) => (
+                            <label
+                              key={c.id}
+                              className="flex cursor-pointer items-center gap-2 rounded px-1 py-1 text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={editCarIds.includes(c.id)}
+                                onChange={() => toggleCar(c.id)}
+                                className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                              />
+                              {c.plateNumber}
+                            </label>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={cancelEdit}
+                        disabled={rowSaving}
+                      >
+                        <X className="h-4 w-4" />
+                        {t('cancel')}
+                      </Button>
+                      <Button size="sm" onClick={saveEdit} disabled={rowSaving}>
+                        <Check className="h-4 w-4" />
+                        {t('save')}
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {driver.carIds.map((carId) => {
-                      const car = cars.find((c) => c.id === carId);
-                      return (
-                        <span
-                          key={carId}
-                          className="inline-flex items-center gap-1 rounded-full bg-primary-500/10 px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400"
-                        >
-                          <Car className="h-3 w-3" />
-                          {car?.plateNumber || carId}
-                        </span>
-                      );
-                    })}
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      {t('linkedCars')}
+                    </p>
+                    {driver.carIds.length === 0 ? (
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {t('noLinkedCars')}
+                      </p>
+                    ) : (
+                      <div className="flex flex-wrap gap-2">
+                        {driver.carIds.map((carId) => {
+                          const car = cars.find((c) => c.id === carId);
+                          return (
+                            <span
+                              key={carId}
+                              className="inline-flex items-center gap-1 rounded-full bg-primary-500/10 px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400"
+                            >
+                              <Car className="h-3 w-3" />
+                              {car?.plateNumber || carId}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 )}
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
         </div>
       )}
     </div>

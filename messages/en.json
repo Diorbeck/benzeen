@@ -138,10 +138,22 @@
     "title": "Trusted by Fleet Operators",
     "metricsTitle": "What it means for your fleet",
     "metrics": {
-      "saving": { "value": "up to 30%", "label": "fuel savings" },
-      "delivery": { "value": "next day", "label": "delivery to vehicles" },
-      "control": { "value": "24/7", "label": "fuel control" },
-      "reports": { "value": "minutes", "label": "on reports, not hours" }
+      "saving": {
+        "value": "up to 30%",
+        "label": "fuel savings"
+      },
+      "delivery": {
+        "value": "next day",
+        "label": "delivery to vehicles"
+      },
+      "control": {
+        "value": "24/7",
+        "label": "fuel control"
+      },
+      "reports": {
+        "value": "minutes",
+        "label": "on reports, not hours"
+      }
     },
     "logistics": "Logistics",
     "taxi": "Taxi service",
@@ -226,7 +238,9 @@
     "submit": "Sign in",
     "submitting": "Signing in...",
     "smsCode": "SMS code",
-    "errorPhoneCode": "Enter phone number and SMS code"
+    "errorPhoneCode": "Enter phone number and SMS code",
+    "password": "Password",
+    "errorPhonePassword": "Enter phone number and password"
   },
   "login": {
     "title": "Sign in",
@@ -388,7 +402,8 @@
     "statusNear": "Near limit",
     "statusExceeded": "Exceeded",
     "noCars": "No vehicles",
-    "noCarsDesc": "Add vehicles in the Vehicles section to set limits."
+    "noCarsDesc": "Add vehicles in the Vehicles section to set limits.",
+    "errorBelowUsed": "Limit cannot be lower than used liters ({used} L)"
   },
   "admin": {
     "title": "Admin dashboard",
@@ -436,17 +451,29 @@
   "drivers": {
     "addDriver": "Add driver",
     "name": "Name",
-    "nameLabel": "Driver name",
-    "namePlaceholder": "Full name (optional)",
+    "nameLabel": "Driver full name *",
+    "namePlaceholder": "Full name",
     "phone": "Phone",
     "phoneLabel": "Driver phone *",
     "phonePlaceholder": "+998 90 000 00 00",
-    "passwordLabel": "Password / SMS code *",
-    "passwordPlaceholder": "Choose a sign-in code",
+    "passwordLabel": "Password *",
+    "passwordPlaceholder": "Set a sign-in password",
     "carLabel": "Car *",
     "selectCar": "Select car",
     "creating": "Creating...",
-    "error": "Error"
+    "error": "Error",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete this driver?",
+    "manageCars": "Driver's cars",
+    "noDrivers": "No drivers",
+    "noDriversDesc": "Add drivers so they can create orders",
+    "linkedCars": "Linked cars:",
+    "noLinkedCars": "No linked cars",
+    "updateError": "Failed to save",
+    "nameRequired": "Driver full name is required"
   },
   "cars": {
     "addCar": "Add car",
@@ -455,7 +482,15 @@
     "noCarsDesc": "Add your first car to start tracking fuel and limits",
     "used": "Used",
     "limitExhausted": "Limit exhausted",
-    "remainingShort": "Remaining: {remaining} L"
+    "remainingShort": "Remaining: {remaining} L",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "plateLabel": "Plate number",
+    "modelLabel": "Model",
+    "saveError": "Failed to save",
+    "plateExists": "Plate already exists",
+    "plateRequired": "Plate is required"
   },
   "addCarForm": {
     "plateNumber": "Plate number",
@@ -572,5 +607,20 @@
   },
   "loading": {
     "default": "Loading..."
+  },
+  "settings": {
+    "editCompany": "Company details",
+    "companyName": "Company name",
+    "address": "Address",
+    "phone": "Phone",
+    "telegram": "Telegram",
+    "edit": "Edit",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "saved": "Saved",
+    "error": "Failed to save",
+    "role": "Role",
+    "nameRequired": "Company name is required"
   }
 }

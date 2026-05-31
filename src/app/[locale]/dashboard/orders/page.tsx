@@ -74,7 +74,7 @@ export default async function OrdersPage({
     }));
   } else if (companyId) {
     const list = await prisma.order.findMany({
-      where: { car: { companyId } },
+      where: { car: { companyId }, status: 'DELIVERED' },
       orderBy: { createdAt: 'desc' },
       take: 100,
       include: orderInclude,
