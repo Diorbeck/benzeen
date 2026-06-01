@@ -263,7 +263,7 @@
     "errorPhoneCode": "Enter phone number and SMS code",
     "errorLoginPassword": "Enter login and password",
     "errorInvalid": "Invalid email or password",
-    "demo": "Demo: Super Admin — admin@benzeen.uz / 123, Company — company@benzeen.uz / company123"
+    "demo": "Your login and password are issued by an administrator"
   },
   "signup": {
     "title": "Create account",

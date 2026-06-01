@@ -263,7 +263,7 @@
     "errorPhoneCode": "Telefon va SMS kodini kiriting",
     "errorLoginPassword": "Login va parolni kiriting",
     "errorInvalid": "Noto'g'ri email yoki parol",
-    "demo": "Demo: Super Admin — admin@benzeen.uz / 123, Company — company@benzeen.uz / company123"
+    "demo": "Login va parolni administrator beradi"
   },
   "signup": {
     "title": "Hisob yaratish",
