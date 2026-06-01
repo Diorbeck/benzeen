@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { OrdersList } from '@/components/dashboard/orders-list';
+import { RequestsTable } from '@/components/dashboard/requests-table';
 
 export default async function RequestsPage({
   params,
@@ -24,27 +25,45 @@ export default async function RequestsPage({
     redirect(`/${locale}/dashboard`);
   }
 
-  let orders: { id: string; volume: number; status: string; fuelType: string; plateNumber: string; createdAt: Date; address?: string | null; driverName?: string | null }[] = [];
-
   if (role === 'SUPER_ADMIN') {
-    orders = (
-      await prisma.order.findMany({
-        where: { status: { in: ['CREATED', 'RECEIVED', 'COURIER_ASSIGNED', 'IN_DELIVERY'] } },
-        orderBy: { createdAt: 'desc' },
-        take: 100,
-        include: { car: true, createdBy: true },
-      })
-    ).map((o) => ({
+    const orders = await prisma.order.findMany({
+      where: { status: { in: ['CREATED', 'RECEIVED', 'COURIER_ASSIGNED', 'IN_DELIVERY'] } },
+      orderBy: { createdAt: 'desc' },
+      take: 300,
+      include: {
+        car: { include: { company: { select: { name: true } } } },
+        createdBy: { select: { name: true, email: true } },
+      },
+    });
+
+    const rows = orders.map((o) => ({
       id: o.id,
+      company: o.car.company.name,
+      plateNumber: o.car.plateNumber,
+      fuelType: o.fuelType,
       volume: o.volume,
       status: o.status,
-      fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
-      createdAt: o.createdAt,
       address: o.address,
-      driverName: o.createdBy?.name ?? o.createdBy?.email ?? null,
+      createdAt: o.createdAt.toISOString(),
+      createdBy: o.createdBy?.name ?? o.createdBy?.email ?? null,
     }));
-  } else if (companyId) {
+
+    return (
+      <div className="space-y-8">
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {t('requestsTitle')}
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Активные заявки: в ожидании принятия или в пути.
+        </p>
+        <RequestsTable rows={rows} />
+      </div>
+    );
+  }
+
+  let orders: { id: string; volume: number; status: string; fuelType: string; plateNumber: string; createdAt: Date; address?: string | null; driverName?: string | null }[] = [];
+
+  if (companyId) {
     orders = (
       await prisma.order.findMany({
         where: { car: { companyId }, status: 'CREATED' },
