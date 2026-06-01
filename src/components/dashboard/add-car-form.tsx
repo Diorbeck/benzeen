@@ -18,7 +18,7 @@ export function AddCarForm() {
   const [form, setForm] = useState({
     plateNumber: '',
     model: '',
-    fuelType: 'AI_95' as 'AI_92' | 'AI_95',
+    fuelType: 'AI_95' as 'AI_92' | 'AI_95' | 'AI_100',
     monthlyLimit: 200,
     tankCapacity: 80,
   });
@@ -95,11 +95,12 @@ export function AddCarForm() {
         </label>
         <select
           value={form.fuelType}
-          onChange={(e) => setForm((f) => ({ ...f, fuelType: e.target.value as 'AI_92' | 'AI_95' }))}
+          onChange={(e) => setForm((f) => ({ ...f, fuelType: e.target.value as 'AI_92' | 'AI_95' | 'AI_100' }))}
           className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-gray-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
         >
           <option value="AI_92">{t('ai92')}</option>
           <option value="AI_95">{t('ai95')}</option>
+          <option value="AI_100">{t('ai100')}</option>
         </select>
       </div>
       <div>

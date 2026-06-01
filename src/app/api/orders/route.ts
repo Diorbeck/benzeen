@@ -8,7 +8,7 @@ import { FULL_TANK_MAX_LITERS } from '@/lib/constants';
 
 const schema = z.object({
   carId: z.string().cuid(),
-  fuelType: z.enum(['AI_92', 'AI_95']),
+  fuelType: z.enum(['AI_92', 'AI_95', 'AI_100']),
   volume: z.number().int().min(0).max(FULL_TANK_MAX_LITERS),
   isFullTank: z.boolean().optional(),
   address: z.string().optional(),
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     const order = await prisma.order.create({
       data: {
         carId: data.carId,
-        fuelType: data.fuelType as 'AI_92' | 'AI_95',
+        fuelType: data.fuelType,
         volume,
         isFullTank,
         status: 'CREATED',

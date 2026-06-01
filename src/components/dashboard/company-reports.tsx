@@ -4,11 +4,12 @@ import { motion } from 'framer-motion';
 import { Download, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type Row = { id: string; name: string; ai92: number; ai95: number; total: number };
+type Row = { id: string; name: string; ai92: number; ai95: number; ai100: number; total: number };
 
 export function CompanyReports({ rows }: { rows: Row[] }) {
   const totalAi92 = rows.reduce((s, r) => s + r.ai92, 0);
   const totalAi95 = rows.reduce((s, r) => s + r.ai95, 0);
+  const totalAi100 = rows.reduce((s, r) => s + r.ai100, 0);
 
   const csvCell = (value: string | number) => {
     const s = String(value ?? '');
@@ -16,9 +17,9 @@ export function CompanyReports({ rows }: { rows: Row[] }) {
   };
 
   const handleExport = () => {
-    const headers = ['Компания', 'AI-92, л', 'AI-95, л', 'Всего, л'];
-    const body = rows.map((r) => [r.name, r.ai92, r.ai95, r.total]);
-    const csv = [headers, ...body, ['Итого', totalAi92, totalAi95, totalAi92 + totalAi95]]
+    const headers = ['Компания', 'AI-92, л', 'AI-95, л', 'AI-100, л', 'Всего, л'];
+    const body = rows.map((r) => [r.name, r.ai92, r.ai95, r.ai100, r.total]);
+    const csv = [headers, ...body, ['Итого', totalAi92, totalAi95, totalAi100, totalAi92 + totalAi95 + totalAi100]]
       .map((r) => r.map(csvCell).join(','))
       .join('\n');
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
@@ -44,6 +45,13 @@ export function CompanyReports({ rows }: { rows: Row[] }) {
             Всего AI-95:{' '}
             <span className="font-semibold text-gray-900 dark:text-white">
               {totalAi95.toLocaleString('ru-RU')} л
+            </span>
+          </span>
+          <span className="text-gray-300 dark:text-gray-600">·</span>
+          <span>
+            Всего AI-100:{' '}
+            <span className="font-semibold text-gray-900 dark:text-white">
+              {totalAi100.toLocaleString('ru-RU')} л
             </span>
           </span>
         </div>
@@ -73,6 +81,7 @@ export function CompanyReports({ rows }: { rows: Row[] }) {
                   <th className="px-6 py-4">Компания</th>
                   <th className="px-6 py-4 text-right">AI-92, л</th>
                   <th className="px-6 py-4 text-right">AI-95, л</th>
+                  <th className="px-6 py-4 text-right">AI-100, л</th>
                   <th className="px-6 py-4 text-right">Всего, л</th>
                 </tr>
               </thead>
@@ -91,6 +100,9 @@ export function CompanyReports({ rows }: { rows: Row[] }) {
                     <td className="px-6 py-4 text-right text-amber-600 dark:text-amber-400">
                       {r.ai95.toLocaleString('ru-RU')}
                     </td>
+                    <td className="px-6 py-4 text-right text-sky-600 dark:text-sky-400">
+                      {r.ai100.toLocaleString('ru-RU')}
+                    </td>
                     <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-white">
                       {r.total.toLocaleString('ru-RU')}
                     </td>
@@ -107,7 +119,10 @@ export function CompanyReports({ rows }: { rows: Row[] }) {
                     {totalAi95.toLocaleString('ru-RU')}
                   </td>
                   <td className="px-6 py-4 text-right text-gray-900 dark:text-white">
-                    {(totalAi92 + totalAi95).toLocaleString('ru-RU')}
+                    {totalAi100.toLocaleString('ru-RU')}
+                  </td>
+                  <td className="px-6 py-4 text-right text-gray-900 dark:text-white">
+                    {(totalAi92 + totalAi95 + totalAi100).toLocaleString('ru-RU')}
                   </td>
                 </tr>
               </tfoot>

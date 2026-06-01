@@ -259,6 +259,7 @@ export function OrdersList({
             <option value="all">{t('filters.product')}</option>
             <option value="AI_92">AI-92</option>
             <option value="AI_95">AI-95</option>
+            <option value="AI_100">AI-100</option>
           </select>
           {showVehicleDriverFilters && (
             <>

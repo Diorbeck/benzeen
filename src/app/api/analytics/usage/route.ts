@@ -21,7 +21,7 @@ export async function GET(req: Request) {
       return NextResponse.json({
         perCar: [],
         perMonth: [],
-        byFuelType: { AI_92: 0, AI_95: 0 },
+        byFuelType: { AI_92: 0, AI_95: 0, AI_100: 0 },
       });
     }
 
@@ -90,11 +90,15 @@ export async function GET(req: Request) {
         ...p,
         label: `${['Янв', 'Фев', 'Мар', 'Апр', 'Май', 'Июн', 'Июл', 'Авг', 'Сен', 'Окт', 'Ноя', 'Дек'][p.month - 1]} ${p.year.toString().slice(2)}`,
       })),
-      byFuelType: { AI_92: byFuelType.AI_92 ?? 0, AI_95: byFuelType.AI_95 ?? 0 },
+      byFuelType: {
+        AI_92: byFuelType.AI_92 ?? 0,
+        AI_95: byFuelType.AI_95 ?? 0,
+        AI_100: byFuelType.AI_100 ?? 0,
+      },
     });
   } catch {
     return NextResponse.json(
-      { perCar: [], perMonth: [], byFuelType: { AI_92: 0, AI_95: 0 } },
+      { perCar: [], perMonth: [], byFuelType: { AI_92: 0, AI_95: 0, AI_100: 0 } },
       { status: 200 }
     );
   }

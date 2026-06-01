@@ -22,7 +22,7 @@ export function CreateOrderForm() {
   const t = useTranslations('createOrder');
   const [selected, setSelected] = useState({
     carId: '',
-    fuelType: 'AI_95' as 'AI_92' | 'AI_95',
+    fuelType: 'AI_95' as 'AI_92' | 'AI_95' | 'AI_100',
     address: '',
     notes: '',
     volume: 0,
@@ -42,7 +42,7 @@ export function CreateOrderForm() {
           setSelected((s) => ({
             ...s,
             carId: car?.id ?? '',
-            fuelType: (car as { fuelType?: string })?.fuelType === 'AI_92' ? 'AI_92' : 'AI_95',
+            fuelType: (car?.fuelType as 'AI_92' | 'AI_95' | 'AI_100') ?? 'AI_95',
             address: lastAddress,
             volume: 0,
           }));
@@ -137,7 +137,7 @@ export function CreateOrderForm() {
             setSelected((s) => ({
               ...s,
               carId: e.target.value,
-              fuelType: nextCar?.fuelType === 'AI_92' ? 'AI_92' : 'AI_95',
+              fuelType: (nextCar?.fuelType as 'AI_92' | 'AI_95' | 'AI_100') ?? 'AI_95',
               volume: Math.min(s.volume, nextRemaining),
             }));
           }}

@@ -36,18 +36,26 @@ export default async function InvoicesPage({
       },
     });
 
-    const stats = new Map<string, { ai92: number; ai95: number }>();
-    for (const c of companies) stats.set(c.id, { ai92: 0, ai95: 0 });
+    const stats = new Map<string, { ai92: number; ai95: number; ai100: number }>();
+    for (const c of companies) stats.set(c.id, { ai92: 0, ai95: 0, ai100: 0 });
     for (const o of delivered) {
       const s = stats.get(o.car.companyId);
       if (!s) continue;
       if (o.fuelType === 'AI_92') s.ai92 += o.volume;
+      else if (o.fuelType === 'AI_100') s.ai100 += o.volume;
       else s.ai95 += o.volume;
     }
 
     const rows = companies.map((c) => {
-      const s = stats.get(c.id) ?? { ai92: 0, ai95: 0 };
-      return { id: c.id, name: c.name, ai92: s.ai92, ai95: s.ai95, total: s.ai92 + s.ai95 };
+      const s = stats.get(c.id) ?? { ai92: 0, ai95: 0, ai100: 0 };
+      return {
+        id: c.id,
+        name: c.name,
+        ai92: s.ai92,
+        ai95: s.ai95,
+        ai100: s.ai100,
+        total: s.ai92 + s.ai95 + s.ai100,
+      };
     });
 
     return (
@@ -56,7 +64,7 @@ export default async function InvoicesPage({
           Отчёты
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Сколько литров топлива (AI-92 и AI-95) залито по каждой компании за всё время.
+          Сколько литров топлива (AI-92, AI-95 и AI-100) залито по каждой компании за всё время.
         </p>
         <CompanyReports rows={rows} />
       </div>

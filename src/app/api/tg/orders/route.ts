@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 
 const createSchema = z.object({
   carId: z.string().cuid(),
-  fuelType: z.enum(['AI_92', 'AI_95']),
+  fuelType: z.enum(['AI_92', 'AI_95', 'AI_100']),
   volume: z.number().int().min(0).max(FULL_TANK_MAX_LITERS),
   isFullTank: z.boolean().optional(),
   address: z.string().max(300).optional(),

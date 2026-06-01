@@ -7,7 +7,7 @@ import { z } from 'zod';
 const schema = z.object({
   plateNumber: z.string().min(1).max(20),
   model: z.string().max(100).optional(),
-  fuelType: z.enum(['AI_92', 'AI_95']),
+  fuelType: z.enum(['AI_92', 'AI_95', 'AI_100']),
   monthlyLimit: z.coerce.number().int().min(1).max(10000),
   tankCapacity: z.coerce.number().int().min(1).max(80),
 });
@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         companyId,
         plateNumber: data.plateNumber.toUpperCase(),
         model: data.model,
-        fuelType: data.fuelType as 'AI_92' | 'AI_95',
+        fuelType: data.fuelType,
         monthlyLimit: data.monthlyLimit,
         tankCapacity: data.tankCapacity,
       },

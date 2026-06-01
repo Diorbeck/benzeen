@@ -19,6 +19,7 @@ enum Role {
 enum FuelType {
   AI_92
   AI_95
+  AI_100
 }
 
 enum AuditAction {

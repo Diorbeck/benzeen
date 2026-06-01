@@ -8,16 +8,21 @@ async function main() {
   const password = (process.env.SUPER_ADMIN_PASSWORD || 'AD4543895').trim();
   const adminHash = await bcrypt.hash(password, 10);
 
-  // Fuel prices
+  // Fuel prices (UZS per liter)
   await prisma.price.upsert({
     where: { fuelType: 'AI_92' },
-    create: { fuelType: 'AI_92', priceUzs: 9500 },
-    update: { priceUzs: 9500 },
+    create: { fuelType: 'AI_92', priceUzs: 13800 },
+    update: { priceUzs: 13800 },
   });
   await prisma.price.upsert({
     where: { fuelType: 'AI_95' },
-    create: { fuelType: 'AI_95', priceUzs: 10500 },
-    update: { priceUzs: 10500 },
+    create: { fuelType: 'AI_95', priceUzs: 15800 },
+    update: { priceUzs: 15800 },
+  });
+  await prisma.price.upsert({
+    where: { fuelType: 'AI_100' },
+    create: { fuelType: 'AI_100', priceUzs: 20900 },
+    update: { priceUzs: 20900 },
   });
 
   // Single SUPER_ADMIN — no demo company/driver/courier data.

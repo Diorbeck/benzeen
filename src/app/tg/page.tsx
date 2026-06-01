@@ -22,7 +22,7 @@ const VOLUME_OPTIONS = [10, 15, 20, 25, 30, 40] as const;
 interface Car {
   id: string;
   plateNumber: string;
-  fuelType: 'AI_92' | 'AI_95';
+  fuelType: 'AI_92' | 'AI_95' | 'AI_100';
   monthlyLimit: number;
   remainingLiters: number;
 }
@@ -43,7 +43,7 @@ interface DriverInfo {
   phone: string | null;
 }
 
-const FUEL_LABEL: Record<string, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95' };
+const FUEL_LABEL: Record<string, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95', AI_100: 'АИ-100' };
 
 const STATUS_LABEL: Record<string, string> = {
   CREATED: 'Создан',

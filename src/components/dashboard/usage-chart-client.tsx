@@ -8,14 +8,19 @@ export default function UsageChartClient({
 }: {
   data?: {
     perMonth?: { label: string; used: number }[];
-    byFuelType?: { AI_92?: number; AI_95?: number };
+    byFuelType?: { AI_92?: number; AI_95?: number; AI_100?: number };
   };
 }) {
   const t = useTranslations('dashboard.chart');
   const perMonth = data?.perMonth ?? [];
-  const byFuel = data?.byFuelType ?? { AI_92: 0, AI_95: 0 };
+  const byFuel = data?.byFuelType ?? { AI_92: 0, AI_95: 0, AI_100: 0 };
 
-  if (perMonth.length === 0 && (byFuel.AI_92 ?? 0) === 0 && (byFuel.AI_95 ?? 0) === 0) {
+  if (
+    perMonth.length === 0 &&
+    (byFuel.AI_92 ?? 0) === 0 &&
+    (byFuel.AI_95 ?? 0) === 0 &&
+    (byFuel.AI_100 ?? 0) === 0
+  ) {
     return (
       <div className="flex h-[200px] items-center justify-center rounded-xl border border-dashed border-gray-200 dark:border-white/10">
         <p className="text-sm text-gray-500 dark:text-gray-400">{t('noData')}</p>
@@ -39,15 +44,19 @@ export default function UsageChartClient({
           </BarChart>
         </ResponsiveContainer>
       </div>
-      {(byFuel.AI_92 ?? 0) > 0 || (byFuel.AI_95 ?? 0) > 0 ? (
+      {(byFuel.AI_92 ?? 0) > 0 || (byFuel.AI_95 ?? 0) > 0 || (byFuel.AI_100 ?? 0) > 0 ? (
         <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
           <span className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-amber-500" />
-            AI-92: {byFuel.AI_92} л
+            AI-92: {byFuel.AI_92 ?? 0} л
           </span>
           <span className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-primary-500" />
-            AI-95: {byFuel.AI_95} л
+            AI-95: {byFuel.AI_95 ?? 0} л
+          </span>
+          <span className="flex items-center gap-2">
+            <span className="h-2 w-2 rounded-full bg-sky-500" />
+            AI-100: {byFuel.AI_100 ?? 0} л
           </span>
         </div>
       ) : null}

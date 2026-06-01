@@ -50,9 +50,11 @@ export default async function DashboardPage({
 
     let liters92 = 0;
     let liters95 = 0;
+    let liters100 = 0;
     const byCompany = new Map<string, { name: string; liters: number; orders: number }>();
     for (const o of delivered) {
       if (o.fuelType === 'AI_92') liters92 += o.volume;
+      else if (o.fuelType === 'AI_100') liters100 += o.volume;
       else liters95 += o.volume;
       const c = o.car.company;
       const entry = byCompany.get(c.id) ?? { name: c.name, liters: 0, orders: 0 };
@@ -67,9 +69,10 @@ export default async function DashboardPage({
     return (
       <AdminOverview
         date={dateStr}
-        totalLiters={liters92 + liters95}
+        totalLiters={liters92 + liters95 + liters100}
         liters92={liters92}
         liters95={liters95}
+        liters100={liters100}
         ordersCount={delivered.length}
         topCompanies={topCompanies}
       />

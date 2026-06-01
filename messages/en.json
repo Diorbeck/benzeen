@@ -501,6 +501,7 @@
     "fuelType": "Fuel type",
     "ai92": "AI-92",
     "ai95": "AI-95",
+    "ai100": "AI-100",
     "monthlyLimit": "Monthly limit (L)",
     "tankCapacity": "Tank capacity (L)",
     "add": "Add",

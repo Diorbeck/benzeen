@@ -11,6 +11,7 @@ export function AdminOverview({
   totalLiters,
   liters92,
   liters95,
+  liters100,
   ordersCount,
   topCompanies,
 }: {
@@ -18,6 +19,7 @@ export function AdminOverview({
   totalLiters: number;
   liters92: number;
   liters95: number;
+  liters100: number;
   ordersCount: number;
   topCompanies: TopCompany[];
 }) {
@@ -64,6 +66,13 @@ export function AdminOverview({
       value: liters95.toLocaleString('ru-RU'),
       color: 'text-amber-600 dark:text-amber-400',
       bg: 'bg-amber-500/10',
+    },
+    {
+      icon: Droplet,
+      label: 'AI-100, л',
+      value: liters100.toLocaleString('ru-RU'),
+      color: 'text-sky-600 dark:text-sky-400',
+      bg: 'bg-sky-500/10',
     },
     {
       icon: Package,
