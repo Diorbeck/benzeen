@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { createNotification } from '@/lib/notifications';
+import { sendTelegramMessage } from '@/lib/telegram';
 import { FULL_TANK_MAX_LITERS } from '@/lib/constants';
 
 const schema = z.object({
@@ -122,6 +123,25 @@ export async function PATCH(
         message: `${order.car.plateNumber}: ${deliveredVolume} L delivered`,
         orderId: order.id,
       });
+    }
+
+    // Notify the driver in Telegram if they created the order from the Mini App
+    // (no-op when the bot is unconfigured or the driver hasn't linked).
+    const tgId = order.createdBy?.telegramId;
+    if (tgId) {
+      const plate = order.car.plateNumber;
+      let tgText: string | null = null;
+      if (newStatus === 'COURIER_ASSIGNED') {
+        tgText = `🚚 Курьер принял ваш заказ по машине <b>${plate}</b>.`;
+      } else if (newStatus === 'IN_DELIVERY') {
+        tgText = `🛣️ Курьер выехал к вам. Машина <b>${plate}</b>.`;
+      } else if (newStatus === 'DELIVERED') {
+        tgText = `✅ Заказ доставлен: <b>${plate}</b> — ${deliveredVolume} л.`;
+      }
+      if (tgText) {
+        // Fire-and-forget; never block the response on Telegram.
+        void sendTelegramMessage(tgId, tgText);
+      }
     }
 
     return NextResponse.json(updated);

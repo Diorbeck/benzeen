@@ -16,7 +16,8 @@ const cspReportOnly = [
   "form-action 'self'",
   // Next.js injects inline bootstrap/hydration scripts; 'unsafe-inline' keeps
   // report-only quiet. Upgrade path: switch to nonce-based (see notes).
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  // telegram.org serves the Mini App SDK (telegram-web-app.js).
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
@@ -39,6 +40,29 @@ const securityHeaders = [
   { key: 'Content-Security-Policy-Report-Only', value: cspReportOnly },
 ];
 
+// The Telegram Mini App must be embeddable in Telegram's iframe (Telegram
+// Web/Desktop). X-Frame-Options can't express "allow only telegram.org"
+// reliably (ALLOW-FROM is dead), so we drop it on /tg and instead rely on
+// frame-ancestors below — security for /tg comes from server-side initData
+// validation, not from blocking embedding.
+const tgFrameAncestors =
+  "frame-ancestors 'self' https://telegram.org https://*.telegram.org https://web.telegram.org";
+
+const tgCsp = cspReportOnly
+  .split('; ')
+  .map((d) => (d.startsWith('frame-ancestors') ? tgFrameAncestors : d))
+  .join('; ');
+
+const tgHeaders = [
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  {
+    key: 'Permissions-Policy',
+    value: 'camera=(), microphone=(), geolocation=()',
+  },
+  { key: 'Content-Security-Policy-Report-Only', value: tgCsp },
+];
+
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
@@ -47,8 +71,18 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Mini App routes: framing allowed for Telegram (no X-Frame-Options).
       {
-        source: '/:path*',
+        source: '/tg/:path*',
+        headers: tgHeaders,
+      },
+      {
+        source: '/tg',
+        headers: tgHeaders,
+      },
+      // Everything else except /tg gets the strict headers (incl. XFO).
+      {
+        source: '/((?!tg$|tg/).*)',
         headers: securityHeaders,
       },
     ];

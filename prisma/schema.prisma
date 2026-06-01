@@ -51,6 +51,7 @@ model User {
   phone         String?   @unique
   driverPassword String?
   vehicleNumber String?
+  telegramId    String?   @unique
   role          Role
   companyId     String?
   createdAt     DateTime  @default(now())

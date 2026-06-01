@@ -34,6 +34,12 @@ export default async function middleware(request: NextRequest) {
     }
     return NextResponse.next();
   }
+
+  // Telegram Mini App lives outside i18n routing — never locale-redirect it.
+  if (pathname === '/tg' || pathname.startsWith('/tg/')) {
+    return NextResponse.next();
+  }
+
   const segments = pathname.split('/').filter(Boolean);
   const locale = segments[0] && ['ru', 'en', 'uz'].includes(segments[0]) ? segments[0] : 'ru';
   const isProtected = pathname.includes('/dashboard');
@@ -101,7 +107,7 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next|_vercel|.*\\..*).*)',
+    '/((?!api|_next|_vercel|tg$|tg/|.*\\..*).*)',
     '/api/auth/:path*',
   ],
 };
