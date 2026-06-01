@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import bcrypt from 'bcryptjs';
-import { createAndSendCode, type SignupMeta } from '@/lib/verification';
+import { createAndSendCode } from '@/lib/verification';
 
 const sendSchema = z.object({
   identifier: z.string().min(1),
@@ -23,30 +22,19 @@ export async function POST(req: Request) {
     const body = await req.json();
     const data = sendSchema.parse(body);
 
-    if (data.purpose === 'signup' && !data.signupPayload) {
+    // Self-service signup is disabled — accounts are created by an admin only.
+    // Only password_reset is allowed past this point.
+    if (data.purpose === 'signup') {
       return NextResponse.json(
-        { error: 'signupPayload required for signup' },
-        { status: 400 }
+        { error: 'Self-service signup is disabled.' },
+        { status: 403 }
       );
-    }
-
-    let meta: SignupMeta | undefined;
-    if (data.purpose === 'signup' && data.signupPayload) {
-      const passwordHash = await bcrypt.hash(data.signupPayload.password, 10);
-      meta = {
-        fullName: data.signupPayload.fullName,
-        companyName: data.signupPayload.companyName,
-        email: data.signupPayload.email,
-        phone: data.signupPayload.phone,
-        passwordHash,
-      };
     }
 
     const result = await createAndSendCode({
       identifier: data.identifier,
       method: data.method,
       purpose: data.purpose,
-      meta,
     });
 
     if (!result.ok) {

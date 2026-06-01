@@ -224,11 +224,11 @@
   "managerLogin": {
     "title": "Company Manager Login",
     "subtitle": "Sign in to manage your company fleet.",
-    "email": "Email",
+    "email": "Login",
     "password": "Password",
     "submit": "Sign in",
     "submitting": "Signing in...",
-    "demo": "Demo: admin@benzeen.uz / 123, company@benzeen.uz / company123"
+    "demo": "Your login and password are issued by an administrator"
   },
   "driverLogin": {
     "title": "Driver Access",

@@ -224,11 +224,11 @@
   "managerLogin": {
     "title": "Вход для менеджера компании",
     "subtitle": "Войдите, чтобы управлять парком компании.",
-    "email": "Email",
+    "email": "Логин",
     "password": "Пароль",
     "submit": "Войти",
     "submitting": "Вход...",
-    "demo": "Демо: admin@benzeen.uz / 123, company@benzeen.uz / company123"
+    "demo": "Логин и пароль выдаёт администратор"
   },
   "driverLogin": {
     "title": "Доступ водителя",

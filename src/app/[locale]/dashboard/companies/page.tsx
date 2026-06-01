@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { getTranslations } from 'next-intl/server';
+import bcrypt from 'bcryptjs';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { writeAuditLog } from '@/lib/audit';
@@ -87,15 +88,43 @@ export default async function CompaniesPage({
             const address = String(formData.get('address') || '').trim() || undefined;
             const phone = String(formData.get('phone') || '').trim() || undefined;
             const telegram = String(formData.get('telegram') || '').trim() || undefined;
+            const login = String(formData.get('login') || '').trim().toLowerCase();
+            const password = String(formData.get('password') || '');
             if (!name) return;
             const actorSession = await getServerSession(authOptions);
             const actor = actorSession?.user as
               | { id?: string; email?: string; role?: string }
               | undefined;
             if (actor?.role !== 'SUPER_ADMIN') return;
+
+            // If a login is provided, both login and password are required, the
+            // login must be unique (it is stored in User.email), and it becomes
+            // the COMPANY_ADMIN account for this company.
+            if (login) {
+              if (password.length < 4) return;
+              const existing = await prisma.user.findUnique({
+                where: { email: login },
+              });
+              if (existing) return;
+            }
+
             const created = await prisma.company.create({
               data: { name, address, phone, telegram },
             });
+
+            if (login && password.length >= 4) {
+              const passwordHash = await bcrypt.hash(password, 10);
+              await prisma.user.create({
+                data: {
+                  email: login,
+                  name,
+                  passwordHash,
+                  role: 'COMPANY_ADMIN',
+                  companyId: created.id,
+                },
+              });
+            }
+
             await writeAuditLog({
               action: 'COMPANY_CREATE',
               targetType: 'Company',
@@ -148,6 +177,39 @@ export default async function CompaniesPage({
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
             />
           </div>
+
+          <div className="md:col-span-2 mt-2 rounded-lg border border-dashed border-gray-200 p-3 dark:border-white/10">
+            <p className="mb-2 text-xs font-medium text-gray-600 dark:text-gray-300">
+              Доступ для входа (необязательно). Укажите логин и пароль — компания
+              сможет войти на странице «Вход для менеджера». Email не требуется.
+            </p>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
+                  Логин
+                </label>
+                <input
+                  name="login"
+                  autoComplete="off"
+                  placeholder="company123"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
+                  Пароль
+                </label>
+                <input
+                  name="password"
+                  type="text"
+                  autoComplete="off"
+                  placeholder="Минимум 4 символа"
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
+                />
+              </div>
+            </div>
+          </div>
+
           <div className="md:col-span-2 flex justify-end">
             <button
               type="submit"

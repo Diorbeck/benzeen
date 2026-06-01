@@ -67,13 +67,13 @@ function ManagerLoginForm() {
           </label>
           <input
             id="manager-email"
-            type="email"
+            type="text"
             placeholder={t('email')}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             className={inputClass}
-            autoComplete="email"
+            autoComplete="username"
             disabled={loading}
           />
         </div>
@@ -117,13 +117,6 @@ function ManagerLoginForm() {
         <Button type="submit" disabled={loading} className="w-full">
           {loading ? t('submitting') : t('submit')}
         </Button>
-
-        <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-          {tAuth('noAccount')}{' '}
-          <Link href={`/${locale}/signup`} className="font-medium text-primary-500 hover:text-primary-400 hover:underline">
-            {tAuth('createOne')}
-          </Link>
-        </p>
       </form>
     </AuthLayout>
   );

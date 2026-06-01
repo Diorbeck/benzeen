@@ -224,11 +224,11 @@
   "managerLogin": {
     "title": "Kompaniya menejeri kirishi",
     "subtitle": "Avtoparkni boshqarish uchun kiring.",
-    "email": "Email",
+    "email": "Login",
     "password": "Parol",
     "submit": "Kirish",
     "submitting": "Kirilmoqda...",
-    "demo": "Demo: admin@benzeen.uz / 123, company@benzeen.uz / company123"
+    "demo": "Login va parolni administrator beradi"
   },
   "driverLogin": {
     "title": "Haydovchi kirishi",

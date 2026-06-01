@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { prisma } from '@/lib/prisma';
 import { verifyCode } from '@/lib/verification';
 
 const verifySchema = z.object({
@@ -28,32 +27,13 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: message }, { status: 400 });
     }
 
-    if (data.purpose === 'signup' && result.signupMeta) {
-      const { fullName, companyName, email, phone, passwordHash } = result.signupMeta;
-      const emailNormalized = String(email ?? '').trim().toLowerCase();
-      if (!emailNormalized || !passwordHash) {
-        return NextResponse.json({ error: 'Invalid signup data' }, { status: 400 });
-      }
-      const existing = await prisma.user.findUnique({ where: { email: emailNormalized } });
-      if (existing) {
-        return NextResponse.json({ error: 'This email is already registered.' }, { status: 400 });
-      }
-      const company = await prisma.company.create({
-        data: {
-          name: (companyName ?? '').trim(),
-          phone: phone ? String(phone).trim() || undefined : undefined,
-        },
-      });
-      await prisma.user.create({
-        data: {
-          email: emailNormalized,
-          name: (fullName ?? '').trim() || null,
-          phone: phone ? String(phone).trim() || undefined : undefined,
-          passwordHash,
-          role: 'COMPANY_ADMIN',
-          companyId: company.id,
-        },
-      });
+    // Self-service signup is disabled — accounts are created by an admin only.
+    // Only password_reset reaches this point.
+    if (data.purpose === 'signup') {
+      return NextResponse.json(
+        { error: 'Self-service signup is disabled.' },
+        { status: 403 }
+      );
     }
 
     return NextResponse.json({ ok: true });
