@@ -21,6 +21,14 @@ enum FuelType {
   AI_95
 }
 
+enum AuditAction {
+  COMPANY_CREATE
+  COMPANY_DELETE
+  COURIER_CREATE
+  COURIER_DELETE
+  LIMIT_CHANGE
+}
+
 enum OrderStatus {
   CREATED
   PENDING_APPROVAL
@@ -168,6 +176,12 @@ model Order {
   car         Car   @relation(fields: [carId], references: [id], onDelete: Cascade)
   createdBy   User? @relation("CreatedBy", fields: [createdById], references: [id])
   assignedTo  User? @relation("AssignedTo", fields: [assignedToId], references: [id])
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([deliveredAt])
+  @@index([carId])
+  @@index([carId, status])
 }
 
 model Price {
@@ -201,6 +215,36 @@ model CarUsage {
   car Car @relation(fields: [carId], references: [id], onDelete: Cascade)
 
   @@unique([carId, month, year])
+}
+
+// Immutable trail of sensitive super-admin mutations. Never store PII beyond
+// the actor email (already known to admins); metadata is sanitized at write.
+model AuditLog {
+  id         String      @id @default(cuid())
+  actorId    String?
+  actorEmail String?
+  action     AuditAction
+  targetType String      // "Company" | "Courier" | "Car" ...
+  targetId   String?
+  metadata   Json?       // small, non-PII context: { name, before, after, ... }
+  createdAt  DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([action])
+  @@index([actorId])
+}
+
+// Web Push (PWA notifications). One row per browser/device subscription.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String?
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
 }
 
 model Notification {

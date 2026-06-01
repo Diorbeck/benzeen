@@ -18,6 +18,12 @@ export function Footer() {
   const pathname = usePathname() ?? '';
   const locale = pathname.startsWith('/en') ? 'en' : pathname.startsWith('/uz') ? 'uz' : 'ru';
 
+  const legalLabels = {
+    ru: { privacy: 'Конфиденциальность', terms: 'Условия' },
+    en: { privacy: 'Privacy', terms: 'Terms' },
+    uz: { privacy: 'Maxfiylik', terms: 'Shartlar' },
+  }[locale];
+
   return (
     <footer className="border-t border-gray-200 dark:border-white/5 transition-colors duration-300">
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
@@ -53,6 +59,20 @@ export function Footer() {
           <p className="text-xs text-gray-500">
             © {new Date().getFullYear()} Benzeen. {t('rights')}
           </p>
+          <nav className="flex items-center gap-4" aria-label="Legal">
+            <Link
+              href={`/${locale}/privacy`}
+              className="text-xs text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-white"
+            >
+              {legalLabels.privacy}
+            </Link>
+            <Link
+              href={`/${locale}/terms`}
+              className="text-xs text-gray-500 transition-colors hover:text-gray-900 dark:hover:text-white"
+            >
+              {legalLabels.terms}
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { writeAuditLog } from '@/lib/audit';
 import { z } from 'zod';
 
 const patchSchema = z
@@ -99,6 +100,26 @@ export async function PATCH(
       where: { id },
       data: updateData,
     });
+
+    if (
+      data.monthlyLimit !== undefined &&
+      data.monthlyLimit !== car.monthlyLimit
+    ) {
+      const actor = session.user as { id?: string; email?: string };
+      await writeAuditLog({
+        action: 'LIMIT_CHANGE',
+        targetType: 'Car',
+        targetId: id,
+        actorId: actor.id ?? null,
+        actorEmail: actor.email ?? null,
+        metadata: {
+          plateNumber: car.plateNumber,
+          before: car.monthlyLimit,
+          after: data.monthlyLimit,
+        },
+      });
+    }
+
     return NextResponse.json(updated);
   } catch (e) {
     if (e instanceof z.ZodError) {

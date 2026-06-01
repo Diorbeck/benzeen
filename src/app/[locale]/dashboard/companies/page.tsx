@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { getTranslations } from 'next-intl/server';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { writeAuditLog } from '@/lib/audit';
 import { CompaniesList } from '@/components/dashboard/companies-list';
 
 export default async function CompaniesPage({
@@ -87,8 +88,21 @@ export default async function CompaniesPage({
             const phone = String(formData.get('phone') || '').trim() || undefined;
             const telegram = String(formData.get('telegram') || '').trim() || undefined;
             if (!name) return;
-            await prisma.company.create({
+            const actorSession = await getServerSession(authOptions);
+            const actor = actorSession?.user as
+              | { id?: string; email?: string; role?: string }
+              | undefined;
+            if (actor?.role !== 'SUPER_ADMIN') return;
+            const created = await prisma.company.create({
               data: { name, address, phone, telegram },
+            });
+            await writeAuditLog({
+              action: 'COMPANY_CREATE',
+              targetType: 'Company',
+              targetId: created.id,
+              actorId: actor.id ?? null,
+              actorEmail: actor.email ?? null,
+              metadata: { name: created.name },
             });
           }}
           className="grid gap-3 text-sm md:grid-cols-2"

@@ -4,11 +4,36 @@ import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
 import { routing } from '@/i18n/routing';
+import { checkAuthRateLimit, clientIpFromHeaders } from '@/lib/ratelimit';
 
 const intlMiddleware = createMiddleware(routing);
 
 export default async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Rate-limit auth endpoints (brute-force protection). Only POSTs are limited
+  // so normal session/csrf polling (GET) is never throttled.
+  if (pathname.startsWith('/api/auth')) {
+    if (request.method === 'POST') {
+      const ip = clientIpFromHeaders(request.headers);
+      const result = await checkAuthRateLimit(ip);
+      if (result && !result.success) {
+        const retryAfter = Math.max(1, Math.ceil((result.reset - Date.now()) / 1000));
+        return NextResponse.json(
+          { error: 'Too many attempts. Please try again later.' },
+          {
+            status: 429,
+            headers: {
+              'Retry-After': String(retryAfter),
+              'X-RateLimit-Limit': String(result.limit),
+              'X-RateLimit-Remaining': String(result.remaining),
+            },
+          },
+        );
+      }
+    }
+    return NextResponse.next();
+  }
   const segments = pathname.split('/').filter(Boolean);
   const locale = segments[0] && ['ru', 'en', 'uz'].includes(segments[0]) ? segments[0] : 'ru';
   const isProtected = pathname.includes('/dashboard');
@@ -39,6 +64,7 @@ export default async function middleware(request: NextRequest) {
     '/dashboard/invoices',
     '/dashboard/admin',
     '/dashboard/companies',
+    '/dashboard/audit',
   ];
   const deliveriesPath = pathname.includes('/dashboard/deliveries');
   const driverOnlyPaths = ['/dashboard/my-vehicle', '/dashboard/my-limit'];
@@ -74,5 +100,8 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  matcher: [
+    '/((?!api|_next|_vercel|.*\\..*).*)',
+    '/api/auth/:path*',
+  ],
 };

@@ -22,6 +22,7 @@ import {
   Truck,
   BarChart3,
   Bike,
+  ScrollText,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { NotificationBell } from './notification-bell';
@@ -42,6 +43,7 @@ type NavKey =
   | 'reports'
   | 'invoices'
   | 'couriers'
+  | 'audit'
   | 'settings'
   | 'myCars'
   | 'myVehicle'
@@ -65,6 +67,7 @@ const navByRole: Record<
     { path: '/deliveries', labelKey: 'deliveries', icon: Truck },
     { path: '/invoices', labelKey: 'reports', icon: BarChart3 },
     { path: '/couriers', labelKey: 'couriers', icon: Bike },
+    { path: '/audit', labelKey: 'audit', icon: ScrollText },
     { path: '/settings', labelKey: 'settings', icon: Settings },
   ],
   COMPANY_ADMIN: [

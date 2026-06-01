@@ -1,0 +1,71 @@
+name: Daily DB Backup
+
+# Runs a daily logical backup of the production PostgreSQL database with
+# pg_dump, gzips it, and stores it as a PRIVATE GitHub Actions artifact
+# (retention: 30 days). Optionally mirrors the dump to S3 when AWS secrets
+# are present. The dump is never printed to logs.
+#
+# Required repo secret:
+#   DATABASE_URL            full postgres connection string (prod)
+# Optional repo secrets (enable S3 upload when ALL are set):
+#   AWS_ACCESS_KEY_ID
+#   AWS_SECRET_ACCESS_KEY
+#   AWS_REGION              e.g. eu-central-1
+#   BACKUP_S3_BUCKET        e.g. s3://my-bucket/benzeen-backups
+
+on:
+  schedule:
+    # 02:30 UTC every day (~07:30 Tashkent). Adjust as needed.
+    - cron: '30 2 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Install PostgreSQL 16 client
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/keyrings/postgresql.gpg
+          sudo sed -i 's|deb |deb [signed-by=/usr/share/keyrings/postgresql.gpg] |' /etc/apt/sources.list.d/pgdg.list
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+
+      - name: Create dump
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "::error::DATABASE_URL secret is not set"; exit 1
+          fi
+          STAMP=$(date -u +%Y%m%d-%H%M%S)
+          FILE="benzeen-${STAMP}.dump.gz"
+          echo "FILE=$FILE" >> "$GITHUB_ENV"
+          # Custom format (-Fc) is compressed + supports selective restore.
+          # Pipe straight to gzip; the URL is passed via env, never echoed.
+          pg_dump --no-owner --no-privileges -Fc "$DATABASE_URL" | gzip > "$FILE"
+          ls -lh "$FILE"
+
+      - name: Upload artifact (private, 30-day retention)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.FILE }}
+          path: ${{ env.FILE }}
+          retention-days: 30
+          if-no-files-found: error
+
+      - name: Mirror to S3 (optional)
+        if: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.BACKUP_S3_BUCKET != '' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
+          BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
+        run: |
+          aws s3 cp "$FILE" "$BUCKET/$FILE" --only-show-errors
+          echo "Uploaded $FILE to $BUCKET"

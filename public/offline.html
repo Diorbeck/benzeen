@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Нет соединения — Benzeen</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        background: #0a1f44;
+        color: #fff;
+        text-align: center;
+        padding: 24px;
+      }
+      .card { max-width: 360px; }
+      .logo {
+        width: 64px; height: 64px; margin: 0 auto 20px;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 16px; font-size: 36px; font-weight: 700;
+        background: linear-gradient(135deg, #2563eb 0%, #0a1f44 100%);
+      }
+      h1 { font-size: 20px; margin: 0 0 8px; }
+      p { opacity: .8; line-height: 1.5; margin: 0 0 20px; }
+      button {
+        appearance: none; border: 0; cursor: pointer;
+        background: #2563eb; color: #fff; font-weight: 600;
+        padding: 12px 20px; border-radius: 10px; font-size: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">B</div>
+      <h1>Нет подключения к интернету</h1>
+      <p>Проверьте соединение и попробуйте снова. Некоторые данные могут быть недоступны в офлайн-режиме.</p>
+      <button onclick="location.reload()">Повторить</button>
+    </div>
+  </body>
+</html>

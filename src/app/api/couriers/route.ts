@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { writeAuditLog } from '@/lib/audit';
 import { z } from 'zod';
 import * as bcrypt from 'bcryptjs';
 
@@ -19,7 +20,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { role } = session.user as { role?: string };
+    const { role, id: actorId, email: actorEmail } = session.user as {
+      role?: string;
+      id?: string;
+      email?: string;
+    };
     if (role !== 'SUPER_ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
@@ -52,6 +57,16 @@ export async function POST(req: Request) {
         vehicleNumber: data.vehicleNumber?.trim() || null,
         role: 'COURIER',
       },
+    });
+
+    await writeAuditLog({
+      action: 'COURIER_CREATE',
+      targetType: 'Courier',
+      targetId: courier.id,
+      actorId: actorId ?? null,
+      actorEmail: actorEmail ?? null,
+      // Name only — never store phone/email (PII) in the audit trail.
+      metadata: { name: courier.name },
     });
 
     return NextResponse.json({ id: courier.id });
