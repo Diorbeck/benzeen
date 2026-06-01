@@ -125,8 +125,6 @@ function ManagerLoginForm() {
           </Link>
         </p>
       </form>
-
-      <p className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">{t('demo')}</p>
     </AuthLayout>
   );
 }
