@@ -169,6 +169,11 @@ model Order {
   status     OrderStatus @default(CREATED)
   address    String?
   notes      String?
+  // Telegram bot confirmation flow: null | AWAIT_CONFIRM | AWAIT_LOCATION
+  botPhase   String?
+  // Delivery coordinates captured from the driver's Telegram location share.
+  lat        Float?
+  lng        Float?
   createdById String?
   assignedToId String?
   createdAt  DateTime    @default(now())

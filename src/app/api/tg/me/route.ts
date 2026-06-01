@@ -11,7 +11,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Invalid init data' }, { status: 401 });
   }
 
-  if (!ctx.driver) {
+  if (!ctx.user) {
     return NextResponse.json({
       linked: false,
       tgName: ctx.tgUser.first_name ?? null,
@@ -20,10 +20,12 @@ export async function GET(req: Request) {
 
   return NextResponse.json({
     linked: true,
+    role: ctx.user.role,
     driver: {
-      id: ctx.driver.id,
-      name: ctx.driver.name,
-      phone: ctx.driver.phone,
+      id: ctx.user.id,
+      name: ctx.user.name,
+      phone: ctx.user.phone,
+      role: ctx.user.role,
     },
   });
 }

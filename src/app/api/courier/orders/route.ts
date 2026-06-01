@@ -20,7 +20,7 @@ export async function GET() {
     const orders = await prisma.order.findMany({
       where: {
         OR: [
-          { status: 'CREATED', assignedToId: null },
+          { status: 'RECEIVED', assignedToId: null },
           { assignedToId: courierId, status: { in: ['COURIER_ASSIGNED', 'IN_DELIVERY'] } },
         ],
       },

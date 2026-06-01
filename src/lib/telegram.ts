@@ -109,11 +109,35 @@ export interface InlineKeyboardButton {
   text: string;
   url?: string;
   web_app?: { url: string };
+  callback_data?: string;
 }
 
-export interface ReplyMarkup {
+export interface InlineKeyboardMarkup {
   inline_keyboard: InlineKeyboardButton[][];
 }
+
+export interface KeyboardButton {
+  text: string;
+  request_location?: boolean;
+}
+
+export interface ReplyKeyboardMarkup {
+  keyboard: KeyboardButton[][];
+  resize_keyboard?: boolean;
+  one_time_keyboard?: boolean;
+  is_persistent?: boolean;
+}
+
+export interface ReplyKeyboardRemove {
+  remove_keyboard: true;
+}
+
+// A message reply_markup may be inline buttons, a custom reply keyboard, or a
+// request to remove the reply keyboard.
+export type ReplyMarkup =
+  | InlineKeyboardMarkup
+  | ReplyKeyboardMarkup
+  | ReplyKeyboardRemove;
 
 /**
  * Sends a message via the Bot API. No-op (returns false) when the bot token is
@@ -150,6 +174,77 @@ export async function sendTelegramMessage(
     return false;
   }
 }
+
+/**
+ * Acknowledges a callback_query (inline button press) so Telegram stops showing
+ * the loading spinner on the button. Optional toast text. Never throws.
+ */
+export async function answerCallbackQuery(
+  callbackQueryId: string,
+  text?: string,
+): Promise<boolean> {
+  const token = getBotToken();
+  if (!token) return false;
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${token}/answerCallbackQuery`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          callback_query_id: callbackQueryId,
+          ...(text ? { text } : {}),
+        }),
+      },
+    );
+    return res.ok;
+  } catch (e) {
+    console.error('[telegram] answerCallbackQuery error:', e);
+    return false;
+  }
+}
+
+/**
+ * Edits the text (and optionally inline keyboard) of a previously sent message.
+ * Used to "finalize" a confirmation prompt after a button press. Never throws.
+ */
+export async function editMessageText(
+  chatId: number | string,
+  messageId: number,
+  text: string,
+  replyMarkup?: InlineKeyboardMarkup,
+): Promise<boolean> {
+  const token = getBotToken();
+  if (!token) return false;
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${token}/editMessageText`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: chatId,
+          message_id: messageId,
+          text,
+          parse_mode: 'HTML',
+          disable_web_page_preview: true,
+          ...(replyMarkup ? { reply_markup: replyMarkup } : {}),
+        }),
+      },
+    );
+    return res.ok;
+  } catch (e) {
+    console.error('[telegram] editMessageText error:', e);
+    return false;
+  }
+}
+
+/** Human label for a fuel type, used in bot messages. */
+export const FUEL_LABEL_RU: Record<string, string> = {
+  AI_92: 'АИ-92',
+  AI_95: 'АИ-95',
+  AI_100: 'АИ-100',
+};
 
 /** URL of the Mini App, used in /start bot replies. */
 export function getMiniAppUrl(): string | null {

@@ -10,16 +10,22 @@ import { validateInitData, type TelegramUser } from '@/lib/telegram';
 
 export const TG_INIT_DATA_HEADER = 'x-telegram-init-data';
 
+export interface TgLinkedUser {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  role: string;
+  companyId: string | null;
+}
+
 export interface TgContext {
   tgUser: TelegramUser;
-  // The linked driver, or null if this Telegram account hasn't linked yet.
-  driver: {
-    id: string;
-    name: string | null;
-    phone: string | null;
-    role: string;
-    companyId: string | null;
-  } | null;
+  // Any linked user (driver or courier), or null if not linked yet.
+  user: TgLinkedUser | null;
+  // Back-compat alias: non-null only when the linked user is a DRIVER.
+  driver: TgLinkedUser | null;
+  // Non-null only when the linked user is a COURIER.
+  courier: TgLinkedUser | null;
 }
 
 /**
@@ -40,8 +46,8 @@ export async function getTgContext(req: Request): Promise<TgContext | null> {
     select: { id: true, name: true, phone: true, role: true, companyId: true },
   });
 
-  // Only DRIVER accounts are usable in the Mini App.
   const driver = user && user.role === 'DRIVER' ? user : null;
+  const courier = user && user.role === 'COURIER' ? user : null;
 
-  return { tgUser: validated.user, driver };
+  return { tgUser: validated.user, user: user ?? null, driver, courier };
 }

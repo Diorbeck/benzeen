@@ -7,6 +7,7 @@ interface TelegramWebApp {
   initData: string;
   ready: () => void;
   expand: () => void;
+  close: () => void;
   colorScheme?: 'light' | 'dark';
   HapticFeedback?: { notificationOccurred: (t: 'success' | 'error' | 'warning') => void };
 }
@@ -41,6 +42,20 @@ interface DriverInfo {
   id: string;
   name: string | null;
   phone: string | null;
+  role?: string;
+}
+interface CourierOrderItem {
+  id: string;
+  plateNumber: string;
+  fuelType: string;
+  volume: number;
+  isFullTank: boolean;
+  status: string;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+  createdAt: string;
+  mine: boolean;
 }
 
 const FUEL_LABEL: Record<string, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95', AI_100: 'АИ-100' };
@@ -165,6 +180,14 @@ export default function TgPage() {
             setPhase('app');
           }}
         />
+      </Screen>
+    );
+  }
+
+  if (driver?.role === 'COURIER') {
+    return (
+      <Screen>
+        <CourierDashboard initData={initData!} driver={driver} />
       </Screen>
     );
   }
@@ -318,6 +341,14 @@ function Dashboard({ initData, driver }: { initData: string; driver: DriverInfo 
             onCreated={() => {
               loadCars();
               setTab('orders');
+              // Drop out of the Mini App; the bot continues with a confirmation
+              // prompt in the chat (see /api/tg/orders). Closing may no-op
+              // outside Telegram — the orders tab is the fallback.
+              try {
+                window.Telegram?.WebApp?.close();
+              } catch {
+                /* ignore */
+              }
             }}
           />
         )}
@@ -540,28 +571,47 @@ function NewOrder({
 }
 
 // ---- My orders -------------------------------------------------------------
+const DRIVER_EDITABLE = ['CREATED', 'PENDING_APPROVAL'];
+
 function MyOrders({
   authHeaders,
 }: {
   authHeaders: (extra?: Record<string, string>) => Record<string, string>;
 }) {
   const [orders, setOrders] = useState<OrderItem[] | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch('/api/tg/orders', { headers: authHeaders() });
+      const json = res.ok ? await res.json() : [];
+      setOrders(json);
+    } catch {
+      setOrders([]);
+    }
+  }, [authHeaders]);
 
   useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch('/api/tg/orders', { headers: authHeaders() });
-        const json = res.ok ? await res.json() : [];
-        if (!cancelled) setOrders(json);
-      } catch {
-        if (!cancelled) setOrders([]);
+    load();
+  }, [load]);
+
+  const remove = async (id: string) => {
+    if (!window.confirm('Удалить этот заказ?')) return;
+    setBusyId(id);
+    try {
+      const res = await fetch(`/api/tg/orders/${id}`, {
+        method: 'DELETE',
+        headers: authHeaders(),
+      });
+      if (res.ok) {
+        setOrders((prev) => (prev ? prev.filter((o) => o.id !== id) : prev));
       }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [authHeaders]);
+    } catch {
+      /* ignore */
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   if (orders === null) return <CenterSpinner />;
   if (orders.length === 0) {
@@ -583,6 +633,16 @@ function MyOrders({
             {o.isFullTank ? 'полный бак' : `${o.volume} л`}
           </div>
           <div className="mt-0.5 text-xs text-gray-400">{formatDate(o.createdAt)}</div>
+          {DRIVER_EDITABLE.includes(o.status) && (
+            <button
+              type="button"
+              onClick={() => remove(o.id)}
+              disabled={busyId === o.id}
+              className="mt-2 rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 disabled:opacity-50"
+            >
+              {busyId === o.id ? 'Удаление…' : 'Удалить'}
+            </button>
+          )}
         </div>
       ))}
     </div>
@@ -619,6 +679,148 @@ function Limits({ cars, carsLoaded }: { cars: Car[]; carsLoaded: boolean }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+// ---- Courier dashboard -----------------------------------------------------
+function CourierDashboard({ initData, driver }: { initData: string; driver: DriverInfo | null }) {
+  const [orders, setOrders] = useState<CourierOrderItem[] | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const authHeaders = useCallback(
+    (extra?: Record<string, string>) => ({
+      'X-Telegram-Init-Data': initData,
+      ...(extra ?? {}),
+    }),
+    [initData],
+  );
+
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch('/api/tg/courier/orders', { headers: authHeaders() });
+      if (res.ok) setOrders(await res.json());
+      else setOrders([]);
+    } catch {
+      setOrders([]);
+    }
+  }, [authHeaders]);
+
+  useEffect(() => {
+    load();
+    const id = setInterval(load, 15000);
+    return () => clearInterval(id);
+  }, [load]);
+
+  const act = async (id: string, action: 'TAKE' | 'ON_ROUTE' | 'DELIVERED') => {
+    let volume: number | undefined;
+    if (action === 'DELIVERED') {
+      const input = window.prompt('Сколько литров залито?');
+      if (!input) return;
+      const parsed = parseInt(input, 10);
+      if (!parsed || parsed <= 0) return;
+      volume = parsed;
+    }
+    setBusyId(id);
+    try {
+      const res = await fetch(`/api/tg/courier/orders/${id}`, {
+        method: 'PATCH',
+        headers: authHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ action, volume }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        window.alert(j.error || 'Не удалось обновить заказ');
+      }
+      await load();
+    } catch {
+      /* ignore */
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <header className="border-b border-gray-100 px-5 py-4">
+        <h1 className="text-lg font-bold">Benzeen · Курьер</h1>
+        <p className="text-xs text-gray-500">{driver?.name || driver?.phone || 'Курьер'}</p>
+      </header>
+
+      <div className="flex-1 overflow-y-auto px-5 py-5">
+        {orders === null ? (
+          <CenterSpinner />
+        ) : orders.length === 0 ? (
+          <EmptyState title="Нет заказов" text="Новые заказы появятся здесь автоматически." />
+        ) : (
+          <div className="flex flex-col gap-3">
+            {orders.map((o) => {
+              const navHref = o.lat != null && o.lng != null
+                ? `https://yandex.ru/maps/?rtext=~${o.lat},${o.lng}`
+                : o.address
+                  ? `https://yandex.ru/maps/?text=${encodeURIComponent(o.address)}`
+                  : null;
+              return (
+                <div key={o.id} className="rounded-xl border border-gray-200 px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{o.plateNumber}</span>
+                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColor(o.status)}`}>
+                      {statusLabel(o.status)}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-sm text-gray-600">
+                    {FUEL_LABEL[o.fuelType] ?? o.fuelType} ·{' '}
+                    {o.isFullTank ? 'полный бак' : `${o.volume} л`}
+                  </div>
+                  {o.address && <div className="mt-0.5 text-xs text-gray-500">{o.address}</div>}
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {navHref && (
+                      <a
+                        href={navHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-blue-600"
+                      >
+                        📍 Навигатор
+                      </a>
+                    )}
+                    {o.status === 'RECEIVED' && !o.mine && (
+                      <button
+                        type="button"
+                        onClick={() => act(o.id, 'TAKE')}
+                        disabled={busyId === o.id}
+                        className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                      >
+                        Взять заказ
+                      </button>
+                    )}
+                    {o.status === 'COURIER_ASSIGNED' && o.mine && (
+                      <button
+                        type="button"
+                        onClick={() => act(o.id, 'ON_ROUTE')}
+                        disabled={busyId === o.id}
+                        className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                      >
+                        В путь
+                      </button>
+                    )}
+                    {o.status === 'IN_DELIVERY' && o.mine && (
+                      <button
+                        type="button"
+                        onClick={() => act(o.id, 'DELIVERED')}
+                        disabled={busyId === o.id}
+                        className="rounded-lg bg-green-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+                      >
+                        Доставлено
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

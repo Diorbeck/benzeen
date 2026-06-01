@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { getTgContext } from '@/lib/tg-auth';
 import { FULL_TANK_MAX_LITERS } from '@/lib/constants';
+import { sendTelegramMessage, type InlineKeyboardMarkup } from '@/lib/telegram';
+import { orderSummary } from '@/lib/order-dispatch';
 
 export const runtime = 'nodejs';
 
@@ -92,11 +94,35 @@ export async function POST(req: Request) {
       volume: data.volume ?? 0,
       isFullTank: data.isFullTank ?? false,
       status: 'CREATED',
+      // Awaiting the driver's confirmation in the bot chat before going live.
+      botPhase: 'AWAIT_CONFIRM',
       address: data.address ?? undefined,
       notes: data.notes ?? undefined,
       createdById: ctx.driver.id,
     },
   });
+
+  // Drop out of the Mini App and continue in the bot chat: post a summary with
+  // Confirm / Edit / Cancel buttons. chat_id == the private-chat user id.
+  const summary =
+    `📦 <b>Подтвердите заказ</b>\n\n` +
+    orderSummary({
+      fuelType: order.fuelType,
+      volume: order.volume,
+      isFullTank: order.isFullTank,
+      address: order.address,
+      car: { plateNumber: car.plateNumber },
+    });
+  const markup: InlineKeyboardMarkup = {
+    inline_keyboard: [
+      [{ text: '✅ Подтвердить', callback_data: `confirm:${order.id}` }],
+      [
+        { text: '✏️ Изменить', callback_data: `edit:${order.id}` },
+        { text: '❌ Отменить', callback_data: `cancel:${order.id}` },
+      ],
+    ],
+  };
+  void sendTelegramMessage(ctx.tgUser.id, summary, markup);
 
   return NextResponse.json(order);
 }

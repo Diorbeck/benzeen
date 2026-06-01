@@ -569,6 +569,9 @@
     "inDelivery": "Yo'lda",
     "markDelivered": "Yetkazildi",
     "cancel": "Bekor qilish",
+    "approve": "Tasdiqlash",
+    "reject": "Rad etish",
+    "confirmCancel": "Buyurtma bekor qilinsinmi?",
     "enterCourierId": "Kuryer foydalanuvchi ID",
     "status": {
       "created": "Yaratilgan",

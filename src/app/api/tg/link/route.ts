@@ -51,8 +51,8 @@ export async function POST(req: Request) {
   const telegramId = String(validated.user.id);
 
   const driver = await prisma.user.findFirst({
-    where: { phone, role: 'DRIVER' },
-    select: { id: true, name: true, phone: true, passwordHash: true, telegramId: true },
+    where: { phone, role: { in: ['DRIVER', 'COURIER'] } },
+    select: { id: true, name: true, phone: true, role: true, passwordHash: true, telegramId: true },
   });
 
   // Same generic error for "no such driver" and "wrong password" to avoid
@@ -91,6 +91,7 @@ export async function POST(req: Request) {
 
   return NextResponse.json({
     linked: true,
-    driver: { id: driver.id, name: driver.name, phone: driver.phone },
+    role: driver.role,
+    driver: { id: driver.id, name: driver.name, phone: driver.phone, role: driver.role },
   });
 }

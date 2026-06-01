@@ -32,7 +32,10 @@ type OrderRow = {
   createdAt: Date;
   address?: string | null;
   driverName?: string | null;
+  isFullTank?: boolean;
 };
+
+const MANAGER_CANCELLABLE = ['CREATED', 'PENDING_APPROVAL', 'RECEIVED', 'COURIER_ASSIGNED', 'IN_DELIVERY'];
 
 const DELIVERY_STATUSES = ['COURIER_ASSIGNED', 'IN_DELIVERY', 'DELIVERED', 'ASSIGNED', 'ON_ROUTE'];
 
@@ -54,6 +57,7 @@ export function OrdersList({
   const canExport = role === 'COMPANY_ADMIN' || role === 'SUPER_ADMIN';
   const isCourier = role === 'COURIER';
   const isCompany = role === 'COMPANY_ADMIN';
+  const isDriver = role === 'DRIVER';
   const canAssignOrUpdate = role === 'DISPATCHER' || role === 'SUPER_ADMIN';
 
   const [statusFilter, setStatusFilter] = useState<string>(defaultStatusFilter ?? 'all');
@@ -197,6 +201,35 @@ export function OrdersList({
       if (typeof window !== 'undefined') {
         window.location.reload();
       }
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleDriverDelete = async (orderId: string) => {
+    if (typeof window !== 'undefined' && !window.confirm(t('confirmCancel'))) return;
+    try {
+      await fetch(`/api/orders/${orderId}`, { method: 'DELETE' });
+      if (typeof window !== 'undefined') window.location.reload();
+    } catch {
+      // ignore
+    }
+  };
+
+  const handleManagerAction = async (
+    orderId: string,
+    action: 'approve' | 'reject' | 'cancel',
+  ) => {
+    if (action === 'cancel' && typeof window !== 'undefined') {
+      if (!window.confirm(t('confirmCancel'))) return;
+    }
+    try {
+      await fetch(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+      if (typeof window !== 'undefined') window.location.reload();
     } catch {
       // ignore
     }
@@ -408,6 +441,16 @@ export function OrdersList({
                       Действия
                     </th>
                   )}
+                  {isCompany && (
+                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      {t('table.actions')}
+                    </th>
+                  )}
+                  {isDriver && (
+                    <th className="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                      {t('table.actions')}
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
@@ -533,6 +576,34 @@ export function OrdersList({
                             </Button>
                           )}
                         </div>
+                      </td>
+                    )}
+                    {isCompany && (
+                      <td className="px-6 py-4 text-right text-xs text-gray-600 dark:text-gray-300 space-x-1">
+                        {order.status === 'PENDING_APPROVAL' && (
+                          <>
+                            <Button size="sm" variant="secondary" onClick={() => handleManagerAction(order.id, 'approve')}>
+                              {t('approve')}
+                            </Button>
+                            <Button size="sm" variant="ghost" className="text-red-600" onClick={() => handleManagerAction(order.id, 'reject')}>
+                              {t('reject')}
+                            </Button>
+                          </>
+                        )}
+                        {order.status !== 'PENDING_APPROVAL' && MANAGER_CANCELLABLE.includes(order.status) && (
+                          <Button size="sm" variant="ghost" className="text-red-600" onClick={() => handleManagerAction(order.id, 'cancel')}>
+                            {t('cancel')}
+                          </Button>
+                        )}
+                      </td>
+                    )}
+                    {isDriver && (
+                      <td className="px-6 py-4 text-right text-xs text-gray-600 dark:text-gray-300">
+                        {(order.status === 'CREATED' || order.status === 'PENDING_APPROVAL') && (
+                          <Button size="sm" variant="ghost" className="text-red-600" onClick={() => handleDriverDelete(order.id)}>
+                            {t('cancel')}
+                          </Button>
+                        )}
                       </td>
                     )}
                   </motion.tr>

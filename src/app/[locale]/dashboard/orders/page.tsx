@@ -21,7 +21,7 @@ export default async function OrdersPage({
     id: string;
   };
 
-  let orders: { id: string; volume: number; status: string; fuelType: string; plateNumber: string; createdAt: Date; address?: string | null; driverName?: string | null }[] = [];
+  let orders: { id: string; volume: number; status: string; fuelType: string; plateNumber: string; createdAt: Date; address?: string | null; driverName?: string | null; isFullTank?: boolean }[] = [];
 
   const orderInclude = { car: true, createdBy: true };
 
@@ -73,10 +73,12 @@ export default async function OrdersPage({
       address: o.address,
     }));
   } else if (companyId) {
+    // Managers see all their company's orders, including ones still awaiting
+    // acceptance (CREATED / PENDING_APPROVAL), so they can approve or cancel.
     const list = await prisma.order.findMany({
-      where: { car: { companyId }, status: 'DELIVERED' },
+      where: { car: { companyId } },
       orderBy: { createdAt: 'desc' },
-      take: 100,
+      take: 200,
       include: orderInclude,
     });
     orders = list.map((o) => ({
@@ -88,6 +90,7 @@ export default async function OrdersPage({
       createdAt: o.createdAt,
       address: o.address,
       driverName: o.createdBy?.name ?? o.createdBy?.email ?? null,
+      isFullTank: o.isFullTank,
     }));
   }
 

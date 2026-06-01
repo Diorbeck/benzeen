@@ -14,7 +14,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
   const orders = await prisma.order.findMany({
     where: {
       OR: [
-        { status: 'CREATED', assignedToId: null },
+        { status: 'RECEIVED', assignedToId: null },
         { assignedToId: courierId, status: { in: ['COURIER_ASSIGNED', 'IN_DELIVERY'] } },
       ],
     },
@@ -35,7 +35,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
     if (!orderId) return;
 
     const order = await prisma.order.findUnique({ where: { id: orderId } });
-    if (!order || order.status !== 'CREATED' || order.assignedToId !== null) return;
+    if (!order || order.status !== 'RECEIVED' || order.assignedToId !== null) return;
 
     await prisma.order.update({
       where: { id: orderId },
@@ -175,7 +175,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
               )}
 
               <div className="flex flex-wrap items-end gap-2">
-                {o.status === 'CREATED' && (
+                {o.status === 'RECEIVED' && (
                   <form action={takeOrderAction}>
                     <input type="hidden" name="orderId" value={o.id} />
                     <button

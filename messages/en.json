@@ -569,6 +569,9 @@
     "inDelivery": "In delivery",
     "markDelivered": "Mark delivered",
     "cancel": "Cancel",
+    "approve": "Approve",
+    "reject": "Reject",
+    "confirmCancel": "Cancel this order?",
     "enterCourierId": "Courier user ID",
     "status": {
       "created": "Created",

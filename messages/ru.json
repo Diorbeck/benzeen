@@ -569,6 +569,9 @@
     "inDelivery": "В пути",
     "markDelivered": "Доставлен",
     "cancel": "Отменить",
+    "approve": "Согласовать",
+    "reject": "Отклонить",
+    "confirmCancel": "Отменить этот заказ?",
     "enterCourierId": "ID курьера (User ID)",
     "status": {
       "created": "Создан",
