@@ -6,10 +6,10 @@ import { z } from 'zod';
 import * as bcrypt from 'bcryptjs';
 
 const schema = z.object({
-  email: z.string().email(),
+  name: z.string().min(1).max(200),
+  phone: z.string().min(1).max(50),
   password: z.string().min(6).max(64),
-  name: z.string().max(100).optional(),
-  phone: z.string().max(50).optional(),
+  vehicleNumber: z.string().max(50).optional(),
 });
 
 export async function POST(req: Request) {
@@ -24,27 +24,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const body = await req.json();
-    const data = schema.parse(body);
+    const data = schema.parse(await req.json());
 
-    const existing = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
+    const phone = data.phone.trim().replace(/\s/g, '');
+    if (!phone) {
+      return NextResponse.json({ error: 'Введите номер телефона' }, { status: 400 });
+    }
+
+    const existing = await prisma.user.findFirst({ where: { phone } });
     if (existing) {
       return NextResponse.json(
-        { error: 'Пользователь с таким email уже существует' },
+        { error: 'Этот номер телефона уже зарегистрирован' },
         { status: 400 },
       );
     }
 
     const passwordHash = await bcrypt.hash(data.password, 10);
+    const sanitized = phone.replace(/\D/g, '');
+    const email = `courier+${sanitized}@benzeen.local`;
 
     const courier = await prisma.user.create({
       data: {
-        email: data.email,
-        name: data.name,
+        email,
+        name: data.name.trim(),
+        phone,
         passwordHash,
-        phone: data.phone,
+        vehicleNumber: data.vehicleNumber?.trim() || null,
         role: 'COURIER',
       },
     });
@@ -60,4 +65,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
-

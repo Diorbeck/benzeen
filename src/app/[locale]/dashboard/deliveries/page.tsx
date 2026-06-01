@@ -29,9 +29,9 @@ export default async function DeliveriesPage({
   if (role === 'SUPER_ADMIN') {
     orders = (
       await prisma.order.findMany({
-        where: { status: { in: ['COURIER_ASSIGNED', 'IN_DELIVERY', 'DELIVERED'] } },
-        orderBy: { createdAt: 'desc' },
-        take: 100,
+        where: { status: 'DELIVERED' },
+        orderBy: { deliveredAt: 'desc' },
+        take: 200,
         include: { car: true },
       })
     ).map((o) => ({

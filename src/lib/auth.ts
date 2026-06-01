@@ -33,7 +33,12 @@ export const authOptions: NextAuthOptions = {
 
         if (!credentials?.identifier || !credentials?.password) return null;
 
-        const mode = credentials.mode === 'driver' ? 'driver' : 'default';
+        const mode =
+          credentials.mode === 'driver'
+            ? 'driver'
+            : credentials.mode === 'courier'
+              ? 'courier'
+              : 'default';
 
         try {
           let user;
@@ -55,6 +60,12 @@ export const authOptions: NextAuthOptions = {
               );
               if (!owns) return null;
             }
+          } else if (mode === 'courier') {
+            const phone = credentials.identifier.trim();
+            user = await prisma.user.findFirst({
+              where: { phone, role: 'COURIER' },
+            });
+            if (!user?.passwordHash) return null;
           } else {
             const email = credentials.identifier.trim().toLowerCase();
             user = await prisma.user.findUnique({ where: { email } });

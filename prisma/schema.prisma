@@ -42,6 +42,7 @@ model User {
   passwordHash  String?
   phone         String?   @unique
   driverPassword String?
+  vehicleNumber String?
   role          Role
   companyId     String?
   createdAt     DateTime  @default(now())

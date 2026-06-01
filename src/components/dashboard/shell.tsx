@@ -17,11 +17,11 @@ import {
   Menu,
   X,
   Building2,
-  Shield,
   Gauge,
   ClipboardList,
   Truck,
   BarChart3,
+  Bike,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { NotificationBell } from './notification-bell';
@@ -41,6 +41,7 @@ type NavKey =
   | 'deliveries'
   | 'reports'
   | 'invoices'
+  | 'couriers'
   | 'settings'
   | 'myCars'
   | 'myVehicle'
@@ -59,15 +60,11 @@ const navByRole: Record<
 > = {
   SUPER_ADMIN: [
     { path: '', labelKey: 'overview', icon: LayoutDashboard },
-    { path: '/admin', labelKey: 'admin', icon: Shield },
     { path: '/companies', labelKey: 'companies', icon: Building2 },
-    { path: '/cars', labelKey: 'cars', icon: Car },
-    { path: '/drivers', labelKey: 'drivers', icon: Users },
-    { path: '/limits', labelKey: 'limits', icon: Gauge },
     { path: '/requests', labelKey: 'requests', icon: ClipboardList },
-    { path: '/orders', labelKey: 'orders', icon: Package },
     { path: '/deliveries', labelKey: 'deliveries', icon: Truck },
     { path: '/invoices', labelKey: 'reports', icon: BarChart3 },
+    { path: '/couriers', labelKey: 'couriers', icon: Bike },
     { path: '/settings', labelKey: 'settings', icon: Settings },
   ],
   COMPANY_ADMIN: [

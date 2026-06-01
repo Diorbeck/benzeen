@@ -29,7 +29,7 @@ export default async function RequestsPage({
   if (role === 'SUPER_ADMIN') {
     orders = (
       await prisma.order.findMany({
-        where: { status: 'CREATED' },
+        where: { status: { in: ['CREATED', 'RECEIVED', 'COURIER_ASSIGNED', 'IN_DELIVERY'] } },
         orderBy: { createdAt: 'desc' },
         take: 100,
         include: { car: true, createdBy: true },
@@ -75,7 +75,7 @@ export default async function RequestsPage({
       <OrdersList
         orders={orders}
         role={role}
-        defaultStatusFilter="CREATED"
+        defaultStatusFilter="all"
       />
     </div>
   );

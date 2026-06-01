@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { User, Building2, Pencil, Check, X } from 'lucide-react';
+import { User, Building2, Pencil, Check, X, History, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 type Company = {
@@ -27,6 +28,9 @@ export function SettingsPanel({
 }) {
   const t = useTranslations('settings');
   const router = useRouter();
+  const pathname = usePathname() ?? '';
+  const locale = pathname.split('/')[1] || 'ru';
+  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -96,6 +100,34 @@ export function SettingsPanel({
           </div>
         </div>
       </motion.div>
+
+      {isSuperAdmin && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.03 }}
+          className="space-y-3 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-white/5"
+        >
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-primary-500/10 p-2">
+              <History className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+            </div>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+              Исторические данные
+            </h2>
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Полная история всех заказов и доставок за всё время по всем компаниям.
+          </p>
+          <Link
+            href={`/${locale}/dashboard/history`}
+            className="flex items-center justify-between rounded-xl border border-gray-200 px-4 py-3 text-sm font-medium text-gray-900 transition hover:bg-gray-50 dark:border-white/10 dark:text-white dark:hover:bg-white/5"
+          >
+            Открыть полную историю
+            <ChevronRight className="h-4 w-4 text-gray-400" />
+          </Link>
+        </motion.div>
+      )}
 
       {company && (
         <motion.div

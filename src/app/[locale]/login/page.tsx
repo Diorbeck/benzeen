@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Fuel, ArrowLeft, BriefcaseBusiness, Car } from 'lucide-react';
+import { Fuel, ArrowLeft, BriefcaseBusiness, Car, Bike } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 function LoginRoleSelection() {
@@ -77,6 +77,20 @@ function LoginRoleSelection() {
               </span>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 {t('driverRoleDesc')}
+              </span>
+            </Link>
+            <Link
+              href={`/${locale}/courier-login`}
+              className="group flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-6 text-center transition hover:-translate-y-0.5 hover:border-primary-500/30 hover:bg-white/10 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary-500/30 dark:hover:bg-white/10 sm:col-span-2"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400 transition group-hover:bg-primary-500/30">
+                <Bike className="h-6 w-6" />
+              </div>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                Вход для курьера
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Доставка топлива — вход по телефону и паролю
               </span>
             </Link>
           </div>
