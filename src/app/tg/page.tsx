@@ -424,7 +424,7 @@ function NewOrder({
   }, [carId]);
 
   const canSubmit =
-    !!car && !submitting && remaining > 0 && (fullTank || (volume > 0 && volume <= remaining));
+    !!car && !submitting && remaining > 0 && (fullTank || (volume > 0 && volume <= Math.min(remaining, cap)));
 
   const submit = async () => {
     if (!car) return;
@@ -528,6 +528,27 @@ function NewOrder({
                 </button>
               ))}
             </div>
+            <input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              max={Math.min(remaining, cap)}
+              value={!fullTank && volume > 0 ? volume : ''}
+              onChange={(e) => {
+                const raw = e.target.value;
+                setFullTank(false);
+                if (raw === '') {
+                  setVolume(0);
+                  return;
+                }
+                const n = Math.floor(Number(raw));
+                if (Number.isNaN(n)) return;
+                const clamped = Math.max(1, Math.min(n, Math.min(remaining, cap)));
+                setVolume(clamped);
+              }}
+              placeholder={`Другой объём (1–${Math.min(remaining, cap)} л)`}
+              className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none focus:border-blue-500"
+            />
             <button
               type="button"
               onClick={() => {
