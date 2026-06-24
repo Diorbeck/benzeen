@@ -31,6 +31,8 @@ type OrderRow = {
   plateNumber: string;
   createdAt: Date;
   address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
   driverName?: string | null;
   isFullTank?: boolean;
 };
@@ -78,7 +80,7 @@ export function OrdersList({
       try {
         const res = await fetch('/api/courier/orders');
         if (!res.ok) return;
-        const data: { id: string; plateNumber: string; fuelType: string; volume: number; status: string; address?: string | null; createdAt: string }[] =
+        const data: { id: string; plateNumber: string; fuelType: string; volume: number; status: string; address?: string | null; lat?: number | null; lng?: number | null; createdAt: string }[] =
           await res.json();
         if (cancelled) return;
         setCourierOrders(
@@ -489,7 +491,18 @@ export function OrdersList({
                     </td>
                     {(role === 'COMPANY_ADMIN' || role === 'SUPER_ADMIN' || role === 'DISPATCHER') && (
                       <td className="max-w-[180px] truncate px-6 py-4 text-xs text-gray-500 dark:text-gray-400" title={order.address ?? undefined}>
-                        {order.address ?? '—'}
+                        {order.lat != null && order.lng != null ? (
+                          <a
+                            href={`https://yandex.ru/maps/?pt=${order.lng},${order.lat}&z=17&l=map`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-600 hover:underline dark:text-primary-400"
+                          >
+                            {order.address ?? '📍 На карте'}
+                          </a>
+                        ) : (
+                          (order.address ?? '—')
+                        )}
                       </td>
                     )}
                     <td className="px-6 py-4">
@@ -547,7 +560,11 @@ export function OrdersList({
                               asChild
                             >
                               <a
-                                href={`https://yandex.ru/maps/?text=${encodeURIComponent(order.address)}`}
+                                href={
+                                  order.lat != null && order.lng != null
+                                    ? `https://yandex.ru/maps/?pt=${order.lng},${order.lat}&z=17&l=map`
+                                    : `https://yandex.ru/maps/?text=${encodeURIComponent(order.address ?? '')}`
+                                }
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
