@@ -17,7 +17,6 @@ declare global {
   }
 }
 
-const FULL_TANK_MAX = 80;
 const VOLUME_OPTIONS = [10, 15, 20, 25, 30, 40] as const;
 
 interface Car {
@@ -25,6 +24,7 @@ interface Car {
   plateNumber: string;
   fuelType: 'AI_92' | 'AI_95' | 'AI_100';
   monthlyLimit: number;
+  tankCapacity: number;
   remainingLiters: number;
 }
 interface OrderItem {
@@ -411,6 +411,7 @@ function NewOrder({
 
   const car = cars.find((c) => c.id === carId);
   const remaining = car?.remainingLiters ?? 0;
+  const cap = car?.tankCapacity ?? 0;
 
   useEffect(() => {
     if (!carId && cars.length > 0) setCarId(cars[0].id);
@@ -432,7 +433,7 @@ function NewOrder({
     const payload = {
       carId: car.id,
       fuelType: car.fuelType,
-      volume: fullTank ? Math.min(remaining, FULL_TANK_MAX) : volume,
+      volume: fullTank ? Math.min(remaining, cap) : volume,
       isFullTank: fullTank,
       notes: notes.trim() || undefined,
     };
@@ -509,7 +510,7 @@ function NewOrder({
           <div className="flex flex-col gap-2">
             <span className="text-sm font-medium text-gray-700">Объём, литры</span>
             <div className="grid grid-cols-3 gap-2">
-              {VOLUME_OPTIONS.filter((v) => v <= remaining).map((v) => (
+              {VOLUME_OPTIONS.filter((v) => v <= Math.min(remaining, cap)).map((v) => (
                 <button
                   type="button"
                   key={v}
@@ -531,13 +532,13 @@ function NewOrder({
               type="button"
               onClick={() => {
                 setFullTank((v) => !v);
-                setVolume(0);
+                setVolume(Math.min(remaining, cap));
               }}
               className={`mt-1 rounded-xl border py-3 text-base font-semibold ${
                 fullTank ? 'border-blue-600 bg-blue-50 text-blue-700' : 'border-gray-200'
               }`}
             >
-              Полный бак (до {Math.min(remaining, FULL_TANK_MAX)} л)
+              Полный бак (до {Math.min(remaining, cap)} л)
             </button>
           </div>
 
