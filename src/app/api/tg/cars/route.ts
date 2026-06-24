@@ -33,6 +33,7 @@ export async function GET(req: Request) {
       plateNumber: dc.car.plateNumber,
       fuelType: dc.car.fuelType,
       monthlyLimit: dc.car.monthlyLimit,
+      tankCapacity: dc.car.tankCapacity,
       remainingLiters: remaining,
     };
   });
