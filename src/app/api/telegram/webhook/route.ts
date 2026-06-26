@@ -16,12 +16,10 @@ import {
   requestFullTankApproval,
 } from '@/lib/order-dispatch';
 import { applyCourierAction } from '@/lib/courier-actions';
+import { createNotification } from '@/lib/notifications';
 
 export const runtime = 'nodejs';
 
-// Telegram Bot webhook. Telegram POSTs updates here. We authenticate each call
-// via the secret token configured when the webhook is registered
-// (setWebhook?secret_token=...), which Telegram echoes in this header.
 const SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 
 interface TgUpdate {
@@ -41,7 +39,6 @@ interface TgUpdate {
 }
 
 export async function POST(req: Request) {
-  // No bot configured → accept-and-ignore so Telegram doesn't retry forever.
   if (!getBotToken()) {
     return NextResponse.json({ ok: true });
   }
@@ -73,11 +70,9 @@ export async function POST(req: Request) {
     console.error('[telegram] webhook handler error:', e);
   }
 
-  // Always 200 so Telegram considers the update delivered.
   return NextResponse.json({ ok: true });
 }
 
-// ---- /start and other plain text -------------------------------------------
 async function handleText(message: NonNullable<TgUpdate['message']>) {
   const chatId = message.chat?.id;
   const text = (message.text || '').trim();
@@ -95,7 +90,6 @@ async function handleText(message: NonNullable<TgUpdate['message']>) {
   );
 }
 
-// ---- Inline button presses --------------------------------------------------
 async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
   const fromId = cq.from?.id;
   const chatId = cq.message?.chat?.id;
@@ -130,7 +124,6 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
     return;
   }
 
-  // Courier taking a broadcast order.
   if (verb === 'take') {
     if (user.role !== 'COURIER') {
       await answerCallbackQuery(cq.id, 'Только для курьеров');
@@ -159,11 +152,71 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
     return;
   }
 
-  // Driver actions on their own draft order (confirm / edit / cancel).
   if (order.createdById !== user.id) {
     await answerCallbackQuery(cq.id, 'Это не ваш заказ');
     return;
   }
+
+  if (verb === 'confirm_delivery' || verb === 'dispute_delivery') {
+    if (order.botPhase !== 'AWAIT_DELIVERY_CONFIRM') {
+      await answerCallbackQuery(cq.id, 'Уже обработано');
+      return;
+    }
+
+    if (verb === 'confirm_delivery') {
+      const dispensed = order.dispensedVolume ?? 0;
+      await prisma.$transaction(async (tx) => {
+        await tx.order.update({
+          where: { id: orderId },
+          data: { status: 'DELIVERED', botPhase: null, deliveredAt: new Date() },
+        });
+        if (dispensed > 0) {
+          const now = new Date();
+          const month = now.getMonth() + 1;
+          const year = now.getFullYear();
+          await tx.carUsage.upsert({
+            where: { carId_month_year: { carId: order.carId, month, year } },
+            create: { carId: order.carId, month, year, usedLiters: dispensed },
+            update: { usedLiters: { increment: dispensed } },
+          });
+        }
+      });
+      if (order.createdById) {
+        await createNotification({
+          userId: order.createdById,
+          type: 'ORDER_DELIVERED',
+          title: 'Order delivered',
+          message: `${order.car.plateNumber}: ${dispensed} L delivered`,
+          orderId: order.id,
+        });
+      }
+      await answerCallbackQuery(cq.id, 'Подтверждено');
+      if (chatId && messageId) {
+        await editMessageText(
+          chatId,
+          messageId,
+          `✅ <b>Доставка подтверждена</b>: ${order.car.plateNumber} — ${dispensed} л.`,
+        );
+      }
+      return;
+    }
+
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: 'DISPUTED', botPhase: null },
+    });
+    await answerCallbackQuery(cq.id, 'Спор зафиксирован');
+    const operatorPhone = process.env.OPERATOR_PHONE ?? '';
+    if (chatId && messageId) {
+      await editMessageText(
+        chatId,
+        messageId,
+        `⚠️ <b>Заказ заморожен</b>: ${order.car.plateNumber}.\nСвяжитесь с оператором${operatorPhone ? `: ${operatorPhone}` : ''}.`,
+      );
+    }
+    return;
+  }
+
   if (order.status !== 'CREATED') {
     await answerCallbackQuery(cq.id, 'Заказ уже обработан');
     return;
@@ -182,7 +235,6 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
   }
 
   if (verb === 'edit') {
-    // Drop the draft and invite the driver to recreate it in the Mini App.
     await prisma.order.delete({ where: { id: orderId } });
     await answerCallbackQuery(cq.id, 'Создайте заказ заново');
     const miniAppUrl = getMiniAppUrl();
@@ -233,7 +285,6 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
   await answerCallbackQuery(cq.id);
 }
 
-// ---- Location share (final step) -------------------------------------------
 async function handleLocation(message: NonNullable<TgUpdate['message']>) {
   const chatId = message.chat?.id;
   const fromId = message.from?.id ?? chatId;
@@ -246,7 +297,6 @@ async function handleLocation(message: NonNullable<TgUpdate['message']>) {
   });
   if (!user) return;
 
-  // The driver's order awaiting a location (most recent if several).
   const order = await prisma.order.findFirst({
     where: { createdById: user.id, status: 'CREATED', botPhase: 'AWAIT_LOCATION' },
     orderBy: { createdAt: 'desc' },
