@@ -4,8 +4,7 @@
 // Returns a discriminated result so callers can map it to an HTTP status.
 
 import { prisma } from './prisma';
-import { createNotification } from './notifications';
-import { sendTelegramMessage } from './telegram';
+import { sendTelegramMessage, type InlineKeyboardMarkup } from './telegram';
 
 export type CourierAction = 'TAKE' | 'ON_ROUTE' | 'DELIVERED';
 
@@ -40,6 +39,11 @@ export async function applyCourierAction(
     }
     if (!volume) return { ok: false, status: 400, error: 'Укажите объём' };
 
+    // Cap by the car's real tank capacity (brick #4).
+    if (volume > order.car.tankCapacity) {
+      return { ok: false, status: 400, error: `Больше бака машины (${order.car.tankCapacity} л)` };
+    }
+
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
@@ -49,56 +53,53 @@ export async function applyCourierAction(
     if (volume > remaining) {
       return { ok: false, status: 400, error: `Превышен лимит. Осталось: ${remaining} л` };
     }
+
+    // Courier reports the dispensed amount. Do NOT finalize or deduct yet —
+    // the driver must confirm via the Telegram bot ("Верно / Не верно").
+    // Ordered volume is preserved; the fact goes into dispensedVolume.
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { dispensedVolume: volume, botPhase: 'AWAIT_DELIVERY_CONFIRM' },
+    });
+
+    const tgIdConfirm = order.createdBy?.telegramId;
+    if (tgIdConfirm) {
+      const markup: InlineKeyboardMarkup = {
+        inline_keyboard: [
+          [
+            { text: '✅ Верно', callback_data: `confirm_delivery:${orderId}` },
+            { text: '❌ Не верно', callback_data: `dispute_delivery:${orderId}` },
+          ],
+        ],
+      };
+      void sendTelegramMessage(
+        tgIdConfirm,
+        `⛽️ Курьер указал, что залил <b>${volume} л</b> в машину <b>${order.car.plateNumber}</b>.\nВсё верно?`,
+        markup,
+      );
+    }
+
+    return { ok: true, status: 200, order: { id: order.id, status: order.status } };
   }
 
+  // ---- TAKE / ON_ROUTE only past this point --------------------------------
   let newStatus = order.status;
   let assignedToId: string | undefined;
-  let deliveredAt: Date | undefined;
-  let deliveredVolume = order.volume;
 
   if (action === 'TAKE') {
     newStatus = 'COURIER_ASSIGNED';
     assignedToId = courierId;
   } else if (action === 'ON_ROUTE') {
     newStatus = 'IN_DELIVERY';
-  } else if (action === 'DELIVERED' && volume) {
-    newStatus = 'DELIVERED';
-    deliveredAt = new Date();
-    deliveredVolume = volume;
   }
 
-  await prisma.$transaction(async (tx) => {
-    await tx.order.update({
-      where: { id: orderId },
-      data: {
-        status: newStatus,
-        ...(assignedToId ? { assignedToId } : {}),
-        deliveredAt,
-        volume: deliveredVolume,
-      },
-    });
-
-    if (newStatus === 'DELIVERED' && deliveredVolume > 0) {
-      const now = new Date();
-      const month = now.getMonth() + 1;
-      const year = now.getFullYear();
-      await tx.carUsage.upsert({
-        where: { carId_month_year: { carId: order.car.id, month, year } },
-        create: { carId: order.car.id, month, year, usedLiters: deliveredVolume },
-        update: { usedLiters: { increment: deliveredVolume } },
-      });
-    }
+  await prisma.order.update({
+    where: { id: orderId },
+    data: {
+      status: newStatus,
+      ...(assignedToId ? { assignedToId } : {}),
+    },
   });
-
-  if (newStatus === 'DELIVERED' && order.createdById) {
-    await createNotification({
-      userId: order.createdById,
-      type: 'ORDER_DELIVERED',
-      title: 'Order delivered',
-      message: `${order.car.plateNumber}: ${deliveredVolume} L delivered`,
-      orderId: order.id,
-    });
-  }
 
   // Notify the driver in Telegram (no-op when unconfigured / not linked).
   const tgId = order.createdBy?.telegramId;
@@ -109,8 +110,6 @@ export async function applyCourierAction(
       tgText = `🚚 Курьер принял ваш заказ по машине <b>${plate}</b>.`;
     } else if (newStatus === 'IN_DELIVERY') {
       tgText = `🛣️ Курьер выехал к вам. Машина <b>${plate}</b>.`;
-    } else if (newStatus === 'DELIVERED') {
-      tgText = `✅ Заказ доставлен: <b>${plate}</b> — ${deliveredVolume} л.`;
     }
     if (tgText) void sendTelegramMessage(tgId, tgText);
   }

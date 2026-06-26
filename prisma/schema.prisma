@@ -42,6 +42,7 @@ enum OrderStatus {
   RECEIVED           // received by dispatcher (new flow)
   COURIER_ASSIGNED
   IN_DELIVERY
+  DISPUTED           // courier amount disputed by driver; frozen, no deduction
 }
 
 model User {
@@ -165,6 +166,7 @@ model Order {
   carId      String
   fuelType   FuelType
   volume     Int         // liters
+  dispensedVolume Int?    // actual liters dispensed by courier (fact), confirmed by driver
   isFullTank Boolean     @default(false)
   status     OrderStatus @default(CREATED)
   address    String?

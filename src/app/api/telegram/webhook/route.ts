@@ -16,6 +16,7 @@ import {
   requestFullTankApproval,
 } from '@/lib/order-dispatch';
 import { applyCourierAction } from '@/lib/courier-actions';
+import { createNotification } from '@/lib/notifications';
 
 export const runtime = 'nodejs';
 
@@ -164,6 +165,69 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
     await answerCallbackQuery(cq.id, 'Это не ваш заказ');
     return;
   }
+
+  // Driver confirms or disputes the dispensed amount.
+  if (verb === 'confirm_delivery' || verb === 'dispute_delivery') {
+    if (order.botPhase !== 'AWAIT_DELIVERY_CONFIRM') {
+      await answerCallbackQuery(cq.id, 'Уже обработано');
+      return;
+    }
+
+    if (verb === 'confirm_delivery') {
+      const dispensed = order.dispensedVolume ?? 0;
+      await prisma.$transaction(async (tx) => {
+        await tx.order.update({
+          where: { id: orderId },
+          data: { status: 'DELIVERED', botPhase: null, deliveredAt: new Date() },
+        });
+        if (dispensed > 0) {
+          const now = new Date();
+          const month = now.getMonth() + 1;
+          const year = now.getFullYear();
+          await tx.carUsage.upsert({
+            where: { carId_month_year: { carId: order.carId, month, year } },
+            create: { carId: order.carId, month, year, usedLiters: dispensed },
+            update: { usedLiters: { increment: dispensed } },
+          });
+        }
+      });
+      if (order.createdById) {
+        await createNotification({
+          userId: order.createdById,
+          type: 'ORDER_DELIVERED',
+          title: 'Order delivered',
+          message: `${order.car.plateNumber}: ${dispensed} L delivered`,
+          orderId: order.id,
+        });
+      }
+      await answerCallbackQuery(cq.id, 'Подтверждено');
+      if (chatId && messageId) {
+        await editMessageText(
+          chatId,
+          messageId,
+          `✅ <b>Доставка подтверждена</b>: ${order.car.plateNumber} — ${dispensed} л.`,
+        );
+      }
+      return;
+    }
+
+    // dispute_delivery — заморозить заказ, отправить к оператору, НЕ списывать.
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { status: 'DISPUTED', botPhase: null },
+    });
+    await answerCallbackQuery(cq.id, 'Спор зафиксирован');
+    const operatorPhone = process.env.OPERATOR_PHONE ?? '';
+    if (chatId && messageId) {
+      await editMessageText(
+        chatId,
+        messageId,
+        `⚠️ <b>Заказ заморожен</b>: ${order.car.plateNumber}.\nСвяжитесь с оператором${operatorPhone ? `: ${operatorPhone}` : ''}.`,
+      );
+    }
+    return;
+  }
+
   if (order.status !== 'CREATED') {
     await answerCallbackQuery(cq.id, 'Заказ уже обработан');
     return;
