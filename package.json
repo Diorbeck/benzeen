@@ -19,9 +19,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "dev:turbo": "next dev --turbopack",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
+    "postinstall": "prisma generate",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "db:generate": "prisma generate",
