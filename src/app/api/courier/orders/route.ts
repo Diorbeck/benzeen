@@ -37,6 +37,8 @@ export async function GET() {
         volume: o.volume,
         status: o.status,
         address: o.address,
+        lat: o.lat,
+        lng: o.lng,
         createdAt: o.createdAt,
       })),
     );

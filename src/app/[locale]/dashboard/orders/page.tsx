@@ -21,7 +21,7 @@ export default async function OrdersPage({
     id: string;
   };
 
-  let orders: { id: string; volume: number; status: string; fuelType: string; plateNumber: string; createdAt: Date; address?: string | null; driverName?: string | null; isFullTank?: boolean }[] = [];
+  let orders: { id: string; volume: number; status: string; fuelType: string; plateNumber: string; createdAt: Date; address?: string | null; lat?: number | null; lng?: number | null; driverName?: string | null; isFullTank?: boolean }[] = [];
 
   const orderInclude = { car: true, createdBy: true };
 
@@ -39,6 +39,8 @@ export default async function OrdersPage({
       plateNumber: o.car.plateNumber,
       createdAt: o.createdAt,
       address: o.address,
+      lat: o.lat,
+      lng: o.lng,
       driverName: o.createdBy?.name ?? o.createdBy?.email ?? null,
     }));
   } else if (role === 'DRIVER') {
@@ -71,6 +73,8 @@ export default async function OrdersPage({
       plateNumber: o.car.plateNumber,
       createdAt: o.createdAt,
       address: o.address,
+      lat: o.lat,
+      lng: o.lng,
     }));
   } else if (companyId) {
     // Managers see all their company's orders, including ones still awaiting
@@ -89,6 +93,8 @@ export default async function OrdersPage({
       plateNumber: o.car.plateNumber,
       createdAt: o.createdAt,
       address: o.address,
+      lat: o.lat,
+      lng: o.lng,
       driverName: o.createdBy?.name ?? o.createdBy?.email ?? null,
       isFullTank: o.isFullTank,
     }));

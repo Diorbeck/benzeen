@@ -21,6 +21,8 @@ interface OrderForSummary {
   volume: number;
   isFullTank: boolean;
   address?: string | null;
+  lat?: number | null;
+  lng?: number | null;
   car: { plateNumber: string };
 }
 
@@ -36,6 +38,11 @@ export function orderSummary(order: OrderForSummary): string {
     `Объём: ${volume}`,
   ];
   if (order.address) lines.push(`Адрес: ${order.address}`);
+  if (order.lat != null && order.lng != null) {
+    lines.push(
+      `Карта: https://yandex.ru/maps/?pt=${order.lng},${order.lat}&z=17&l=map`,
+    );
+  }
   return lines.join('\n');
 }
 
@@ -63,6 +70,8 @@ export async function notifyCouriersNewOrder(orderId: string): Promise<void> {
       volume: order.volume,
       isFullTank: order.isFullTank,
       address: order.address,
+      lat: order.lat,
+      lng: order.lng,
       car: order.car,
     });
 
