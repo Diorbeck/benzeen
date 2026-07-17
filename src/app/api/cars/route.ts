@@ -9,7 +9,7 @@ const schema = z.object({
   model: z.string().max(100).optional(),
   fuelType: z.enum(['AI_92', 'AI_95', 'AI_100']),
   monthlyLimit: z.coerce.number().int().min(1).max(10000),
-  tankCapacity: z.coerce.number().int().min(1).max(80),
+  tankCapacity: z.coerce.number().int().min(1).max(100),
 });
 
 export async function POST(req: Request) {

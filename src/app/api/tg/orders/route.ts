@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { getTgContext } from '@/lib/tg-auth';
-import { FULL_TANK_MAX_LITERS } from '@/lib/constants';
 import { sendTelegramMessage, type InlineKeyboardMarkup } from '@/lib/telegram';
 import { orderSummary } from '@/lib/order-dispatch';
 
@@ -11,7 +10,7 @@ export const runtime = 'nodejs';
 const createSchema = z.object({
   carId: z.string().cuid(),
   fuelType: z.enum(['AI_92', 'AI_95', 'AI_100']),
-  volume: z.number().int().min(0).max(FULL_TANK_MAX_LITERS),
+  volume: z.number().int().min(0).max(300),
   isFullTank: z.boolean().optional(),
   address: z.string().max(300).optional(),
   notes: z.string().max(500).optional(),
@@ -85,6 +84,30 @@ export async function POST(req: Request) {
   });
   if (!assigned) {
     return NextResponse.json({ error: 'Машина не закреплена за вами' }, { status: 403 });
+  }
+
+  // Tank capacity guard: a single order may never exceed the car's tank.
+  if (data.volume > car.tankCapacity) {
+    return NextResponse.json(
+      { error: 'Объём больше бака машины' },
+      { status: 400 },
+    );
+  }
+
+  // Monthly limit guard: mirror /api/tg/cars remaining calculation.
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  const usage = await prisma.carUsage.findUnique({
+    where: { carId_month_year: { carId: car.id, month, year } },
+  });
+  const used = usage?.usedLiters ?? 0;
+  const remaining = Math.max(0, car.monthlyLimit - used);
+  if (data.volume > remaining) {
+    return NextResponse.json(
+      { error: 'Превышен месячный лимит' },
+      { status: 400 },
+    );
   }
 
   const order = await prisma.order.create({
