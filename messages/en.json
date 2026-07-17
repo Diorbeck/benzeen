@@ -240,6 +240,28 @@
     "smsCode": "SMS code",
     "errorPhoneCode": "Enter phone number and SMS code",
     "password": "Password",
+    "errorPhonePassword": "Enter phone number and password",
+    "sendCode": "Get code",
+    "code": "SMS code",
+    "codeSent": "If the number is registered, a code has been sent.",
+    "usePassword": "Sign in with password",
+    "useSms": "Sign in with SMS code",
+    "errorCode": "Could not sign in. Check the code and try again."
+  },
+  "courierLogin": {
+    "title": "Courier Access",
+    "subtitle": "Sign in with your phone number.",
+    "phoneNumber": "Phone number",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "password": "Password",
+    "sendCode": "Get code",
+    "code": "SMS code",
+    "codeSent": "If the number is registered, a code has been sent.",
+    "usePassword": "Sign in with password",
+    "useSms": "Sign in with SMS code",
+    "errorCode": "Could not sign in. Check the code and try again.",
+    "errorPhoneCode": "Enter phone number and SMS code",
     "errorPhonePassword": "Enter phone number and password"
   },
   "login": {
