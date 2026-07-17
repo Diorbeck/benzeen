@@ -240,28 +240,6 @@
     "smsCode": "Код из SMS",
     "errorPhoneCode": "Укажите телефон и код из SMS",
     "password": "Пароль",
-    "errorPhonePassword": "Укажите телефон и пароль",
-    "sendCode": "Получить код",
-    "code": "Код из SMS",
-    "codeSent": "Если номер зарегистрирован, код отправлен.",
-    "usePassword": "Войти по паролю",
-    "useSms": "Войти по SMS-коду",
-    "errorCode": "Не удалось войти. Проверьте код и попробуйте снова."
-  },
-  "courierLogin": {
-    "title": "Доступ курьера",
-    "subtitle": "Войдите по номеру телефона.",
-    "phoneNumber": "Телефон",
-    "submit": "Войти",
-    "submitting": "Вход...",
-    "password": "Пароль",
-    "sendCode": "Получить код",
-    "code": "Код из SMS",
-    "codeSent": "Если номер зарегистрирован, код отправлен.",
-    "usePassword": "Войти по паролю",
-    "useSms": "Войти по SMS-коду",
-    "errorCode": "Не удалось войти. Проверьте код и попробуйте снова.",
-    "errorPhoneCode": "Укажите телефон и код из SMS",
     "errorPhonePassword": "Укажите телефон и пароль"
   },
   "login": {

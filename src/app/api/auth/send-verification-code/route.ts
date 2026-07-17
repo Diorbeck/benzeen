@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { createAndSendCode } from '@/lib/verification';
-import { prisma } from '@/lib/prisma';
 
 const sendSchema = z.object({
   identifier: z.string().min(1),
   method: z.enum(['email', 'phone']),
-  purpose: z.enum(['signup', 'password_reset', 'login']),
+  purpose: z.enum(['signup', 'password_reset']),
   signupPayload: z
     .object({
       fullName: z.string().min(1),
@@ -24,34 +23,12 @@ export async function POST(req: Request) {
     const data = sendSchema.parse(body);
 
     // Self-service signup is disabled — accounts are created by an admin only.
+    // Only password_reset is allowed past this point.
     if (data.purpose === 'signup') {
       return NextResponse.json(
         { error: 'Self-service signup is disabled.' },
         { status: 403 }
       );
-    }
-
-    // Login codes: SMS only, and only for existing drivers/couriers.
-    // We never reveal whether a phone exists — always return ok, but only
-    // actually send a code when a matching user is found.
-    if (data.purpose === 'login') {
-      if (data.method !== 'phone') {
-        return NextResponse.json(
-          { error: 'Login codes are sent by SMS only.' },
-          { status: 400 }
-        );
-      }
-      const phone = data.identifier.trim();
-      const user = await prisma.user.findFirst({
-        where: { phone, role: { in: ['DRIVER', 'COURIER'] } },
-        select: { id: true },
-      });
-      if (!user) {
-        return NextResponse.json({
-          ok: true,
-          expiresAt: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
-        });
-      }
     }
 
     const result = await createAndSendCode({

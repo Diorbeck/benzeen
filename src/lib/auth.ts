@@ -5,7 +5,6 @@ import bcrypt from 'bcryptjs';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { Adapter } from 'next-auth/adapters';
 import { ensureSuperAdminFromEnv } from '@/lib/bootstrap';
-import { verifyCode } from '@/lib/verification';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -24,7 +23,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
         mode: { label: 'Mode', type: 'text' },
         vehicleNumber: { label: 'Vehicle Number', type: 'text' },
-        otp: { label: 'OTP', type: 'text' },
       },
       async authorize(credentials) {
         try {
@@ -39,19 +37,8 @@ export const authOptions: NextAuthOptions = {
           credentials.mode === 'driver'
             ? 'driver'
             : credentials.mode === 'courier'
-            ? 'courier'
-            : 'default';
-
-        // SMS login (OTP) for drivers and couriers. Password remains a fallback below.
-        if (credentials.otp === 'true' && (mode === 'driver' || mode === 'courier')) {
-          const phone = credentials.identifier.trim();
-          const role = mode === 'driver' ? 'DRIVER' : 'COURIER';
-          const u = await prisma.user.findFirst({ where: { phone, role } });
-          if (!u) return null;
-          const check = await verifyCode({ identifier: phone, code: credentials.password, purpose: 'login' });
-          if (!check.ok) return null;
-          return { id: u.id, email: u.email, name: u.name, role: u.role, companyId: u.companyId, image: null };
-        }
+              ? 'courier'
+              : 'default';
 
         try {
           let user;
