@@ -52,7 +52,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     provider: {
       '@type': 'Organization',
       name: 'Benzeen',
-      url: 'https://benzeen.uz',
+      url: process.env.NEXT_PUBLIC_APP_URL || 'https://benzeen.uz',
       areaServed: 'UZ',
     },
   };
