@@ -12,7 +12,7 @@ function generateCode(): string {
   return s;
 }
 
-export type VerificationPurpose = 'signup' | 'password_reset' | 'login';
+export type VerificationPurpose = 'signup' | 'password_reset';
 
 export type SignupMeta = {
   fullName: string;

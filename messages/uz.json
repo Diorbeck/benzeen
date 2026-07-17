@@ -240,28 +240,6 @@
     "smsCode": "SMS kodi",
     "errorPhoneCode": "Telefon va SMS kodini kiriting",
     "password": "Parol",
-    "errorPhonePassword": "Telefon va parolni kiriting",
-    "sendCode": "Kod olish",
-    "code": "SMS kodi",
-    "codeSent": "Agar raqam ro'yxatdan o'tgan bo'lsa, kod yuborildi.",
-    "usePassword": "Parol bilan kirish",
-    "useSms": "SMS kod bilan kirish",
-    "errorCode": "Kirib bo'lmadi. Kodni tekshirib, qayta urinib ko'ring."
-  },
-  "courierLogin": {
-    "title": "Kuryer kirishi",
-    "subtitle": "Telefon raqami orqali kiring.",
-    "phoneNumber": "Telefon",
-    "submit": "Kirish",
-    "submitting": "Kirilmoqda...",
-    "password": "Parol",
-    "sendCode": "Kod olish",
-    "code": "SMS kodi",
-    "codeSent": "Agar raqam ro'yxatdan o'tgan bo'lsa, kod yuborildi.",
-    "usePassword": "Parol bilan kirish",
-    "useSms": "SMS kod bilan kirish",
-    "errorCode": "Kirib bo'lmadi. Kodni tekshirib, qayta urinib ko'ring.",
-    "errorPhoneCode": "Telefon va SMS kodini kiriting",
     "errorPhonePassword": "Telefon va parolni kiriting"
   },
   "login": {
