@@ -17,6 +17,8 @@ export default async function HistoryPage({
   if (role !== 'SUPER_ADMIN') redirect(`/${locale}/dashboard`);
 
   const orders = await prisma.order.findMany({
+    // B2B history only; B2C consumer orders live in the client's own account.
+    where: { carId: { not: null } },
     orderBy: { createdAt: 'desc' },
     take: 2000,
     include: {
@@ -28,8 +30,8 @@ export default async function HistoryPage({
 
   const rows = orders.map((o) => ({
     id: o.id,
-    company: o.car.company.name,
-    plateNumber: o.car.plateNumber,
+    company: o.car!.company.name,
+    plateNumber: o.car!.plateNumber,
     fuelType: o.fuelType,
     volume: o.volume,
     status: o.status,

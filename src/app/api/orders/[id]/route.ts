@@ -36,6 +36,10 @@ export async function PATCH(
     if (!order) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
+    // This route manages B2B orders only; B2C orders use /api/orders/client.
+    if (!order.car) {
+      return NextResponse.json({ error: 'Not a B2B order' }, { status: 400 });
+    }
 
     const role = (session.user as { role?: string }).role;
     const companyId = (session.user as { companyId?: string | null }).companyId;
@@ -108,6 +112,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'Only dispatcher can update order status' }, { status: 403 });
     }
 
+    const carId = order.car.id;
     const updated = await prisma.$transaction(async (tx) => {
       const upd = await tx.order.update({
         where: { id },
@@ -124,8 +129,8 @@ export async function PATCH(
         const month = now.getMonth() + 1;
         const year = now.getFullYear();
         await tx.carUsage.upsert({
-          where: { carId_month_year: { carId: order.car.id, month, year } },
-          create: { carId: order.car.id, month, year, usedLiters: order.volume },
+          where: { carId_month_year: { carId, month, year } },
+          create: { carId, month, year, usedLiters: order.volume },
           update: { usedLiters: { increment: order.volume } },
         });
       }
@@ -201,7 +206,7 @@ export async function DELETE(
       ['CREATED', 'PENDING_APPROVAL'].includes(order.status);
     const isCompanyOrder =
       role === 'COMPANY_ADMIN' &&
-      order.car.companyId === companyId &&
+      order.car?.companyId === companyId &&
       !TERMINAL.includes(order.status);
     const isSuperAdmin = role === 'SUPER_ADMIN';
 

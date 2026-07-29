@@ -1,22 +1,37 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { signOut } from 'next-auth/react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Fuel, LogOut, Clock, MapPin } from 'lucide-react';
+import { Fuel, LogOut, Clock, MapPin, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
+
+export type AccountOrder = {
+  id: string;
+  status: string;
+  fuelType: string;
+  volume: number;
+  totalAmount: number | null;
+  createdAt: string;
+};
+
+const FUEL_LABEL: Record<string, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95', AI_100: 'АИ-100' };
 
 export function AccountView({
   locale,
   phone,
   name: initialName,
+  orders = [],
 }: {
   locale: string;
   phone: string;
   name: string;
+  orders?: AccountOrder[];
 }) {
   const t = useTranslations('account');
+  const fmt = useMemo(() => new Intl.NumberFormat('ru-RU'), []);
   const [name, setName] = useState(initialName);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -102,13 +117,35 @@ export function AccountView({
           </form>
         </section>
 
-        {/* Order history (placeholder — populated in M2) */}
+        {/* Order history */}
         <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
-          <div className="mb-3 flex items-center gap-2.5">
+          <div className="mb-4 flex items-center gap-2.5">
             <Clock className="h-5 w-5 text-primary-600" aria-hidden />
             <h2 className="text-base font-semibold text-gray-900">{t('orderHistory')}</h2>
           </div>
-          <p className="text-sm text-gray-500">{t('orderHistoryEmpty')}</p>
+          {orders.length === 0 ? (
+            <p className="text-sm text-gray-500">{t('orderHistoryEmpty')}</p>
+          ) : (
+            <ul className="divide-y divide-gray-100">
+              {orders.map((o) => (
+                <li key={o.id}>
+                  <Link
+                    href={`/${locale}/account/orders/${o.id}`}
+                    className="flex items-center justify-between gap-3 py-3 transition-colors hover:text-primary-600"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-gray-900">
+                        {FUEL_LABEL[o.fuelType] ?? o.fuelType} · {o.volume} {t('liters')}
+                        {o.totalAmount != null ? ` · ${fmt.format(o.totalAmount)} ${t('sum')}` : ''}
+                      </p>
+                      <p className="mt-0.5 text-xs text-gray-500">{t(`status.${o.status}`)}</p>
+                    </div>
+                    <ChevronRight className="h-4 w-4 shrink-0 text-gray-400" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
 
         {/* Saved addresses (placeholder — populated in M5) */}

@@ -16,7 +16,11 @@ export async function GET(req: Request) {
     const year = now.getFullYear();
 
     const orderWhere =
-      role === 'SUPER_ADMIN' ? {} : companyId ? { car: { companyId } } : { id: 'impossible' };
+      role === 'SUPER_ADMIN'
+        ? { carId: { not: null } } // B2B analytics only
+        : companyId
+          ? { car: { companyId } }
+          : { id: 'impossible' };
     if (!companyId && role !== 'SUPER_ADMIN') {
       return NextResponse.json({
         perCar: [],

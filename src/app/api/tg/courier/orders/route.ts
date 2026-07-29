@@ -24,14 +24,17 @@ export async function GET(req: Request) {
       ],
     },
     orderBy: { createdAt: 'asc' },
-    include: { car: { select: { plateNumber: true } } },
+    include: {
+      car: { select: { plateNumber: true } },
+      clientCar: { select: { plate: true } },
+    },
     take: 50,
   });
 
   return NextResponse.json(
     orders.map((o) => ({
       id: o.id,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car?.plateNumber ?? o.clientCar?.plate ?? '—',
       fuelType: o.fuelType,
       volume: o.volume,
       isFullTank: o.isFullTank,

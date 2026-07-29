@@ -680,6 +680,66 @@
     "orderHistoryEmpty": "Your orders will appear here.",
     "addresses": "My addresses",
     "addressesEmpty": "Your saved addresses will appear here.",
-    "logout": "Log out"
+    "logout": "Log out",
+    "liters": "L",
+    "sum": "UZS",
+    "status": {
+      "RECEIVED": "Finding a courier",
+      "COURIER_ASSIGNED": "Courier found",
+      "IN_DELIVERY": "On the way",
+      "DELIVERED": "Delivered",
+      "CANCELLED": "Cancelled",
+      "REJECTED": "Rejected"
+    }
+  },
+  "benzin": {
+    "title": "Order fuel",
+    "whereTitle": "Where to deliver",
+    "locateMe": "My location",
+    "addressPlaceholder": "Comment or address (optional)",
+    "carTitle": "Your car",
+    "platePlaceholder": "Plate number",
+    "modelPlaceholder": "Model",
+    "tankPlaceholder": "Tank capacity, L (optional)",
+    "fuelTitle": "Fuel",
+    "perLiter": "UZS/L",
+    "volumeTitle": "Volume",
+    "liters": "L",
+    "fullTank": "Full tank",
+    "minVolume": "Minimum {min} L",
+    "sum": "UZS",
+    "delivery": "Delivery",
+    "deliveryFree": "Free",
+    "total": "Total",
+    "payCourier": "Pay by card to the courier (terminal/QR)",
+    "order": "Order",
+    "submitting": "Placing…",
+    "errors": {
+      "noPoint": "Pick a point on the map",
+      "generic": "Something went wrong. Please try again.",
+      "minVolumeErr": "Minimum {min} liters",
+      "tankUnknown": "Enter tank capacity for a full tank",
+      "carRequired": "Add a car"
+    }
+  },
+  "orderStatus": {
+    "title": "Order",
+    "back": "To account",
+    "cancelled": "Order cancelled",
+    "steps": {
+      "RECEIVED": "Finding a courier",
+      "COURIER_ASSIGNED": "Courier found",
+      "IN_DELIVERY": "On the way",
+      "DELIVERED": "Delivered"
+    },
+    "car": "Car",
+    "fuel": "Fuel",
+    "volume": "Volume",
+    "liters": "L",
+    "address": "Address",
+    "total": "Total",
+    "sum": "UZS",
+    "payment": "Payment",
+    "payCourier": "Card to courier"
   }
 }

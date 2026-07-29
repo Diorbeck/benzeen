@@ -18,7 +18,7 @@ export default async function DispatcherAssignPage({
   const t = await getTranslations('dispatcher');
 
   const orders = await prisma.order.findMany({
-    where: { status: { in: ['CREATED', 'RECEIVED'] } },
+    where: { carId: { not: null }, status: { in: ['CREATED', 'RECEIVED'] } },
     orderBy: { createdAt: 'desc' },
     take: 100,
     include: { car: true, createdBy: true },
@@ -29,7 +29,7 @@ export default async function DispatcherAssignPage({
     volume: o.volume,
     status: o.status,
     fuelType: o.fuelType,
-    plateNumber: o.car.plateNumber,
+    plateNumber: o.car!.plateNumber,
     createdAt: o.createdAt,
     address: o.address,
     driverName: o.createdBy?.name ?? o.createdBy?.email ?? null,

@@ -16,11 +16,40 @@ export default async function AccountPage({
   if (!sUser?.id) redirect(`/${locale}/client-login`);
   if (sUser.role !== 'CLIENT') redirect(`/${locale}/dashboard`);
 
-  const user = await prisma.user.findUnique({
-    where: { id: sUser.id },
-    select: { phone: true, name: true },
-  });
+  const [user, orders] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: sUser.id },
+      select: { phone: true, name: true },
+    }),
+    prisma.order.findMany({
+      where: { clientId: sUser.id },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+      select: {
+        id: true,
+        status: true,
+        fuelType: true,
+        volume: true,
+        totalAmount: true,
+        createdAt: true,
+      },
+    }),
+  ]);
   if (!user) redirect(`/${locale}/client-login`);
 
-  return <AccountView locale={locale} phone={user.phone ?? ''} name={user.name ?? ''} />;
+  return (
+    <AccountView
+      locale={locale}
+      phone={user.phone ?? ''}
+      name={user.name ?? ''}
+      orders={orders.map((o) => ({
+        id: o.id,
+        status: o.status,
+        fuelType: o.fuelType,
+        volume: o.volume,
+        totalAmount: o.totalAmount,
+        createdAt: o.createdAt.toISOString(),
+      }))}
+    />
+  );
 }

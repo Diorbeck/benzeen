@@ -680,6 +680,66 @@
     "orderHistoryEmpty": "Bu yerda buyurtmalaringiz paydo bo‘ladi.",
     "addresses": "Mening manzillarim",
     "addressesEmpty": "Bu yerda saqlangan manzillar paydo bo‘ladi.",
-    "logout": "Chiqish"
+    "logout": "Chiqish",
+    "liters": "l",
+    "sum": "so‘m",
+    "status": {
+      "RECEIVED": "Kuryer qidirilmoqda",
+      "COURIER_ASSIGNED": "Kuryer topildi",
+      "IN_DELIVERY": "Yo‘lda",
+      "DELIVERED": "Yetkazildi",
+      "CANCELLED": "Bekor qilingan",
+      "REJECTED": "Rad etilgan"
+    }
+  },
+  "benzin": {
+    "title": "Benzin buyurtmasi",
+    "whereTitle": "Qayerga yetkazamiz",
+    "locateMe": "Mening joylashuvim",
+    "addressPlaceholder": "Izoh yoki manzil (ixtiyoriy)",
+    "carTitle": "Sizning avtomobilingiz",
+    "platePlaceholder": "Davlat raqami",
+    "modelPlaceholder": "Rusumi",
+    "tankPlaceholder": "Bak hajmi, l (ixtiyoriy)",
+    "fuelTitle": "Yoqilg‘i",
+    "perLiter": "so‘m/l",
+    "volumeTitle": "Hajm",
+    "liters": "l",
+    "fullTank": "To‘liq bak",
+    "minVolume": "Kamida {min} l",
+    "sum": "so‘m",
+    "delivery": "Yetkazib berish",
+    "deliveryFree": "Bepul",
+    "total": "Jami",
+    "payCourier": "Kuryerga karta orqali to‘lov (terminal/QR)",
+    "order": "Buyurtma berish",
+    "submitting": "Rasmiylashtirilmoqda…",
+    "errors": {
+      "noPoint": "Xaritada nuqtani belgilang",
+      "generic": "Xatolik yuz berdi. Yana urinib ko‘ring.",
+      "minVolumeErr": "Kamida {min} litr",
+      "tankUnknown": "«To‘liq bak» uchun bak hajmini kiriting",
+      "carRequired": "Avtomobil qo‘shing"
+    }
+  },
+  "orderStatus": {
+    "title": "Buyurtma",
+    "back": "Kabinetga",
+    "cancelled": "Buyurtma bekor qilindi",
+    "steps": {
+      "RECEIVED": "Kuryer qidirilmoqda",
+      "COURIER_ASSIGNED": "Kuryer topildi",
+      "IN_DELIVERY": "Yo‘lda",
+      "DELIVERED": "Yetkazildi"
+    },
+    "car": "Avtomobil",
+    "fuel": "Yoqilg‘i",
+    "volume": "Hajm",
+    "liters": "l",
+    "address": "Manzil",
+    "total": "Jami",
+    "sum": "so‘m",
+    "payment": "To‘lov",
+    "payCourier": "Kuryerga karta orqali"
   }
 }

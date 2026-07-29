@@ -28,7 +28,7 @@ export default async function InvoicesPage({
     });
 
     const delivered = await prisma.order.findMany({
-      where: { status: 'DELIVERED' },
+      where: { carId: { not: null }, status: 'DELIVERED' },
       select: {
         volume: true,
         fuelType: true,
@@ -39,7 +39,7 @@ export default async function InvoicesPage({
     const stats = new Map<string, { ai92: number; ai95: number; ai100: number }>();
     for (const c of companies) stats.set(c.id, { ai92: 0, ai95: 0, ai100: 0 });
     for (const o of delivered) {
-      const s = stats.get(o.car.companyId);
+      const s = stats.get(o.car!.companyId);
       if (!s) continue;
       if (o.fuelType === 'AI_92') s.ai92 += o.volume;
       else if (o.fuelType === 'AI_100') s.ai100 += o.volume;
