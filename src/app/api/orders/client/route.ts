@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { B2C_MIN_ORDER_LITERS, FULL_TANK_MAX_LITERS } from '@/lib/constants';
 import { dispatchB2COrderToNearest } from '@/lib/order-dispatch';
+import { paymeCheckoutUrl } from '@/lib/payme';
 
 const schema = z
   .object({
@@ -14,6 +15,8 @@ const schema = z
     lat: z.number().min(-90).max(90),
     lng: z.number().min(-180).max(180),
     address: z.string().max(500).optional(),
+    // 'PAYME' is only honored when Payme is configured; otherwise card-to-courier.
+    paymentMethod: z.enum(['COURIER_POS', 'PAYME']).optional(),
     // Either an existing car or a new one to create on first order.
     clientCarId: z.string().cuid().optional(),
     newCar: z
@@ -78,6 +81,10 @@ export async function POST(req: Request) {
 
     const totalAmount = price.priceUzs * liters;
 
+    // Online payment (Payme) only when configured; otherwise fall back to POS.
+    const merchantId = process.env.PAYME_MERCHANT_ID;
+    const payOnline = data.paymentMethod === 'PAYME' && !!merchantId;
+
     const order = await prisma.order.create({
       data: {
         clientId: user.id,
@@ -91,15 +98,23 @@ export async function POST(req: Request) {
         address: data.address || null,
         pricePerLiter: price.priceUzs,
         totalAmount,
-        // PR-A: card-to-courier only. Online (Payme) arrives in PR-B.
-        paymentMethod: 'COURIER_POS',
-        paymentStatus: 'NOT_REQUIRED',
-        status: 'RECEIVED',
+        // Online: PENDING + CREATED (hidden from couriers) until PAID dispatches
+        // it (see /api/payments/payme). POS: NOT_REQUIRED + RECEIVED, live now.
+        paymentMethod: payOnline ? 'PAYME' : 'COURIER_POS',
+        paymentStatus: payOnline ? 'PENDING' : 'NOT_REQUIRED',
+        status: payOnline ? 'CREATED' : 'RECEIVED',
       },
     });
 
-    // Geo-dispatch to the nearest available couriers; the stale-order cron backs
-    // this up with a broadcast if nobody has a fresh location.
+    if (payOnline) {
+      return NextResponse.json({
+        id: order.id,
+        status: order.status,
+        checkoutUrl: paymeCheckoutUrl(merchantId!, order.id, totalAmount * 100),
+      });
+    }
+
+    // Card-to-courier: geo-dispatch now; the stale-order cron is the fallback.
     await dispatchB2COrderToNearest(order.id);
 
     return NextResponse.json({ id: order.id, status: order.status });

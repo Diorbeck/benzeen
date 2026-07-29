@@ -243,6 +243,7 @@ model Order {
   assignedTo  User? @relation("AssignedTo", fields: [assignedToId], references: [id])
   client      User?      @relation("ClientOrders", fields: [clientId], references: [id])
   clientCar   ClientCar? @relation(fields: [clientCarId], references: [id])
+  paymeTransactions PaymeTransaction[]
 
   @@index([status])
   @@index([createdAt])
@@ -258,6 +259,27 @@ model Price {
   fuelType  FuelType @unique
   priceUzs  Int      // per liter
   updatedAt DateTime @updatedAt
+}
+
+// Payme (Paycom) Merchant API transaction (M2 / PR-B). One order can have
+// several (e.g. a cancelled attempt then a successful one). State follows the
+// Payme spec: 1 created, 2 performed, -1 cancelled(after create), -2 cancelled(after perform).
+model PaymeTransaction {
+  id          String   @id @default(cuid())
+  paycomId    String   @unique // Payme transaction id (params.id)
+  orderId     String
+  amount      Int              // tiyin (order total × 100)
+  state       Int      @default(1)
+  reason      Int?
+  createTime  BigInt           // Payme ms timestamp
+  performTime BigInt?
+  cancelTime  BigInt?
+  createdAt   DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([createTime])
 }
 
 model Invoice {

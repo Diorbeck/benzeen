@@ -21,13 +21,16 @@ export function FuelOrderFlow({
   locale,
   prices,
   car,
+  paymeAvailable = false,
 }: {
   locale: string;
   prices: Record<string, number>;
   car: ExistingCar | null;
+  paymeAvailable?: boolean;
 }) {
   const t = useTranslations('benzin');
   const router = useRouter();
+  const [payment, setPayment] = useState<'COURIER_POS' | 'PAYME'>('COURIER_POS');
 
   const [point, setPoint] = useState<LatLng | null>(null);
   const [address, setAddress] = useState('');
@@ -68,6 +71,7 @@ export function FuelOrderFlow({
         address: address.trim() || undefined,
         isFullTank,
         volume: isFullTank ? undefined : volume,
+        paymentMethod: paymeAvailable ? payment : 'COURIER_POS',
       };
       if (car) {
         body.clientCarId = car.id;
@@ -87,6 +91,11 @@ export function FuelOrderFlow({
       const data = await res.json().catch(() => null);
       if (!res.ok) {
         setError(mapError(t, data?.error));
+        return;
+      }
+      // Online payment → hosted Payme checkout; POS → the order status page.
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl as string;
         return;
       }
       router.push(`/${locale}/account/orders/${data.id}`);
@@ -217,10 +226,28 @@ export function FuelOrderFlow({
           <span>{t('total')}</span>
           <span>{fmt.format(total)} {t('sum')}</span>
         </div>
-        <p className="flex items-center gap-2 text-sm text-gray-500">
-          <Fuel className="h-4 w-4 text-primary-600" aria-hidden />
-          {t('payCourier')}
-        </p>
+        {paymeAvailable ? (
+          <div className="space-y-2 border-t border-gray-200 pt-3">
+            <p className="text-xs font-medium uppercase tracking-wide text-gray-500">{t('paymentTitle')}</p>
+            {(['COURIER_POS', 'PAYME'] as const).map((m) => (
+              <label key={m} className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-700">
+                <input
+                  type="radio"
+                  name="payment"
+                  checked={payment === m}
+                  onChange={() => setPayment(m)}
+                  className="h-4 w-4 accent-primary-600"
+                />
+                {m === 'COURIER_POS' ? t('payCourier') : t('payOnline')}
+              </label>
+            ))}
+          </div>
+        ) : (
+          <p className="flex items-center gap-2 text-sm text-gray-500">
+            <Fuel className="h-4 w-4 text-primary-600" aria-hidden />
+            {t('payCourier')}
+          </p>
+        )}
       </section>
 
       {error && (
@@ -228,7 +255,9 @@ export function FuelOrderFlow({
       )}
 
       <Button onClick={submit} disabled={!canSubmit} className="w-full bg-primary-600 py-6 text-base font-semibold hover:bg-primary-500">
-        {submitting ? t('submitting') : `${t('order')} · ${fmt.format(total)} ${t('sum')}`}
+        {submitting
+          ? t('submitting')
+          : `${paymeAvailable && payment === 'PAYME' ? t('payOnline') : t('order')} · ${fmt.format(total)} ${t('sum')}`}
       </Button>
     </div>
   );

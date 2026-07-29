@@ -720,7 +720,9 @@
       "minVolumeErr": "Minimum {min} liters",
       "tankUnknown": "Enter tank capacity for a full tank",
       "carRequired": "Add a car"
-    }
+    },
+    "paymentTitle": "Payment",
+    "payOnline": "Pay online (Payme)"
   },
   "orderStatus": {
     "title": "Order",

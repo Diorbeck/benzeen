@@ -720,7 +720,9 @@
       "minVolumeErr": "Минимум {min} литров",
       "tankUnknown": "Для «полного бака» укажите объём бака",
       "carRequired": "Добавьте машину"
-    }
+    },
+    "paymentTitle": "Оплата",
+    "payOnline": "Оплатить онлайн (Payme)"
   },
   "orderStatus": {
     "title": "Заказ",

@@ -38,6 +38,7 @@ export default async function BenzinPage({
         <FuelOrderFlow
           locale={locale}
           prices={prices}
+          paymeAvailable={!!process.env.PAYME_MERCHANT_ID}
           car={
             car
               ? { id: car.id, plate: car.plate, model: car.model, tankCapacity: car.tankCapacity }
