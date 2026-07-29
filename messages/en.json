@@ -628,5 +628,58 @@
     "error": "Failed to save",
     "role": "Role",
     "nameRequired": "Company name is required"
+  },
+  "b2c": {
+    "signIn": "Sign in",
+    "chooseSection": "What are we fueling?",
+    "open": "Open",
+    "benzin": {
+      "title": "Petrol",
+      "desc": "Fuel delivery to your car"
+    },
+    "propan": {
+      "title": "Propane",
+      "desc": "Refuel at Benzeen points"
+    },
+    "comingSoon": {
+      "title": "Coming soon",
+      "desc": "This section will be available soon. We’re getting it ready.",
+      "back": "Back to home"
+    }
+  },
+  "clientLogin": {
+    "title": "Sign in",
+    "subtitle": "Enter your phone number — we’ll text you a code",
+    "subtitleCode": "Enter the SMS code sent to {phone}",
+    "backToHome": "Back to home",
+    "phoneLabel": "Phone number",
+    "phonePlaceholder": "+998 90 000 00 00",
+    "codeLabel": "SMS code",
+    "codePlaceholder": "000000",
+    "sendCode": "Get code",
+    "verify": "Sign in",
+    "changePhone": "Change number",
+    "sending": "Sending…",
+    "verifying": "Verifying…",
+    "devHint": "Code sent. In development it is printed to the server logs.",
+    "errors": {
+      "invalidPhone": "Enter a valid number in +998XXXXXXXXX format",
+      "invalidCode": "Invalid or expired code",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "account": {
+    "title": "My account",
+    "phone": "Phone",
+    "name": "Name",
+    "namePlaceholder": "Your name (optional)",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "orderHistory": "Order history",
+    "orderHistoryEmpty": "Your orders will appear here.",
+    "addresses": "My addresses",
+    "addressesEmpty": "Your saved addresses will appear here.",
+    "logout": "Log out"
   }
 }

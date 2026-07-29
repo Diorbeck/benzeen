@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { Adapter } from 'next-auth/adapters';
 import { ensureSuperAdminFromEnv } from '@/lib/bootstrap';
+import { verifyCode } from '@/lib/verification';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -38,7 +39,48 @@ export const authOptions: NextAuthOptions = {
             ? 'driver'
             : credentials.mode === 'courier'
               ? 'courier'
-              : 'default';
+              : credentials.mode === 'client'
+                ? 'client'
+                : 'default';
+
+        // Client sign-in (B2C): phone + one-time SMS code. No password. The
+        // `password` field carries the 6-digit OTP. A CLIENT account is created
+        // on first successful verification.
+        if (mode === 'client') {
+          try {
+            const phone = credentials.identifier.trim();
+            const verified = await verifyCode({
+              identifier: phone,
+              code: credentials.password,
+              purpose: 'client_auth',
+            });
+            if (!verified.ok) return null;
+
+            let user = await prisma.user.findFirst({ where: { phone } });
+            if (user && user.role !== 'CLIENT') {
+              // Phone belongs to a staff account (driver/courier/etc.) — they
+              // must use their own login, not the client OTP flow.
+              return null;
+            }
+            if (!user) {
+              const synthEmail = `${phone.replace(/\D/g, '')}@clients.benzeen.local`;
+              user = await prisma.user.create({
+                data: { phone, email: synthEmail, role: 'CLIENT' },
+              });
+            }
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              companyId: user.companyId,
+              image: null,
+            };
+          } catch (e) {
+            console.error('[auth] client authorize error:', e);
+            return null;
+          }
+        }
 
         try {
           let user;
