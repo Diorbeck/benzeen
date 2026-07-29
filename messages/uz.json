@@ -628,5 +628,58 @@
     "error": "Saqlab bo'lmadi",
     "role": "Rol",
     "nameRequired": "Kompaniya nomini kiriting"
+  },
+  "b2c": {
+    "signIn": "Kirish",
+    "chooseSection": "Nimani quyamiz?",
+    "open": "Ochish",
+    "benzin": {
+      "title": "Benzin",
+      "desc": "Yoqilg‘ini avtomobilingizga yetkazib berish"
+    },
+    "propan": {
+      "title": "Propan",
+      "desc": "Benzeen shoxobchalarida quyish"
+    },
+    "comingSoon": {
+      "title": "Tez orada",
+      "desc": "Bu bo‘lim tez orada ishga tushadi. Biz ustida ishlyapmiz.",
+      "back": "Bosh sahifaga"
+    }
+  },
+  "clientLogin": {
+    "title": "Kirish",
+    "subtitle": "Telefon raqamingizni kiriting — SMS orqali kod yuboramiz",
+    "subtitleCode": "{phone} raqamiga yuborilgan SMS kodini kiriting",
+    "backToHome": "Bosh sahifaga",
+    "phoneLabel": "Telefon raqami",
+    "phonePlaceholder": "+998 90 000 00 00",
+    "codeLabel": "SMS kodi",
+    "codePlaceholder": "000000",
+    "sendCode": "Kod olish",
+    "verify": "Kirish",
+    "changePhone": "Raqamni o‘zgartirish",
+    "sending": "Yuborilmoqda…",
+    "verifying": "Tekshirilmoqda…",
+    "devHint": "Kod yuborildi. Ishlab chiqish rejimida u server loglarida ko‘rinadi.",
+    "errors": {
+      "invalidPhone": "+998XXXXXXXXX ko‘rinishida to‘g‘ri raqam kiriting",
+      "invalidCode": "Kod noto‘g‘ri yoki muddati o‘tgan",
+      "generic": "Xatolik yuz berdi. Yana urinib ko‘ring."
+    }
+  },
+  "account": {
+    "title": "Mening kabinetim",
+    "phone": "Telefon",
+    "name": "Ism",
+    "namePlaceholder": "Ismingiz (ixtiyoriy)",
+    "save": "Saqlash",
+    "saving": "Saqlanmoqda…",
+    "saved": "Saqlandi",
+    "orderHistory": "Buyurtmalar tarixi",
+    "orderHistoryEmpty": "Bu yerda buyurtmalaringiz paydo bo‘ladi.",
+    "addresses": "Mening manzillarim",
+    "addressesEmpty": "Bu yerda saqlangan manzillar paydo bo‘ladi.",
+    "logout": "Chiqish"
   }
 }

@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Fuel, ArrowLeft, BriefcaseBusiness, Car, Bike } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { B2B_ENABLED } from '@/lib/features';
 
 function LoginRoleSelection() {
   const t = useTranslations('auth');
@@ -65,20 +66,22 @@ function LoginRoleSelection() {
                 {t('managerRoleDesc')}
               </span>
             </Link>
-            <Link
-              href={`/${locale}/driver-login`}
-              className="group flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-6 text-center transition hover:-translate-y-0.5 hover:border-primary-500/30 hover:bg-white/10 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary-500/30 dark:hover:bg-white/10"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400 transition group-hover:bg-primary-500/30">
-                <Car className="h-6 w-6" />
-              </div>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                {t('driverLogin')}
-              </span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                {t('driverRoleDesc')}
-              </span>
-            </Link>
+            {B2B_ENABLED && (
+              <Link
+                href={`/${locale}/driver-login`}
+                className="group flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-6 text-center transition hover:-translate-y-0.5 hover:border-primary-500/30 hover:bg-white/10 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary-500/30 dark:hover:bg-white/10"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-500/20 text-primary-400 transition group-hover:bg-primary-500/30">
+                  <Car className="h-6 w-6" />
+                </div>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {t('driverLogin')}
+                </span>
+                <span className="text-xs text-gray-500 dark:text-gray-400">
+                  {t('driverRoleDesc')}
+                </span>
+              </Link>
+            )}
             <Link
               href={`/${locale}/courier-login`}
               className="group flex flex-col items-center gap-3 rounded-xl border border-white/10 bg-white/5 p-6 text-center transition hover:-translate-y-0.5 hover:border-primary-500/30 hover:bg-white/10 dark:border-white/10 dark:bg-white/5 dark:hover:border-primary-500/30 dark:hover:bg-white/10 sm:col-span-2"

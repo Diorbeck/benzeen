@@ -25,6 +25,7 @@ import {
   ScrollText,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { B2B_ENABLED } from '@/lib/features';
 import { NotificationBell } from './notification-bell';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { LanguageSwitcher } from '@/components/language-switcher';
@@ -115,7 +116,23 @@ export function DashboardShell({
 
   const locale = pathname.split('/')[1] || 'ru';
   const base = `/${locale}/dashboard`;
-  const navItems = navByRole[user.role || ''] || navByRole.COMPANY_ADMIN;
+  const allNavItems = navByRole[user.role || ''] || navByRole.COMPANY_ADMIN;
+  // When B2B is off, hide links to B2B-only surfaces (their routes also redirect
+  // in middleware). Courier/admin-core links stay.
+  const B2B_NAV_PATHS = [
+    '/companies',
+    '/cars',
+    '/drivers',
+    '/limits',
+    '/my-limit',
+    '/my-vehicle',
+    '/requests',
+    '/invoices',
+    '/history',
+  ];
+  const navItems = B2B_ENABLED
+    ? allNavItems
+    : allNavItems.filter((item) => !B2B_NAV_PATHS.some((p) => item.path.includes(p)));
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-50 dark:bg-gray-950">
