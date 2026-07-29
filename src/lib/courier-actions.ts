@@ -20,7 +20,11 @@ export async function applyCourierAction(
 ): Promise<CourierActionResult> {
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { car: { include: { usage: true } }, createdBy: true },
+    include: {
+      car: { include: { usage: true } },
+      createdBy: true,
+      clientCar: true,
+    },
   });
 
   if (!order) return { ok: false, status: 404, error: 'Order not found' };
@@ -39,6 +43,23 @@ export async function applyCourierAction(
     }
     if (!volume) return { ok: false, status: 400, error: 'Укажите объём' };
 
+    // B2C delivery (client order): courier enters actual liters → immediately
+    // DELIVERED. No CarUsage limits, no driver "Верно/Не верно" confirm — the
+    // client is present at the pump. (TZ M2 §4.8, §4.4.)
+    if (order.clientId) {
+      const cap = order.clientCar?.tankCapacity;
+      if (cap && volume > cap) {
+        return { ok: false, status: 400, error: `Больше бака машины (${cap} л)` };
+      }
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'DELIVERED', deliveredAt: new Date(), dispensedVolume: volume },
+      });
+      return { ok: true, status: 200, order: { id: order.id, status: 'DELIVERED' } };
+    }
+
+    // B2B delivery: unchanged (limit checks + driver confirmation flow).
+    if (!order.car) return { ok: false, status: 400, error: 'Order has no vehicle' };
     if (volume > order.car.tankCapacity) {
       return { ok: false, status: 400, error: `Больше бака машины (${order.car.tankCapacity} л)` };
     }
@@ -98,7 +119,7 @@ export async function applyCourierAction(
 
   const tgId = order.createdBy?.telegramId;
   if (tgId) {
-    const plate = order.car.plateNumber;
+    const plate = order.car?.plateNumber ?? order.clientCar?.plate ?? '';
     let tgText: string | null = null;
     if (newStatus === 'COURIER_ASSIGNED') {
       tgText = `🚚 Курьер принял ваш заказ по машине <b>${plate}</b>.`;

@@ -25,14 +25,14 @@ export async function GET() {
         ],
       },
       orderBy: { createdAt: 'asc' },
-      include: { car: true },
+      include: { car: true, clientCar: { select: { plate: true } } },
       take: 50,
     });
 
     return NextResponse.json(
       orders.map((o) => ({
         id: o.id,
-        plateNumber: o.car.plateNumber,
+        plateNumber: o.car?.plateNumber ?? o.clientCar?.plate ?? '—',
         fuelType: o.fuelType,
         volume: o.volume,
         status: o.status,

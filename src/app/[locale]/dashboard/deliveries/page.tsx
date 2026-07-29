@@ -27,7 +27,7 @@ export default async function DeliveriesPage({
 
   if (role === 'SUPER_ADMIN') {
     const delivered = await prisma.order.findMany({
-      where: { status: 'DELIVERED' },
+      where: { carId: { not: null }, status: 'DELIVERED' },
       orderBy: { deliveredAt: 'desc' },
       take: 500,
       include: { car: { include: { company: { select: { name: true } } } } },
@@ -35,8 +35,8 @@ export default async function DeliveriesPage({
 
     const rows = delivered.map((o) => ({
       id: o.id,
-      company: o.car.company.name,
-      plateNumber: o.car.plateNumber,
+      company: o.car!.company.name,
+      plateNumber: o.car!.plateNumber,
       fuelType: o.fuelType,
       volume: o.volume,
       deliveredAt: (o.deliveredAt ?? o.createdAt).toISOString(),
@@ -67,14 +67,14 @@ export default async function DeliveriesPage({
         },
         orderBy: { createdAt: 'asc' },
         take: 100,
-        include: { car: true },
+        include: { car: true, clientCar: { select: { plate: true } } },
       })
     ).map((o) => ({
       id: o.id,
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car?.plateNumber ?? o.clientCar?.plate ?? '—',
       createdAt: o.createdAt,
     }));
   } else if (companyId) {
@@ -93,7 +93,7 @@ export default async function DeliveriesPage({
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car!.plateNumber,
       createdAt: o.createdAt,
     }));
   }

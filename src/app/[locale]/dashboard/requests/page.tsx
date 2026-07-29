@@ -27,7 +27,7 @@ export default async function RequestsPage({
 
   if (role === 'SUPER_ADMIN') {
     const orders = await prisma.order.findMany({
-      where: { status: { in: ['CREATED', 'RECEIVED', 'COURIER_ASSIGNED', 'IN_DELIVERY'] } },
+      where: { carId: { not: null }, status: { in: ['CREATED', 'RECEIVED', 'COURIER_ASSIGNED', 'IN_DELIVERY'] } },
       orderBy: { createdAt: 'desc' },
       take: 300,
       include: {
@@ -38,8 +38,8 @@ export default async function RequestsPage({
 
     const rows = orders.map((o) => ({
       id: o.id,
-      company: o.car.company.name,
-      plateNumber: o.car.plateNumber,
+      company: o.car!.company.name,
+      plateNumber: o.car!.plateNumber,
       fuelType: o.fuelType,
       volume: o.volume,
       status: o.status,
@@ -76,7 +76,7 @@ export default async function RequestsPage({
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car!.plateNumber,
       createdAt: o.createdAt,
       address: o.address,
       driverName: o.createdBy?.name ?? o.createdBy?.email ?? null,

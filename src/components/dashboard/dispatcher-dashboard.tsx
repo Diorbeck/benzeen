@@ -9,7 +9,7 @@ export async function DispatcherDashboard({ locale }: { locale: string }) {
   if (!session?.user) return null;
 
   const orders = await prisma.order.findMany({
-    where: { status: 'CREATED' },
+    where: { carId: { not: null }, status: 'CREATED' },
     orderBy: { createdAt: 'desc' },
     take: 100,
     include: { car: true, createdBy: true },
@@ -20,7 +20,7 @@ export async function DispatcherDashboard({ locale }: { locale: string }) {
     volume: o.volume,
     status: o.status,
     fuelType: o.fuelType,
-    plateNumber: o.car.plateNumber,
+    plateNumber: o.car!.plateNumber,
     createdAt: o.createdAt,
     address: o.address,
     driverName: o.createdBy?.name ?? o.createdBy?.email ?? null,

@@ -680,6 +680,66 @@
     "orderHistoryEmpty": "Здесь появятся ваши заказы.",
     "addresses": "Мои адреса",
     "addressesEmpty": "Здесь появятся сохранённые адреса.",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "liters": "л",
+    "sum": "сум",
+    "status": {
+      "RECEIVED": "Ищем курьера",
+      "COURIER_ASSIGNED": "Курьер найден",
+      "IN_DELIVERY": "В пути",
+      "DELIVERED": "Доставлено",
+      "CANCELLED": "Отменён",
+      "REJECTED": "Отклонён"
+    }
+  },
+  "benzin": {
+    "title": "Заказ бензина",
+    "whereTitle": "Куда привезти",
+    "locateMe": "Моё местоположение",
+    "addressPlaceholder": "Комментарий или адрес (необязательно)",
+    "carTitle": "Ваша машина",
+    "platePlaceholder": "Госномер",
+    "modelPlaceholder": "Марка",
+    "tankPlaceholder": "Объём бака, л (необязательно)",
+    "fuelTitle": "Топливо",
+    "perLiter": "сум/л",
+    "volumeTitle": "Объём",
+    "liters": "л",
+    "fullTank": "Полный бак",
+    "minVolume": "Минимум {min} л",
+    "sum": "сум",
+    "delivery": "Доставка",
+    "deliveryFree": "Бесплатно",
+    "total": "Итого",
+    "payCourier": "Оплата картой курьеру (терминал/QR)",
+    "order": "Заказать",
+    "submitting": "Оформляем…",
+    "errors": {
+      "noPoint": "Укажите точку на карте",
+      "generic": "Что-то пошло не так. Попробуйте ещё раз.",
+      "minVolumeErr": "Минимум {min} литров",
+      "tankUnknown": "Для «полного бака» укажите объём бака",
+      "carRequired": "Добавьте машину"
+    }
+  },
+  "orderStatus": {
+    "title": "Заказ",
+    "back": "В кабинет",
+    "cancelled": "Заказ отменён",
+    "steps": {
+      "RECEIVED": "Ищем курьера",
+      "COURIER_ASSIGNED": "Курьер найден",
+      "IN_DELIVERY": "В пути",
+      "DELIVERED": "Доставлено"
+    },
+    "car": "Машина",
+    "fuel": "Топливо",
+    "volume": "Объём",
+    "liters": "л",
+    "address": "Адрес",
+    "total": "Итого",
+    "sum": "сум",
+    "payment": "Оплата",
+    "payCourier": "Картой курьеру"
   }
 }

@@ -40,7 +40,7 @@ export async function GET(req: Request) {
       fuelType: o.fuelType,
       volume: o.volume,
       isFullTank: o.isFullTank,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car!.plateNumber,
       address: o.address,
       createdAt: o.createdAt,
       deliveredAt: o.deliveredAt,

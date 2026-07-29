@@ -44,7 +44,8 @@ export default async function DashboardPage({
     const dayEnd = new Date(`${dateStr}T23:59:59.999`);
 
     const delivered = await prisma.order.findMany({
-      where: { status: 'DELIVERED', deliveredAt: { gte: dayStart, lte: dayEnd } },
+      // B2B only: B2C consumer orders have no company/Car.
+      where: { carId: { not: null }, status: 'DELIVERED', deliveredAt: { gte: dayStart, lte: dayEnd } },
       include: { car: { include: { company: true } } },
     });
 
@@ -56,7 +57,7 @@ export default async function DashboardPage({
       if (o.fuelType === 'AI_92') liters92 += o.volume;
       else if (o.fuelType === 'AI_100') liters100 += o.volume;
       else liters95 += o.volume;
-      const c = o.car.company;
+      const c = o.car!.company;
       const entry = byCompany.get(c.id) ?? { name: c.name, liters: 0, orders: 0 };
       entry.liters += o.volume;
       entry.orders += 1;
@@ -124,7 +125,7 @@ export default async function DashboardPage({
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car!.plateNumber,
     }));
     pendingOrders = pendingList.map((o) => ({ id: o.id, volume: o.volume, status: o.status }));
 

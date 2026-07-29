@@ -19,7 +19,11 @@ export async function CourierDashboard({ locale }: { locale: string }) {
       ],
     },
     orderBy: { createdAt: 'asc' },
-    include: { car: { include: { usage: true } } },
+    include: {
+      car: { include: { usage: true } },
+      clientCar: true,
+      client: { select: { phone: true } },
+    },
     take: 50,
   });
 
@@ -82,10 +86,24 @@ export async function CourierDashboard({ locale }: { locale: string }) {
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { car: { include: { usage: true } } },
+      include: { car: { include: { usage: true } }, clientCar: true },
     });
     if (!order || order.assignedToId !== courierId || order.status !== 'IN_DELIVERY') return;
 
+    // B2C: immediate DELIVERED with actual liters, no CarUsage / limit checks.
+    if (order.clientId) {
+      const cap = order.clientCar?.tankCapacity;
+      if (cap && volume > cap) return;
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'DELIVERED', deliveredAt: new Date(), dispensedVolume: volume },
+      });
+      revalidatePath(`/${locale}/dashboard`);
+      return;
+    }
+
+    // B2B: unchanged (limit check + CarUsage increment).
+    if (!order.car) return;
     const now = new Date();
     const month = now.getMonth() + 1;
     const year = now.getFullYear();
@@ -93,6 +111,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
     const usedLiters = usage?.usedLiters ?? 0;
     const remaining = order.car.monthlyLimit - usedLiters;
     if (volume > remaining) return;
+    const carId = order.car.id;
 
     await prisma.$transaction(async (tx) => {
       await tx.order.update({
@@ -106,13 +125,13 @@ export async function CourierDashboard({ locale }: { locale: string }) {
       await tx.carUsage.upsert({
         where: {
           carId_month_year: {
-            carId: order.carId,
+            carId,
             month,
             year,
           },
         },
         create: {
-          carId: order.carId,
+          carId,
           month,
           year,
           usedLiters: volume,
@@ -150,13 +169,30 @@ export async function CourierDashboard({ locale }: { locale: string }) {
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                    {o.car.plateNumber} · {o.fuelType.replace('_', '-')}
+                    {o.car?.plateNumber ?? o.clientCar?.plate ?? '—'} · {o.fuelType.replace('_', '-')} · {o.volume} л
                   </p>
                   <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     Статус: {o.status}
                   </p>
+                  {o.client?.phone && (
+                    <a
+                      href={`tel:${o.client.phone}`}
+                      className="mt-1 block text-xs font-medium text-primary-600 hover:underline dark:text-primary-400"
+                    >
+                      Клиент: {o.client.phone}
+                    </a>
+                  )}
                 </div>
-                {o.address && (
+                {o.lat != null && o.lng != null ? (
+                  <a
+                    className="text-xs font-medium text-primary-600 hover:underline dark:text-primary-400"
+                    href={`https://yandex.ru/maps/?pt=${o.lng},${o.lat}&z=17&l=map`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Открыть на карте
+                  </a>
+                ) : o.address ? (
                   <a
                     className="text-xs font-medium text-primary-600 hover:underline dark:text-primary-400"
                     href={`https://yandex.ru/maps/?text=${encodeURIComponent(o.address)}`}
@@ -165,7 +201,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
                   >
                     Открыть в навигаторе
                   </a>
-                )}
+                ) : null}
               </div>
 
               {o.address && (

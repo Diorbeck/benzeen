@@ -22,14 +22,18 @@ export const runtime = 'nodejs';
 
 const SECRET_HEADER = 'x-telegram-bot-api-secret-token';
 
+interface TgMessage {
+  message_id?: number;
+  chat?: { id?: number };
+  from?: { id?: number };
+  text?: string;
+  location?: { latitude: number; longitude: number };
+}
+
 interface TgUpdate {
-  message?: {
-    message_id?: number;
-    chat?: { id?: number };
-    from?: { id?: number };
-    text?: string;
-    location?: { latitude: number; longitude: number };
-  };
+  message?: TgMessage;
+  // Live-location updates arrive as edits to the original location message.
+  edited_message?: TgMessage;
   callback_query?: {
     id: string;
     from?: { id?: number };
@@ -61,8 +65,11 @@ export async function POST(req: Request) {
   try {
     if (update.callback_query) {
       await handleCallback(update.callback_query);
+    } else if (update.edited_message?.location) {
+      // Live-location update (courier sharing movement) — refresh only, no reply.
+      await handleLocation(update.edited_message, true);
     } else if (update.message?.location) {
-      await handleLocation(update.message);
+      await handleLocation(update.message, false);
     } else if (update.message) {
       await handleText(update.message);
     }
@@ -170,7 +177,7 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
           where: { id: orderId },
           data: { status: 'DELIVERED', botPhase: null, deliveredAt: new Date() },
         });
-        if (dispensed > 0) {
+        if (dispensed > 0 && order.carId) {
           const now = new Date();
           const month = now.getMonth() + 1;
           const year = now.getFullYear();
@@ -186,7 +193,7 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
           userId: order.createdById,
           type: 'ORDER_DELIVERED',
           title: 'Order delivered',
-          message: `${order.car.plateNumber}: ${dispensed} L delivered`,
+          message: `${order.car?.plateNumber ?? ""}: ${dispensed} L delivered`,
           orderId: order.id,
         });
       }
@@ -195,7 +202,7 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
         await editMessageText(
           chatId,
           messageId,
-          `✅ <b>Доставка подтверждена</b>: ${order.car.plateNumber} — ${dispensed} л.`,
+          `✅ <b>Доставка подтверждена</b>: ${order.car?.plateNumber ?? ""} — ${dispensed} л.`,
         );
       }
       return;
@@ -211,7 +218,7 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
       await editMessageText(
         chatId,
         messageId,
-        `⚠️ <b>Заказ заморожен</b>: ${order.car.plateNumber}.\nСвяжитесь с оператором${operatorPhone ? `: ${operatorPhone}` : ''}.`,
+        `⚠️ <b>Заказ заморожен</b>: ${order.car?.plateNumber ?? ""}.\nСвяжитесь с оператором${operatorPhone ? `: ${operatorPhone}` : ''}.`,
       );
     }
     return;
@@ -285,7 +292,7 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
   await answerCallbackQuery(cq.id);
 }
 
-async function handleLocation(message: NonNullable<TgUpdate['message']>) {
+async function handleLocation(message: TgMessage, isEdited: boolean) {
   const chatId = message.chat?.id;
   const fromId = message.from?.id ?? chatId;
   const loc = message.location;
@@ -293,9 +300,25 @@ async function handleLocation(message: NonNullable<TgUpdate['message']>) {
 
   const user = await prisma.user.findUnique({
     where: { telegramId: String(fromId) },
-    select: { id: true },
+    select: { id: true, role: true },
   });
   if (!user) return;
+
+  // Courier live location → feed geo-dispatch. Silent on live-update edits.
+  if (user.role === 'COURIER') {
+    await prisma.courierLocation.upsert({
+      where: { courierId: user.id },
+      create: { courierId: user.id, lat: loc.latitude, lng: loc.longitude },
+      update: { lat: loc.latitude, lng: loc.longitude },
+    });
+    if (!isEdited) {
+      await sendTelegramMessage(
+        chatId,
+        '📍 Локация получена. Вы в очереди на ближайшие заказы.',
+      );
+    }
+    return;
+  }
 
   const order = await prisma.order.findFirst({
     where: { createdById: user.id, status: 'CREATED', botPhase: 'AWAIT_LOCATION' },

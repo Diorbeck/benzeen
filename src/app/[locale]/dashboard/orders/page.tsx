@@ -23,10 +23,12 @@ export default async function OrdersPage({
 
   let orders: { id: string; volume: number; status: string; fuelType: string; plateNumber: string; createdAt: Date; address?: string | null; lat?: number | null; lng?: number | null; driverName?: string | null; isFullTank?: boolean }[] = [];
 
-  const orderInclude = { car: true, createdBy: true };
+  const orderInclude = { car: true, createdBy: true, clientCar: true };
 
   if (role === 'SUPER_ADMIN') {
     const list = await prisma.order.findMany({
+      // B2B orders only; B2C consumer orders are dispatched to couriers directly.
+      where: { carId: { not: null } },
       orderBy: { createdAt: 'desc' },
       take: 100,
       include: orderInclude,
@@ -36,7 +38,7 @@ export default async function OrdersPage({
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car!.plateNumber,
       createdAt: o.createdAt,
       address: o.address,
       lat: o.lat,
@@ -55,7 +57,7 @@ export default async function OrdersPage({
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car!.plateNumber,
       createdAt: o.createdAt,
     }));
   } else if (role === 'COURIER') {
@@ -63,14 +65,15 @@ export default async function OrdersPage({
       where: { assignedToId: userId, status: { in: ['COURIER_ASSIGNED', 'IN_DELIVERY'] } },
       orderBy: { createdAt: 'asc' },
       take: 50,
-      include: { car: true },
+      include: { car: true, clientCar: { select: { plate: true } } },
     });
     orders = list.map((o) => ({
       id: o.id,
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      // Couriers handle both B2B (car) and B2C (clientCar) orders.
+      plateNumber: o.car?.plateNumber ?? o.clientCar?.plate ?? '—',
       createdAt: o.createdAt,
       address: o.address,
       lat: o.lat,
@@ -90,7 +93,7 @@ export default async function OrdersPage({
       volume: o.volume,
       status: o.status,
       fuelType: o.fuelType,
-      plateNumber: o.car.plateNumber,
+      plateNumber: o.car!.plateNumber,
       createdAt: o.createdAt,
       address: o.address,
       lat: o.lat,

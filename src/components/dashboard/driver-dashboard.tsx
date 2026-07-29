@@ -212,7 +212,7 @@ export async function DriverDashboard({ locale }: { locale: string }) {
                 recentOrders.map((o) => (
                   <tr key={o.id} className="border-b border-gray-100 dark:border-white/[0.04]">
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
-                      {o.car.plateNumber}
+                      {o.car!.plateNumber}
                     </td>
                     <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
                       {o.fuelType.replace('_', '-')}
