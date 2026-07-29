@@ -720,7 +720,9 @@
       "minVolumeErr": "Kamida {min} litr",
       "tankUnknown": "«To‘liq bak» uchun bak hajmini kiriting",
       "carRequired": "Avtomobil qo‘shing"
-    }
+    },
+    "paymentTitle": "Toʻlov",
+    "payOnline": "Onlayn toʻlash (Payme)"
   },
   "orderStatus": {
     "title": "Buyurtma",
