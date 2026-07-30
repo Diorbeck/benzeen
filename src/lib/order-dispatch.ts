@@ -10,7 +10,7 @@
 import { prisma } from './prisma';
 import { createNotification } from './notifications';
 import { haversineKm } from './geo';
-import { COURIER_LOCATION_MAX_AGE_MS, DISPATCH_NEAREST_COUNT } from './constants';
+import { COURIER_LOCATION_MAX_AGE_MS, DISPATCH_NEAREST_COUNT, DISPATCH_STALE_AFTER_MS } from './constants';
 import {
   sendTelegramMessage,
   getMiniAppUrl,
@@ -152,6 +152,41 @@ export async function dispatchOrder(orderId: string): Promise<void> {
     data: { status: 'RECEIVED', botPhase: null },
   });
   await notifyCouriersNewOrder(orderId);
+}
+
+/**
+ * Backstop for B2C orders that nobody took after the initial nearest-courier
+ * offer: broadcast them to ALL couriers, once (`botPhase` marker prevents
+ * re-notifying). Same query the daily cron runs — but this is also called on
+ * ordinary system activity (a new B2C order, a courier taking a job), so stale
+ * orders get re-dispatched in near-real-time without a paid sub-daily cron.
+ *
+ * Fire-and-forget friendly: never throws, returns how many were broadcast.
+ */
+export async function redispatchStale(): Promise<number> {
+  try {
+    const cutoff = new Date(Date.now() - DISPATCH_STALE_AFTER_MS);
+    const stale = await prisma.order.findMany({
+      where: {
+        status: 'RECEIVED',
+        assignedToId: null,
+        clientId: { not: null },
+        botPhase: null,
+        createdAt: { lt: cutoff },
+      },
+      select: { id: true },
+      take: 50,
+    });
+
+    for (const o of stale) {
+      await prisma.order.update({ where: { id: o.id }, data: { botPhase: 'BROADCAST' } });
+      await notifyCouriersNewOrder(o.id);
+    }
+    return stale.length;
+  } catch (e) {
+    console.error('[redispatchStale] error:', e);
+    return 0;
+  }
 }
 
 /**

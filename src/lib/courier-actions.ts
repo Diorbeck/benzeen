@@ -5,6 +5,7 @@
 
 import { prisma } from './prisma';
 import { sendTelegramMessage, type InlineKeyboardMarkup } from './telegram';
+import { redispatchStale } from './order-dispatch';
 
 export type CourierAction = 'TAKE' | 'ON_ROUTE' | 'DELIVERED';
 
@@ -127,6 +128,12 @@ export async function applyCourierAction(
       tgText = `🛣️ Курьер выехал к вам. Машина <b>${plate}</b>.`;
     }
     if (tgText) void sendTelegramMessage(tgId, tgText);
+  }
+
+  // A courier taking a job is system activity — sweep any other stale B2C orders
+  // and broadcast them (near-real-time backstop, replaces the sub-daily cron).
+  if (action === 'TAKE') {
+    await redispatchStale();
   }
 
   return { ok: true, status: 200, order: { id: order.id, status: newStatus } };
