@@ -15,9 +15,10 @@ export default async function BenzinPage({
   const session = await getServerSession(authOptions);
   const user = session?.user as { id?: string; role?: string } | undefined;
 
-  // Client-only flow. Guests are sent to sign in and returned here afterwards.
+  // Client-only flow. Guests → sign in (and back here); staff (admin/courier/…)
+  // → their dashboard, so a wrong-role visit isn't a silent bounce to home.
   if (!user?.id) redirect(`/${locale}/client-login?callbackUrl=/${locale}/benzin`);
-  if (user.role !== 'CLIENT') redirect(`/${locale}`);
+  if (user.role !== 'CLIENT') redirect(`/${locale}/dashboard`);
 
   const [priceRows, car] = await Promise.all([
     prisma.price.findMany(),
