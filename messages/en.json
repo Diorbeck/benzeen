@@ -665,7 +665,8 @@
     "errors": {
       "invalidPhone": "Enter a valid number in +998XXXXXXXXX format",
       "invalidCode": "Invalid or expired code",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "smsUnavailable": "SMS is temporarily unavailable, please try again later"
     }
   },
   "account": {
@@ -742,6 +743,9 @@
     "total": "Total",
     "sum": "UZS",
     "payment": "Payment",
-    "payCourier": "Card to courier"
+    "payCourier": "Card to courier",
+    "courierComing": "Courier is on the way",
+    "eta": "≈ {minutes} min",
+    "etaCalculating": "Estimating time…"
   }
 }

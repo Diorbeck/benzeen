@@ -17,6 +17,7 @@ import {
 } from '@/lib/order-dispatch';
 import { applyCourierAction } from '@/lib/courier-actions';
 import { createNotification } from '@/lib/notifications';
+import { COURIER_LOCATION_MAX_AGE_MS } from '@/lib/constants';
 
 export const runtime = 'nodejs';
 
@@ -149,11 +150,23 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
       return;
     }
     await answerCallbackQuery(cq.id, 'Заказ взят');
+    // Remind the courier to share live location if we don't have a fresh fix —
+    // clients track the courier on the map (M3) and geo-dispatch needs it.
+    let takeExtra = '';
+    const loc = await prisma.courierLocation.findUnique({
+      where: { courierId: user.id },
+      select: { updatedAt: true },
+    });
+    const freshLoc = loc && Date.now() - loc.updatedAt.getTime() <= COURIER_LOCATION_MAX_AGE_MS;
+    if (!freshLoc) {
+      takeExtra =
+        '\n\n📍 Включи трансляцию геопозиции (скрепка → Геопозиция → Транслировать), чтобы клиент видел тебя на карте.';
+    }
     if (chatId && messageId) {
       await editMessageText(
         chatId,
         messageId,
-        `✅ <b>Вы взяли заказ</b>\n\n` + orderSummary(order),
+        `✅ <b>Вы взяли заказ</b>\n\n` + orderSummary(order) + takeExtra,
       );
     }
     return;

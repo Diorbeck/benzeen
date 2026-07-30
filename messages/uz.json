@@ -665,7 +665,8 @@
     "errors": {
       "invalidPhone": "+998XXXXXXXXX ko‘rinishida to‘g‘ri raqam kiriting",
       "invalidCode": "Kod noto‘g‘ri yoki muddati o‘tgan",
-      "generic": "Xatolik yuz berdi. Yana urinib ko‘ring."
+      "generic": "Xatolik yuz berdi. Yana urinib ko‘ring.",
+      "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring"
     }
   },
   "account": {
@@ -742,6 +743,9 @@
     "total": "Jami",
     "sum": "so‘m",
     "payment": "To‘lov",
-    "payCourier": "Kuryerga karta orqali"
+    "payCourier": "Kuryerga karta orqali",
+    "courierComing": "Kuryer siz tomon yoʻlda",
+    "eta": "≈ {minutes} daqiqa",
+    "etaCalculating": "Vaqt hisoblanmoqda…"
   }
 }

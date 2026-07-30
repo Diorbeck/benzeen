@@ -38,6 +38,8 @@ export default async function ClientOrderPage({
           totalAmount: order.totalAmount,
           paymentMethod: order.paymentMethod,
           address: order.address,
+          lat: order.lat,
+          lng: order.lng,
           plate: order.clientCar?.plate ?? null,
           createdAt: order.createdAt.toISOString(),
         }}

@@ -44,7 +44,13 @@ function ClientLoginForm() {
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        setError(data?.error === 'invalid_phone' ? t('errors.invalidPhone') : t('errors.generic'));
+        // Bad number → field error; anything else (Eskiz/gateway) → honest
+        // "SMS temporarily unavailable" instead of a vague generic error.
+        setError(
+          data?.error === 'invalid_phone'
+            ? t('errors.invalidPhone')
+            : t('errors.smsUnavailable'),
+        );
         return;
       }
       setPhone(normalized);
