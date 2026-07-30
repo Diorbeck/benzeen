@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { B2C_MIN_ORDER_LITERS, FULL_TANK_MAX_LITERS } from '@/lib/constants';
-import { dispatchB2COrderToNearest } from '@/lib/order-dispatch';
+import { dispatchB2COrderToNearest, redispatchStale } from '@/lib/order-dispatch';
 import { paymeCheckoutUrl } from '@/lib/payme';
 
 const schema = z
@@ -106,6 +106,10 @@ export async function POST(req: Request) {
       },
     });
 
+    // Use this order-creation activity to re-dispatch any other stale orders
+    // (near-real-time backstop that replaces the sub-daily cron).
+    await redispatchStale();
+
     if (payOnline) {
       return NextResponse.json({
         id: order.id,
@@ -114,7 +118,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // Card-to-courier: geo-dispatch now; the stale-order cron is the fallback.
+    // Card-to-courier: geo-dispatch now; redispatchStale + daily cron are the fallback.
     await dispatchB2COrderToNearest(order.id);
 
     return NextResponse.json({ id: order.id, status: order.status });
