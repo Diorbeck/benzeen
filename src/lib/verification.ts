@@ -149,7 +149,7 @@ export async function createAndSendCode(params: {
         email: eskizEmail,
         password: eskizPassword,
         to: identifier.trim(),
-        message: `Benzeen: kod ${code}. ${CODE_EXPIRY_MINUTES} daqiqa amal qiladi.`,
+        message: `Код подтверждения для регистрации на сайте benzeen.uz: ${code}`,
       });
       return { ok: true, expiresAt };
     } catch (err) {
