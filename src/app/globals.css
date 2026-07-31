@@ -170,3 +170,32 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
   border: none;
 }
+
+/* --- B2C design-pass base --------------------------------------------------- */
+/* No accidental horizontal scroll on mobile. */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+body {
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+}
+
+/* Respect reduced-motion for all animation/transition. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* MapLibre canvas fills its rounded container cleanly. */
+.maplibregl-map {
+  border-radius: inherit;
+}

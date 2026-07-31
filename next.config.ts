@@ -17,13 +17,17 @@ const cspReportOnly = [
   // Next.js injects inline bootstrap/hydration scripts; 'unsafe-inline' keeps
   // report-only quiet. Upgrade path: switch to nonce-based (see notes).
   // telegram.org serves the Mini App SDK (telegram-web-app.js).
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://telegram.org",
+  // blob: allows the MapLibre GL web worker (created from a blob URL).
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://telegram.org",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https:",
+  // MapLibre raster tiles may be drawn as images; allow OSM tile hosts.
+  "img-src 'self' data: blob: https: https://*.tile.openstreetmap.org",
   "font-src 'self' data:",
-  // API / telemetry endpoints the app talks to:
-  "connect-src 'self' https://*.upstash.io https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
+  // API / telemetry + OSM tile fetches (MapLibre loads tiles via fetch).
+  "connect-src 'self' https://*.tile.openstreetmap.org https://*.upstash.io https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
   "worker-src 'self' blob:",
+  // Some browsers consult child-src for workers instead of worker-src.
+  "child-src 'self' blob:",
   "manifest-src 'self'",
   'upgrade-insecure-requests',
 ].join('; ');
@@ -34,7 +38,7 @@ const securityHeaders = [
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=()',
+    value: 'camera=(), microphone=(), geolocation=(self)',
   },
   // To ENFORCE later, rename this header to 'Content-Security-Policy'.
   { key: 'Content-Security-Policy-Report-Only', value: cspReportOnly },
@@ -58,7 +62,7 @@ const tgHeaders = [
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=()',
+    value: 'camera=(), microphone=(), geolocation=(self)',
   },
   { key: 'Content-Security-Policy-Report-Only', value: tgCsp },
 ];

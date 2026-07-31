@@ -2,42 +2,83 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { Fuel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { track } from '@/lib/analytics';
+import { siteConfig } from '@/lib/site-config';
 
-export function B2CHeader() {
+const STAFF_ROLES = new Set([
+  'SUPER_ADMIN',
+  'COMPANY_ADMIN',
+  'DRIVER',
+  'COURIER',
+  'DISPATCHER',
+  'PROPANE_OPERATOR',
+]);
+
+/** B2C header: session-aware — CLIENT → cabinet, staff → dashboard, guest → sign in + order CTA. */
+export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
   const t = useTranslations('b2c');
-  const tCommon = useTranslations('common');
   const pathname = usePathname() ?? '';
-  const locale = pathname.split('/').filter(Boolean)[0] || 'ru';
-  const safeLocale = ['ru', 'en', 'uz'].includes(locale) ? locale : 'ru';
+  const seg = pathname.split('/').filter(Boolean)[0];
+  const locale = seg === 'ru' || seg === 'en' || seg === 'uz' ? seg : 'ru';
+  const { data: session, status } = useSession();
+  const role = (session?.user as { role?: string } | undefined)?.role;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/85 backdrop-blur-xl">
-      <nav className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-5 sm:px-8">
+    <header className="sticky top-0 z-header border-b border-gray-100 bg-white/85 backdrop-blur-xl">
+      <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
-          href={`/${safeLocale}`}
-          className="flex items-center gap-2.5 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          href={`/${locale}`}
+          className="flex items-center gap-2.5 rounded-control transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-600">
+          <span className="flex h-9 w-9 items-center justify-center rounded-control bg-primary-600">
             <Fuel className="h-5 w-5 text-white" aria-hidden />
-          </div>
-          <span className="text-lg font-semibold tracking-tight text-gray-900">
-            {tCommon('appName')}
           </span>
+          <span className="text-lg font-semibold tracking-tight text-navy">{siteConfig.appName}</span>
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <LanguageSwitcher />
-          <Button
-            size="sm"
-            className="bg-primary-600 font-semibold text-white hover:bg-primary-500"
-            asChild
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <Link
+            href={`/${locale}#how`}
+            className="hidden rounded-control px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-navy md:inline-block"
           >
-            <Link href={`/${safeLocale}/client-login`}>{t('signIn')}</Link>
-          </Button>
+            {t('howItWorks')}
+          </Link>
+          <LanguageSwitcher />
+
+          {status === 'loading' ? (
+            <span className="h-9 w-20 animate-pulse rounded-control bg-gray-100" aria-hidden />
+          ) : role === 'CLIENT' ? (
+            <Button variant="secondary" size="sm" className="rounded-control" asChild>
+              <Link href={`/${locale}/account`}>{t('account')}</Link>
+            </Button>
+          ) : role && STAFF_ROLES.has(role) ? (
+            <Button variant="secondary" size="sm" className="rounded-control" asChild>
+              <Link href={`/${locale}/dashboard`}>{t('dashboard')}</Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" className="hidden rounded-control text-gray-600 hover:text-navy sm:inline-flex" asChild>
+                <Link href={`/${locale}/client-login`} onClick={() => track('login_clicked', { where: 'header' })}>
+                  {t('signIn')}
+                </Link>
+              </Button>
+              {showOrderCta && (
+                <Button size="sm" className="rounded-control bg-primary-600 font-semibold text-white hover:bg-primary-500" asChild>
+                  <Link
+                    href={`/${locale}/benzin`}
+                    onClick={() => track('gasoline_order_clicked', { where: 'header' })}
+                  >
+                    {t('orderFuel')}
+                  </Link>
+                </Button>
+              )}
+            </>
+          )}
         </div>
       </nav>
     </header>
