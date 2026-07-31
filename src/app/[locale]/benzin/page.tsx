@@ -6,12 +6,22 @@ import { prisma } from '@/lib/prisma';
 import { B2CHeader } from '@/components/b2c/header';
 import { FuelOrderFlow, type ExistingCar } from '@/components/b2c/fuel-order-flow';
 
+const FUELS = ['AI_92', 'AI_95', 'AI_100'] as const;
+type Fuel = (typeof FUELS)[number];
+
 export default async function BenzinPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ fuel?: string; volume?: string; carId?: string }>;
 }) {
   const { locale } = await params;
+  const sp = await searchParams;
+  const initialFuel = FUELS.includes(sp.fuel as Fuel) ? (sp.fuel as Fuel) : undefined;
+  const volNum = sp.volume ? Number(sp.volume) : NaN;
+  const initialVolume = Number.isInteger(volNum) && volNum > 0 ? volNum : undefined;
+  const initialCarId = sp.carId || undefined;
   const session = await getServerSession(authOptions);
   const user = session?.user as { id?: string; role?: string } | undefined;
 
@@ -48,6 +58,9 @@ export default async function BenzinPage({
           cars={cars}
           isLoggedIn={isLoggedIn}
           paymeAvailable={!!process.env.PAYME_MERCHANT_ID}
+          initialFuel={initialFuel}
+          initialVolume={initialVolume}
+          initialCarId={initialCarId}
         />
       </main>
     </div>

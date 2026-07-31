@@ -16,10 +16,10 @@ export default async function AccountPage({
   if (!sUser?.id) redirect(`/${locale}/client-login`);
   if (sUser.role !== 'CLIENT') redirect(`/${locale}/dashboard`);
 
-  const [user, orders] = await Promise.all([
+  const [user, orders, cars] = await Promise.all([
     prisma.user.findUnique({
       where: { id: sUser.id },
-      select: { phone: true, name: true },
+      select: { phone: true, name: true, lastName: true },
     }),
     prisma.order.findMany({
       where: { clientId: sUser.id },
@@ -30,9 +30,16 @@ export default async function AccountPage({
         status: true,
         fuelType: true,
         volume: true,
+        dispensedVolume: true,
         totalAmount: true,
+        clientCarId: true,
         createdAt: true,
       },
+    }),
+    prisma.clientCar.findMany({
+      where: { userId: sUser.id },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, plate: true, model: true, tankCapacity: true },
     }),
   ]);
   if (!user) redirect(`/${locale}/client-login`);
@@ -42,12 +49,16 @@ export default async function AccountPage({
       locale={locale}
       phone={user.phone ?? ''}
       name={user.name ?? ''}
+      lastName={user.lastName ?? ''}
+      cars={cars}
       orders={orders.map((o) => ({
         id: o.id,
         status: o.status,
         fuelType: o.fuelType,
         volume: o.volume,
+        dispensedVolume: o.dispensedVolume,
         totalAmount: o.totalAmount,
+        clientCarId: o.clientCarId,
         createdAt: o.createdAt.toISOString(),
       }))}
     />
