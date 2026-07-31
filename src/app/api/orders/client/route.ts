@@ -3,7 +3,12 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-import { B2C_MIN_ORDER_LITERS, FULL_TANK_MAX_LITERS } from '@/lib/constants';
+import {
+  B2C_MIN_ORDER_LITERS,
+  FULL_TANK_MAX_LITERS,
+  SCHEDULE_MIN_LEAD_MS,
+  SCHEDULE_MAX_AHEAD_MS,
+} from '@/lib/constants';
 import { dispatchB2COrderToNearest, redispatchStale } from '@/lib/order-dispatch';
 import { paymeCheckoutUrl } from '@/lib/payme';
 
@@ -17,6 +22,8 @@ const schema = z
     address: z.string().max(500).optional(),
     // 'PAYME' is only honored when Payme is configured; otherwise card-to-courier.
     paymentMethod: z.enum(['COURIER_POS', 'PAYME']).optional(),
+    // ISO datetime for a planned order; absent = deliver ASAP.
+    scheduledFor: z.string().datetime().optional(),
     // Either an existing car or a new one to create on first order.
     clientCarId: z.string().cuid().optional(),
     newCar: z
@@ -81,9 +88,26 @@ export async function POST(req: Request) {
 
     const totalAmount = price.priceUzs * liters;
 
-    // Online payment (Payme) only when configured; otherwise fall back to POS.
+    // Scheduled order? Validate the window server-side (24/7, +1h … +7d).
+    let scheduledFor: Date | null = null;
+    if (data.scheduledFor) {
+      const dt = new Date(data.scheduledFor);
+      const now = Date.now();
+      const SLACK = 60 * 1000;
+      if (
+        Number.isNaN(dt.getTime()) ||
+        dt.getTime() < now + SCHEDULE_MIN_LEAD_MS - SLACK ||
+        dt.getTime() > now + SCHEDULE_MAX_AHEAD_MS + SLACK
+      ) {
+        return NextResponse.json({ error: 'invalid_schedule' }, { status: 400 });
+      }
+      scheduledFor = dt;
+    }
+    const scheduled = scheduledFor != null;
+
+    // Online payment (Payme) only when configured; not for scheduled v1.
     const merchantId = process.env.PAYME_MERCHANT_ID;
-    const payOnline = data.paymentMethod === 'PAYME' && !!merchantId;
+    const payOnline = !scheduled && data.paymentMethod === 'PAYME' && !!merchantId;
 
     const order = await prisma.order.create({
       data: {
@@ -98,17 +122,22 @@ export async function POST(req: Request) {
         address: data.address || null,
         pricePerLiter: price.priceUzs,
         totalAmount,
-        // Online: PENDING + CREATED (hidden from couriers) until PAID dispatches
-        // it (see /api/payments/payme). POS: NOT_REQUIRED + RECEIVED, live now.
+        scheduledFor,
+        // Scheduled: SCHEDULED + POS, NOT dispatched until its window opens.
+        // Online: PENDING + CREATED until PAID. POS: NOT_REQUIRED + RECEIVED, live now.
         paymentMethod: payOnline ? 'PAYME' : 'COURIER_POS',
         paymentStatus: payOnline ? 'PENDING' : 'NOT_REQUIRED',
-        status: payOnline ? 'CREATED' : 'RECEIVED',
+        status: scheduled ? 'SCHEDULED' : payOnline ? 'CREATED' : 'RECEIVED',
       },
     });
 
-    // Use this order-creation activity to re-dispatch any other stale orders
-    // (near-real-time backstop that replaces the sub-daily cron).
+    // Activity sweep for OTHER orders (activates due-soon scheduled + stale RECEIVED).
     await redispatchStale();
+
+    if (scheduled) {
+      // Not dispatched now; activated by redispatchStale when its window opens.
+      return NextResponse.json({ id: order.id, status: order.status });
+    }
 
     if (payOnline) {
       return NextResponse.json({

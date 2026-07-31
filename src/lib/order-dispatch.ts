@@ -10,7 +10,12 @@
 import { prisma } from './prisma';
 import { createNotification } from './notifications';
 import { haversineKm } from './geo';
-import { COURIER_LOCATION_MAX_AGE_MS, DISPATCH_NEAREST_COUNT, DISPATCH_STALE_AFTER_MS } from './constants';
+import {
+  COURIER_LOCATION_MAX_AGE_MS,
+  DISPATCH_NEAREST_COUNT,
+  DISPATCH_STALE_AFTER_MS,
+  SCHEDULE_ACTIVATE_WINDOW_MS,
+} from './constants';
 import {
   sendTelegramMessage,
   getMiniAppUrl,
@@ -165,6 +170,20 @@ export async function dispatchOrder(orderId: string): Promise<void> {
  */
 export async function redispatchStale(): Promise<number> {
   try {
+    // (a) Activate SCHEDULED orders whose window is now open (<= now + 30 min):
+    // flip to RECEIVED and geo-dispatch to the nearest couriers.
+    const dueBy = new Date(Date.now() + SCHEDULE_ACTIVATE_WINDOW_MS);
+    const due = await prisma.order.findMany({
+      where: { status: 'SCHEDULED', clientId: { not: null }, scheduledFor: { lte: dueBy } },
+      select: { id: true },
+      take: 50,
+    });
+    for (const o of due) {
+      await prisma.order.update({ where: { id: o.id }, data: { status: 'RECEIVED', botPhase: null } });
+      await dispatchB2COrderToNearest(o.id);
+    }
+
+    // (b) Broadcast RECEIVED B2C orders nobody took after the nearest offer.
     const cutoff = new Date(Date.now() - DISPATCH_STALE_AFTER_MS);
     const stale = await prisma.order.findMany({
       where: {

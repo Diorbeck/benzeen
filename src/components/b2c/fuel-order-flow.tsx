@@ -4,12 +4,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { Car, Check, Fuel, MapPin, Plus, X } from 'lucide-react';
+import { CalendarClock, Car, Check, Fuel, MapPin, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MapPicker, type LatLng } from '@/components/map/map-picker';
 import { calcOrderPrice, type FuelType } from '@/lib/pricing';
 import { formatMoney } from '@/lib/format';
 import { FUEL_TYPES, VOLUME_PRESETS, resolveLiters, submitBlockReason } from '@/lib/order-form';
+import { SCHEDULE_MIN_LEAD_MS, SCHEDULE_MAX_AHEAD_MS, SCHEDULE_STEP_MINUTES } from '@/lib/constants';
 import { loadDraft, saveDraft, clearDraft, type OrderDraft } from '@/lib/order-draft';
 import { track } from '@/lib/analytics';
 import { formatPlate, normalizePhone } from '@/lib/input-format';
@@ -30,6 +31,7 @@ export function FuelOrderFlow({
   initialFuel,
   initialVolume,
   initialCarId,
+  initialScheduleOpen = false,
 }: {
   locale: string;
   prices: Record<string, number>;
@@ -40,6 +42,8 @@ export function FuelOrderFlow({
   initialFuel?: FuelType;
   initialVolume?: number;
   initialCarId?: string;
+  // Open the "When" step in schedule mode (from /account → Запланировать заказ).
+  initialScheduleOpen?: boolean;
 }) {
   const t = useTranslations('benzin');
   const router = useRouter();
@@ -59,6 +63,9 @@ export function FuelOrderFlow({
   const [isFullTank, setIsFullTank] = useState(false);
   const [point, setPoint] = useState<LatLng | null>(null);
   const [address, setAddress] = useState('');
+  const [when, setWhen] = useState<'asap' | 'schedule'>(initialScheduleOpen ? 'schedule' : 'asap');
+  const [scheduledLocal, setScheduledLocal] = useState('');
+  const [scheduleBounds, setScheduleBounds] = useState<{ min: string; max: string }>({ min: '', max: '' });
   const [payment, setPayment] = useState<'COURIER_POS' | 'PAYME'>('COURIER_POS');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -93,6 +100,17 @@ export function FuelOrderFlow({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Schedule bounds computed client-side (avoids SSR/hydration time mismatch).
+  useEffect(() => {
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const fmt = (d: Date) =>
+      `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    setScheduleBounds({
+      min: fmt(new Date(Date.now() + SCHEDULE_MIN_LEAD_MS)),
+      max: fmt(new Date(Date.now() + SCHEDULE_MAX_AHEAD_MS)),
+    });
+  }, []);
+
   const usingNewCar = addingCar || !carId;
   const selectedCar = cars.find((c) => c.id === carId) ?? null;
   const knownTankCapacity = usingNewCar
@@ -123,7 +141,7 @@ export function FuelOrderFlow({
     [pricePerLiter, liters],
   );
 
-  const block = submitBlockReason({
+  const baseBlock = submitBlockReason({
     point,
     hasExistingCar: !usingNewCar && !!selectedCar,
     newPlate: plate,
@@ -132,6 +150,9 @@ export function FuelOrderFlow({
     isFullTank,
     knownTankCapacity,
   });
+  const scheduleInvalid = when === 'schedule' && !scheduledLocal;
+  const block: string | null = baseBlock ?? (scheduleInvalid ? 'no_time' : null);
+  const showPayme = paymeAvailable && when === 'asap';
 
   // --- inline login ---
   const [loginOpen, setLoginOpen] = useState(false);
@@ -153,7 +174,9 @@ export function FuelOrderFlow({
         address: address.trim() || undefined,
         isFullTank,
         volume: isFullTank ? undefined : volume,
-        paymentMethod: paymeAvailable ? payment : 'COURIER_POS',
+        paymentMethod: showPayme ? payment : 'COURIER_POS',
+        scheduledFor:
+          when === 'schedule' && scheduledLocal ? new Date(scheduledLocal).toISOString() : undefined,
       };
       if (!usingNewCar && selectedCar) body.clientCarId = selectedCar.id;
       else body.newCar = { plate: plate.trim(), model: model.trim() || undefined, tankCapacity: tankCapacity ? Number(tankCapacity) : undefined };
@@ -446,6 +469,32 @@ export function FuelOrderFlow({
             maxLength={200}
           />
         </StepCard>
+
+        {/* 4. When */}
+        <StepCard step={4} title={t('when.title')} icon={CalendarClock}>
+          <div className="space-y-2">
+            {(['asap', 'schedule'] as const).map((w) => (
+              <label key={w} className="flex cursor-pointer items-center gap-2.5 text-sm text-navy">
+                <input type="radio" name="when" checked={when === w} onChange={() => setWhen(w)} className="h-4 w-4 accent-primary-600" />
+                {t(`when.${w}`)}
+              </label>
+            ))}
+          </div>
+          {when === 'schedule' && (
+            <div className="mt-3">
+              <input
+                type="datetime-local"
+                className={`${inputCls} max-w-xs`}
+                min={scheduleBounds.min}
+                max={scheduleBounds.max}
+                step={SCHEDULE_STEP_MINUTES * 60}
+                value={scheduledLocal}
+                onChange={(e) => setScheduledLocal(e.target.value)}
+              />
+              <p className="mt-1 text-xs text-gray-500">{t('when.hint')}</p>
+            </div>
+          )}
+        </StepCard>
       </div>
 
       {/* Summary — sticky on desktop */}
@@ -460,7 +509,7 @@ export function FuelOrderFlow({
             total={total}
             plate={usingNewCar ? plate : selectedCar?.plate ?? ''}
             address={address}
-            paymeAvailable={paymeAvailable}
+            paymeAvailable={showPayme}
             payment={payment}
             setPayment={setPayment}
             block={block}
@@ -594,7 +643,7 @@ function Summary({
   paymeAvailable: boolean;
   payment: 'COURIER_POS' | 'PAYME';
   setPayment: (p: 'COURIER_POS' | 'PAYME') => void;
-  block: ReturnType<typeof submitBlockReason>;
+  block: string | null;
   submitting: boolean;
   error: string;
   onSubmit: () => void;

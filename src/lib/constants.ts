@@ -17,3 +17,12 @@ export const COURIER_LOCATION_MAX_AGE_MS = 5 * 60 * 1000; // 5 min
 export const DISPATCH_NEAREST_COUNT = 3;
 // A RECEIVED B2C order unassigned longer than this is broadcast to all couriers.
 export const DISPATCH_STALE_AFTER_MS = 2 * 60 * 1000; // 2 min
+
+// --- Scheduled orders (24/7) ---
+// Earliest a planned order can be set for, and how far ahead.
+export const SCHEDULE_MIN_LEAD_MS = 60 * 60 * 1000; // +1 hour
+export const SCHEDULE_MAX_AHEAD_MS = 7 * 24 * 60 * 60 * 1000; // +7 days
+// A SCHEDULED order this close to its time is activated (→ RECEIVED + dispatch).
+export const SCHEDULE_ACTIVATE_WINDOW_MS = 30 * 60 * 1000; // 30 min
+// UI time step.
+export const SCHEDULE_STEP_MINUTES = 30;

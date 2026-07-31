@@ -58,6 +58,7 @@ enum OrderStatus {
   COURIER_ASSIGNED
   IN_DELIVERY
   DISPUTED           // courier amount disputed by driver; frozen, no deduction
+  SCHEDULED          // B2C planned order; not dispatched until its window opens
 }
 
 model User {
@@ -235,6 +236,7 @@ model Order {
   totalAmount   Int?              // UZS = pricePerLiter * volume, snapshot
   paymentMethod PaymentMethod?
   paymentStatus PaymentStatus?
+  scheduledFor  DateTime?          // B2C: planned delivery time (SCHEDULED orders)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   deliveredAt DateTime?

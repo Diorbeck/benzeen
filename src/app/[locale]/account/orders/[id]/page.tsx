@@ -37,6 +37,7 @@ export default async function ClientOrderPage({
           pricePerLiter: order.pricePerLiter,
           totalAmount: order.totalAmount,
           paymentMethod: order.paymentMethod,
+          scheduledFor: order.scheduledFor ? order.scheduledFor.toISOString() : null,
           address: order.address,
           lat: order.lat,
           lng: order.lng,
