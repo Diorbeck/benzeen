@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { B2CHeader } from '@/components/b2c/header';
-import { FuelOrderFlow } from '@/components/b2c/fuel-order-flow';
+import { FuelOrderFlow, type ExistingCar } from '@/components/b2c/fuel-order-flow';
 
 export default async function BenzinPage({
   params,
@@ -15,36 +15,39 @@ export default async function BenzinPage({
   const session = await getServerSession(authOptions);
   const user = session?.user as { id?: string; role?: string } | undefined;
 
-  // Client-only flow. Guests → sign in (and back here); staff (admin/courier/…)
-  // → their dashboard, so a wrong-role visit isn't a silent bounce to home.
-  if (!user?.id) redirect(`/${locale}/client-login?callbackUrl=/${locale}/benzin`);
-  if (user.role !== 'CLIENT') redirect(`/${locale}/dashboard`);
+  // Guests AND clients may build an order (login happens inline at "Order").
+  // Staff (any non-CLIENT role) go to their dashboard.
+  if (user?.id && user.role !== 'CLIENT') redirect(`/${locale}/dashboard`);
+  const isLoggedIn = Boolean(user?.id && user.role === 'CLIENT');
 
-  const [priceRows, car] = await Promise.all([
+  const [priceRows, carRows] = await Promise.all([
     prisma.price.findMany(),
-    prisma.clientCar.findFirst({ where: { userId: user.id }, orderBy: { createdAt: 'desc' } }),
+    isLoggedIn
+      ? prisma.clientCar.findMany({ where: { userId: user!.id }, orderBy: { createdAt: 'desc' } })
+      : Promise.resolve([]),
   ]);
   const prices: Record<string, number> = {};
   for (const p of priceRows) prices[p.fuelType] = p.priceUzs;
+  const cars: ExistingCar[] = carRows.map((c) => ({
+    id: c.id,
+    plate: c.plate,
+    model: c.model,
+    tankCapacity: c.tankCapacity,
+  }));
 
   const t = await getTranslations('benzin');
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-navy">
       <B2CHeader />
-      <main className="mx-auto max-w-2xl px-5 py-10 sm:px-8">
-        <h1 className="mb-8 text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
-          {t('title')}
-        </h1>
+      <main className="mx-auto max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-navy sm:text-3xl">{t('title')}</h1>
         <FuelOrderFlow
           locale={locale}
           prices={prices}
+          cars={cars}
+          isLoggedIn={isLoggedIn}
           paymeAvailable={!!process.env.PAYME_MERCHANT_ID}
-          car={
-            car
-              ? { id: car.id, plate: car.plate, model: car.model, tankCapacity: car.tankCapacity }
-              : null
-          }
         />
       </main>
     </div>

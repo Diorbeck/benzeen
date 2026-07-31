@@ -15,17 +15,19 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'hero' });
-  const title = t('headline');
-  const description = t('subtext');
+  const t = await getTranslations({ locale, namespace: 'seo' });
+  const title = t('title');
+  const description = t('description');
+  const ogLocale = locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_US' : 'uz_UZ';
   return {
     title,
     description,
-    openGraph: {
-      title,
-      description,
-      locale: locale === 'ru' ? 'ru_RU' : locale === 'en' ? 'en_US' : 'uz_UZ',
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { uz: '/uz', ru: '/ru', en: '/en' },
     },
+    openGraph: { title, description, locale: ogLocale, type: 'website' },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
@@ -39,7 +41,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   setRequestLocale(locale as 'ru' | 'en' | 'uz');
 
   const messages = await getMessages();
-  const t = await getTranslations({ locale, namespace: 'hero' });
+  const t = await getTranslations({ locale, namespace: 'seo' });
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -47,7 +49,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     name: 'Benzeen',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
-    description: t('subtext'),
+    description: t('description'),
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'UZS' },
     provider: {
       '@type': 'Organization',

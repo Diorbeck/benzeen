@@ -45,6 +45,23 @@ const config: Config = {
           400: '#9ca3af',
           500: '#6b7280',
         },
+        // Deep navy — B2C text/contrast on light surfaces.
+        navy: {
+          DEFAULT: '#0A1F44',
+          700: '#13294f',
+          800: '#0d1f3c',
+          900: '#0A1F44',
+          950: '#06132b',
+        },
+        // Semantic — success only for success, warning only for warnings.
+        success: { DEFAULT: '#059669', 500: '#10b981', 600: '#059669' },
+        warning: { DEFAULT: '#d97706', 500: '#f59e0b', 600: '#d97706' },
+      },
+      // ~1180–1240px content container, centered, comfortable gutters.
+      container: {
+        center: true,
+        padding: { DEFAULT: '1rem', sm: '1.5rem', lg: '2rem' },
+        screens: { '2xl': '1240px' },
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
@@ -89,6 +106,20 @@ const config: Config = {
       spacing: {
         '18': '4.5rem',
         '22': '5.5rem',
+      },
+      // Radius scale kept in the 12–16px range (sheets a touch larger).
+      borderRadius: {
+        control: '0.75rem', // 12px — inputs, chips
+        card: '1rem', // 16px — cards, panels
+        sheet: '1.25rem', // 20px — bottom sheets only
+      },
+      transitionDuration: { DEFAULT: '200ms' },
+      zIndex: {
+        header: '50',
+        dropdown: '60',
+        sheet: '70',
+        modal: '80',
+        toast: '90',
       },
     },
   },

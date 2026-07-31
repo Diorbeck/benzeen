@@ -90,13 +90,13 @@ export function OrderStatus({
         {t('back')}
       </Link>
 
-      <h1 className="text-2xl font-semibold tracking-tight text-gray-900">{t('title')}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-navy">{t('title')}</h1>
 
       {/* Live tracking during active delivery */}
       {!cancelled && isActive && destination && (
         <div className="mt-6 space-y-3">
           <div className="flex items-center justify-between gap-3">
-            <p className="flex items-center gap-2 text-sm font-medium text-gray-900">
+            <p className="flex items-center gap-2 text-sm font-medium text-navy">
               <Navigation className="h-4 w-4 text-primary-600" aria-hidden />
               {t('courierComing')}
             </p>
@@ -109,7 +109,7 @@ export function OrderStatus({
       )}
 
       {cancelled ? (
-        <p className="mt-6 rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-600">{t('cancelled')}</p>
+        <p className="mt-6 rounded-card bg-red-500/10 px-4 py-3 text-sm text-red-600">{t('cancelled')}</p>
       ) : (
         <ol className="mt-8 space-y-4">
           {STEPS.map((step, i) => {
@@ -124,7 +124,7 @@ export function OrderStatus({
                 >
                   {done ? <Check className="h-4 w-4" /> : current ? <Loader2 className="h-4 w-4 animate-spin" /> : i + 1}
                 </span>
-                <span className={`text-sm ${done || current ? 'font-medium text-gray-900' : 'text-gray-400'}`}>
+                <span className={`text-sm ${done || current ? 'font-medium text-navy' : 'text-gray-400'}`}>
                   {t(`steps.${step}`)}
                 </span>
               </li>
@@ -134,7 +134,7 @@ export function OrderStatus({
       )}
 
       {/* Order details */}
-      <dl className="mt-8 space-y-2 rounded-2xl border border-gray-200 bg-gray-50 p-5 text-sm">
+      <dl className="mt-8 space-y-2 rounded-card border border-gray-200 bg-gray-50 p-5 text-sm">
         <Row label={t('car')} value={order.plate ?? '—'} />
         <Row label={t('fuel')} value={FUEL_LABEL[order.fuelType] ?? order.fuelType} />
         <Row label={t('volume')} value={`${order.dispensedVolume ?? order.volume} ${t('liters')}`} />
@@ -152,7 +152,7 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4">
       <dt className="text-gray-500">{label}</dt>
-      <dd className="text-right font-medium text-gray-900">{value}</dd>
+      <dd className="text-right font-medium text-navy">{value}</dd>
     </div>
   );
 }

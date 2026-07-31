@@ -645,6 +645,97 @@
       "title": "Tez orada",
       "desc": "Bu bo‘lim tez orada ishga tushadi. Biz ustida ishlyapmiz.",
       "back": "Bosh sahifaga"
+    },
+    "howItWorks": "Qanday ishlaydi",
+    "orderFuel": "Yoqilgʻi buyurtma qilish",
+    "account": "Kabinet",
+    "dashboard": "Panel",
+    "hero": {
+      "title": "Yoqilgʻi oʻzi yetib keladi",
+      "subtitle": "Butun Toshkent boʻylab benzin mashinangizga. Narx — AZSdagidek, buyurtmadan oldin koʻrinadi. Yetkazish bepul.",
+      "ctaBenzin": "Benzin buyurtma qilish",
+      "ctaPropan": "Propan topish",
+      "how": "Qanday ishlaydi"
+    },
+    "heroCard": {
+      "status": "Kuryer yoʻlda",
+      "coverage": "Toshkent · 24/7",
+      "priceLabel": "Narx AZSdagidek",
+      "freeDelivery": "Yetkazish bepul",
+      "cardPay": "Kuryerga karta orqali"
+    },
+    "services": {
+      "benzin": {
+        "title": "Benzin",
+        "desc": "Yoqilgʻini mashinangizga yetkazamiz — uy, ofis yoki yoʻlda.",
+        "cta": "Benzin buyurtma qilish"
+      },
+      "propan": {
+        "title": "Propan",
+        "desc": "GBOli avtolar uchun Benzeen shoxobchalarida quyish.",
+        "cta": "Yaqin shoxobchani topish"
+      }
+    },
+    "how": {
+      "title": "Qanday ishlaydi",
+      "step1": {
+        "title": "Manzilni belgilang",
+        "desc": "Yoqilgʻi qayerga kerakligini geolokatsiya yoki xaritada belgilang."
+      },
+      "step2": {
+        "title": "Yoqilgʻini tanlang",
+        "desc": "AI-92, 95 yoki 100 va kerakli hajm. Narx darhol koʻrinadi."
+      },
+      "step3": {
+        "title": "Kuryerga karta orqali toʻlang",
+        "desc": "Kuryer kelib quyadi. Toʻlov joyida karta orqali, chek — tarixda."
+      }
+    },
+    "adv": {
+      "title": "Nega Benzeen",
+      "price": {
+        "title": "Narx oldindan maʼlum",
+        "desc": "AZSdagidek — yakuniy summani buyurtmadan oldin koʻrasiz."
+      },
+      "card": {
+        "title": "Karta orqali toʻlov",
+        "desc": "Kuryerda terminal yoki QR. Naqd kerak emas."
+      },
+      "history": {
+        "title": "Buyurtmalar tarixi",
+        "desc": "Barcha buyurtma va cheklar kabinetingizda."
+      },
+      "support": {
+        "title": "Qoʻllab-quvvatlash",
+        "desc": "Nimadir notoʻgʻri ketsa, telefon orqali yordam beramiz."
+      }
+    },
+    "faq": {
+      "title": "Koʻp beriladigan savollar",
+      "q1": {
+        "q": "Qayerda ishlaysiz?",
+        "a": "Butun Toshkent boʻylab, kunu tun."
+      },
+      "q2": {
+        "q": "Yetkazish qancha turadi?",
+        "a": "Yetkazish bepul. Faqat yoqilgʻi uchun toʻlaysiz — AZSdagi narxda."
+      },
+      "q3": {
+        "q": "Qanday toʻlanadi?",
+        "a": "Kuryerga karta orqali — terminal yoki QR. Naqd kerak emas."
+      },
+      "q4": {
+        "q": "Minimal buyurtma qancha?",
+        "a": "30 litrdan."
+      }
+    },
+    "footer": {
+      "tagline": "Butun Toshkent boʻylab yoqilgʻi mashinangizga.",
+      "contactsTitle": "Aloqa",
+      "docsTitle": "Hujjatlar",
+      "terms": "Foydalanish shartlari",
+      "privacy": "Maxfiylik",
+      "rights": "Barcha huquqlar himoyalangan."
     }
   },
   "clientLogin": {
@@ -723,7 +814,44 @@
       "carRequired": "Avtomobil qo‘shing"
     },
     "paymentTitle": "Toʻlov",
-    "payOnline": "Onlayn toʻlash (Payme)"
+    "payOnline": "Onlayn toʻlash (Payme)",
+    "steps": {
+      "car": "Avtomobil",
+      "fuel": "Yoqilgʻi va hajm",
+      "address": "Manzil"
+    },
+    "addCar": "Avtomobil qoʻshish",
+    "plateLabel": "Davlat raqami",
+    "modelLabel": "Rusumi",
+    "tankLabel": "Bak hajmi, l",
+    "optional": "ixtiyoriy",
+    "customVolume": "Oʻz hajmi, l",
+    "fullTankNote": "Toʻliq bakgacha quyamiz (taxminan {max} l). Yakun — haqiqatda quyilgan litrlar boʻyicha.",
+    "summaryTitle": "Sizning buyurtma",
+    "pricePerLiterLabel": "Litr narxi",
+    "disabled": {
+      "no_point": "Xaritada manzilni belgilang",
+      "no_car": "Avtomobil qoʻshing",
+      "min_volume": "Kamida 30 litr",
+      "no_tank_capacity": "«Toʻliq bak» uchun bak hajmini kiriting"
+    },
+    "draftRestored": "Buyurtmangizni saqlab qoʻydik — davom eting.",
+    "draftClear": "Qaytadan boshlash",
+    "login": {
+      "title": "Raqamni tasdiqlang",
+      "subtitle": "Telefon raqamingizni kiriting — buyurtma uchun SMS orqali kod yuboramiz.",
+      "subtitleCode": "{phone} raqamiga yuborilgan kodni kiriting",
+      "invalidPhone": "+998XXXXXXXXX koʻrinishida raqam kiriting",
+      "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring",
+      "invalidCode": "Kod notoʻgʻri yoki muddati oʻtgan",
+      "devHint": "Kod yuborildi.",
+      "send": "Kod olish",
+      "sending": "Yuborilmoqda…",
+      "verifyAndOrder": "Tasdiqlash va buyurtma",
+      "verifying": "Tekshirilmoqda…",
+      "changePhone": "Raqamni oʻzgartirish",
+      "cancel": "Yopish"
+    }
   },
   "orderStatus": {
     "title": "Buyurtma",
@@ -747,5 +875,19 @@
     "courierComing": "Kuryer siz tomon yoʻlda",
     "eta": "≈ {minutes} daqiqa",
     "etaCalculating": "Vaqt hisoblanmoqda…"
+  },
+  "propan": {
+    "title": "Yaqin-atrofda propan",
+    "subtitle": "Benzeen gazovozlari GBOli avtolarni quyadigan shoxobchalar. Oʻzingiz kelasiz.",
+    "searchPlaceholder": "Nomi boʻyicha qidirish",
+    "mapSoon": "Shoxobchalar xaritasi tez orada",
+    "error": "Shoxobchalarni yuklab boʻlmadi. Yana urinib koʻring.",
+    "retry": "Yangilash",
+    "emptyTitle": "Shoxobchalar tez orada",
+    "emptyDesc": "Toshkent boʻylab propan shoxobchalari xaritasini tayyorlyapmiz. Keyinroq kiring."
+  },
+  "seo": {
+    "title": "Benzeen — yoqilgʻi mashinangizga Toshkentda",
+    "description": "Butun Toshkent boʻylab benzinni mashinangizga buyurtma qiling. Narx AZSdagidek, yetkazish bepul, kuryerga karta orqali toʻlov. Kunu tun."
   }
 }

@@ -645,6 +645,97 @@
       "title": "Coming soon",
       "desc": "This section will be available soon. We’re getting it ready.",
       "back": "Back to home"
+    },
+    "howItWorks": "How it works",
+    "orderFuel": "Order fuel",
+    "account": "Account",
+    "dashboard": "Dashboard",
+    "hero": {
+      "title": "Fuel comes to you",
+      "subtitle": "Petrol to your car across Tashkent. Price like at the station, shown before you order. Free delivery.",
+      "ctaBenzin": "Order petrol",
+      "ctaPropan": "Find propane",
+      "how": "How it works"
+    },
+    "heroCard": {
+      "status": "Courier on the way",
+      "coverage": "Tashkent · 24/7",
+      "priceLabel": "Price like at the station",
+      "freeDelivery": "Free delivery",
+      "cardPay": "Card to courier"
+    },
+    "services": {
+      "benzin": {
+        "title": "Petrol",
+        "desc": "We bring fuel to your car — at home, the office, or on the road.",
+        "cta": "Order petrol"
+      },
+      "propan": {
+        "title": "Propane",
+        "desc": "Refuel LPG cars at Benzeen points.",
+        "cta": "Find nearest point"
+      }
+    },
+    "how": {
+      "title": "How it works",
+      "step1": {
+        "title": "Set the address",
+        "desc": "Mark where to bring the fuel — by geolocation or on the map."
+      },
+      "step2": {
+        "title": "Choose fuel",
+        "desc": "AI-92, 95 or 100 and the volume. The price shows instantly."
+      },
+      "step3": {
+        "title": "Pay by card to the courier",
+        "desc": "The courier arrives and fuels up. Pay by card on the spot; the receipt is in your history."
+      }
+    },
+    "adv": {
+      "title": "Why Benzeen",
+      "price": {
+        "title": "Price known upfront",
+        "desc": "Like at the station — you see the total before ordering."
+      },
+      "card": {
+        "title": "Card payment",
+        "desc": "Terminal or QR with the courier. No cash needed."
+      },
+      "history": {
+        "title": "Order history",
+        "desc": "All orders and receipts in your account."
+      },
+      "support": {
+        "title": "Support",
+        "desc": "We help by phone if anything goes wrong."
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "q1": {
+        "q": "Where do you operate?",
+        "a": "Across all of Tashkent, around the clock."
+      },
+      "q2": {
+        "q": "How much is delivery?",
+        "a": "Delivery is free. You pay only for the fuel — at the station price."
+      },
+      "q3": {
+        "q": "How do I pay?",
+        "a": "By card to the courier — terminal or QR. No cash needed."
+      },
+      "q4": {
+        "q": "What's the minimum order?",
+        "a": "From 30 liters."
+      }
+    },
+    "footer": {
+      "tagline": "Fuel to your car across Tashkent.",
+      "contactsTitle": "Contacts",
+      "docsTitle": "Documents",
+      "terms": "Terms of use",
+      "privacy": "Privacy",
+      "rights": "All rights reserved."
     }
   },
   "clientLogin": {
@@ -723,7 +814,44 @@
       "carRequired": "Add a car"
     },
     "paymentTitle": "Payment",
-    "payOnline": "Pay online (Payme)"
+    "payOnline": "Pay online (Payme)",
+    "steps": {
+      "car": "Vehicle",
+      "fuel": "Fuel & volume",
+      "address": "Address"
+    },
+    "addCar": "Add a vehicle",
+    "plateLabel": "Plate number",
+    "modelLabel": "Model",
+    "tankLabel": "Tank capacity, L",
+    "optional": "optional",
+    "customVolume": "Custom volume, L",
+    "fullTankNote": "We fill up to a full tank (about {max} L). The total is based on liters actually dispensed.",
+    "summaryTitle": "Your order",
+    "pricePerLiterLabel": "Price per liter",
+    "disabled": {
+      "no_point": "Pick the address on the map",
+      "no_car": "Add a vehicle",
+      "min_volume": "Minimum 30 liters",
+      "no_tank_capacity": "Enter tank capacity for a full tank"
+    },
+    "draftRestored": "We saved your order — pick up where you left off.",
+    "draftClear": "Start over",
+    "login": {
+      "title": "Confirm your number",
+      "subtitle": "Enter your phone — we'll text a code to place the order.",
+      "subtitleCode": "Enter the code sent to {phone}",
+      "invalidPhone": "Enter a valid +998XXXXXXXXX number",
+      "smsUnavailable": "SMS is temporarily unavailable, please try again later",
+      "invalidCode": "Invalid or expired code",
+      "devHint": "Code sent.",
+      "send": "Get code",
+      "sending": "Sending…",
+      "verifyAndOrder": "Confirm & order",
+      "verifying": "Verifying…",
+      "changePhone": "Change number",
+      "cancel": "Close"
+    }
   },
   "orderStatus": {
     "title": "Order",
@@ -747,5 +875,19 @@
     "courierComing": "Courier is on the way",
     "eta": "≈ {minutes} min",
     "etaCalculating": "Estimating time…"
+  },
+  "propan": {
+    "title": "Propane nearby",
+    "subtitle": "Points where Benzeen tankers refuel LPG cars. You drive up yourself.",
+    "searchPlaceholder": "Search points by name",
+    "mapSoon": "Points map coming soon",
+    "error": "Couldn't load points. Please try again.",
+    "retry": "Refresh",
+    "emptyTitle": "Points coming soon",
+    "emptyDesc": "We're preparing the propane points map across Tashkent. Check back later."
+  },
+  "seo": {
+    "title": "Benzeen — fuel to your car in Tashkent",
+    "description": "Order petrol to your car across Tashkent. Price like at the station, free delivery, card payment to the courier. 24/7."
   }
 }

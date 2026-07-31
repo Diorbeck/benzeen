@@ -53,14 +53,14 @@ export function AccountView({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900">
+    <div className="min-h-screen bg-gray-50 text-navy">
       <header className="sticky top-0 z-40 border-b border-gray-100 bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between gap-4 px-5 sm:px-8">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-600">
               <Fuel className="h-5 w-5 text-white" aria-hidden />
             </div>
-            <span className="text-lg font-semibold tracking-tight text-gray-900">
+            <span className="text-lg font-semibold tracking-tight text-navy">
               {t('title')}
             </span>
           </div>
@@ -80,13 +80,13 @@ export function AccountView({
 
       <main className="mx-auto max-w-3xl space-y-6 px-5 py-10 sm:px-8">
         {/* Profile */}
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+        <section className="rounded-card border border-gray-200 bg-white p-6 sm:p-8">
           <form onSubmit={saveName} className="space-y-5">
             <div>
               <label className="mb-1 block text-xs font-medium text-gray-500">
                 {t('phone')}
               </label>
-              <p className="text-base font-medium text-gray-900">{phone || '—'}</p>
+              <p className="text-base font-medium text-navy">{phone || '—'}</p>
             </div>
             <div>
               <label
@@ -105,7 +105,7 @@ export function AccountView({
                   setName(e.target.value);
                   setSaved(false);
                 }}
-                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+                className="w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-navy placeholder-gray-400 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
               />
             </div>
             <div className="flex items-center gap-3">
@@ -118,10 +118,10 @@ export function AccountView({
         </section>
 
         {/* Order history */}
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+        <section className="rounded-card border border-gray-200 bg-white p-6 sm:p-8">
           <div className="mb-4 flex items-center gap-2.5">
             <Clock className="h-5 w-5 text-primary-600" aria-hidden />
-            <h2 className="text-base font-semibold text-gray-900">{t('orderHistory')}</h2>
+            <h2 className="text-base font-semibold text-navy">{t('orderHistory')}</h2>
           </div>
           {orders.length === 0 ? (
             <p className="text-sm text-gray-500">{t('orderHistoryEmpty')}</p>
@@ -134,7 +134,7 @@ export function AccountView({
                     className="flex items-center justify-between gap-3 py-3 transition-colors hover:text-primary-600"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-gray-900">
+                      <p className="truncate text-sm font-medium text-navy">
                         {FUEL_LABEL[o.fuelType] ?? o.fuelType} · {o.volume} {t('liters')}
                         {o.totalAmount != null ? ` · ${fmt.format(o.totalAmount)} ${t('sum')}` : ''}
                       </p>
@@ -149,10 +149,10 @@ export function AccountView({
         </section>
 
         {/* Saved addresses (placeholder — populated in M5) */}
-        <section className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8">
+        <section className="rounded-card border border-gray-200 bg-white p-6 sm:p-8">
           <div className="mb-3 flex items-center gap-2.5">
             <MapPin className="h-5 w-5 text-primary-600" aria-hidden />
-            <h2 className="text-base font-semibold text-gray-900">{t('addresses')}</h2>
+            <h2 className="text-base font-semibold text-navy">{t('addresses')}</h2>
           </div>
           <p className="text-sm text-gray-500">{t('addressesEmpty')}</p>
         </section>
