@@ -14,7 +14,7 @@ export default async function BenzinPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ fuel?: string; volume?: string; carId?: string }>;
+  searchParams: Promise<{ fuel?: string; volume?: string; carId?: string; schedule?: string }>;
 }) {
   const { locale } = await params;
   const sp = await searchParams;
@@ -22,6 +22,7 @@ export default async function BenzinPage({
   const volNum = sp.volume ? Number(sp.volume) : NaN;
   const initialVolume = Number.isInteger(volNum) && volNum > 0 ? volNum : undefined;
   const initialCarId = sp.carId || undefined;
+  const initialScheduleOpen = sp.schedule === '1';
   const session = await getServerSession(authOptions);
   const user = session?.user as { id?: string; role?: string } | undefined;
 
@@ -61,6 +62,7 @@ export default async function BenzinPage({
           initialFuel={initialFuel}
           initialVolume={initialVolume}
           initialCarId={initialCarId}
+          initialScheduleOpen={initialScheduleOpen}
         />
       </main>
     </div>

@@ -782,7 +782,8 @@
       "DELIVERED": "Delivered",
       "CANCELLED": "Cancelled",
       "REJECTED": "Rejected",
-      "CREATED": "Created"
+      "CREATED": "Created",
+      "SCHEDULED": "Scheduled"
     },
     "tabs": {
       "profile": "Profile",
@@ -808,7 +809,9 @@
       "repeat": "Repeat",
       "empty": "No orders yet.",
       "orderedN": "{n} L ordered",
-      "filledN": "{n} L filled"
+      "filledN": "{n} L filled",
+      "schedule": "Schedule an order",
+      "scheduledBadge": "Next scheduled order: {when}"
     }
   },
   "benzin": {
@@ -860,7 +863,8 @@
       "no_point": "Pick the address on the map",
       "no_car": "Add a vehicle",
       "min_volume": "Minimum 30 liters",
-      "no_tank_capacity": "Enter tank capacity for a full tank"
+      "no_tank_capacity": "Enter tank capacity for a full tank",
+      "no_time": "Pick date and time"
     },
     "draftRestored": "We saved your order — pick up where you left off.",
     "draftClear": "Start over",
@@ -878,6 +882,12 @@
       "verifying": "Verifying…",
       "changePhone": "Change number",
       "cancel": "Close"
+    },
+    "when": {
+      "title": "When to deliver?",
+      "asap": "As soon as possible",
+      "schedule": "Pick date & time",
+      "hint": "24/7 delivery. Time from +1 hour to +7 days."
     }
   },
   "orderStatus": {
@@ -901,7 +911,10 @@
     "payCourier": "Card to courier",
     "courierComing": "Courier is on the way",
     "eta": "≈ {minutes} min",
-    "etaCalculating": "Estimating time…"
+    "etaCalculating": "Estimating time…",
+    "scheduledFor": "Scheduled for {when}",
+    "cancelOrder": "Cancel order",
+    "cancelling": "Cancelling…"
   },
   "propan": {
     "title": "Propane nearby",

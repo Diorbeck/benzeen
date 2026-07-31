@@ -782,7 +782,8 @@
       "DELIVERED": "Yetkazildi",
       "CANCELLED": "Bekor qilingan",
       "REJECTED": "Rad etilgan",
-      "CREATED": "Yaratilgan"
+      "CREATED": "Yaratilgan",
+      "SCHEDULED": "Rejalashtirilgan"
     },
     "tabs": {
       "profile": "Profil",
@@ -808,7 +809,9 @@
       "repeat": "Takrorlash",
       "empty": "Hozircha buyurtmalar yoʻq.",
       "orderedN": "{n} l buyurtma",
-      "filledN": "{n} l quyildi"
+      "filledN": "{n} l quyildi",
+      "schedule": "Buyurtmani rejalashtirish",
+      "scheduledBadge": "Eng yaqin rejalashtirilgan buyurtma: {when}"
     }
   },
   "benzin": {
@@ -860,7 +863,8 @@
       "no_point": "Xaritada manzilni belgilang",
       "no_car": "Avtomobil qoʻshing",
       "min_volume": "Kamida 30 litr",
-      "no_tank_capacity": "«Toʻliq bak» uchun bak hajmini kiriting"
+      "no_tank_capacity": "«Toʻliq bak» uchun bak hajmini kiriting",
+      "no_time": "Sana va vaqtni tanlang"
     },
     "draftRestored": "Buyurtmangizni saqlab qoʻydik — davom eting.",
     "draftClear": "Qaytadan boshlash",
@@ -878,6 +882,12 @@
       "verifying": "Tekshirilmoqda…",
       "changePhone": "Raqamni oʻzgartirish",
       "cancel": "Yopish"
+    },
+    "when": {
+      "title": "Qachon yetkazamiz?",
+      "asap": "Iloji boricha tezroq",
+      "schedule": "Sana va vaqtni tanlash",
+      "hint": "Yetkazish kunu tun. Vaqt — +1 soatdan +7 kungacha."
     }
   },
   "orderStatus": {
@@ -901,7 +911,10 @@
     "payCourier": "Kuryerga karta orqali",
     "courierComing": "Kuryer siz tomon yoʻlda",
     "eta": "≈ {minutes} daqiqa",
-    "etaCalculating": "Vaqt hisoblanmoqda…"
+    "etaCalculating": "Vaqt hisoblanmoqda…",
+    "scheduledFor": "{when} ga rejalashtirilgan",
+    "cancelOrder": "Buyurtmani bekor qilish",
+    "cancelling": "Bekor qilinmoqda…"
   },
   "propan": {
     "title": "Yaqin-atrofda propan",

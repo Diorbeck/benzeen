@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Check, Loader2, Navigation } from 'lucide-react';
+import { ArrowLeft, Check, Loader2, Navigation, CalendarClock } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { TrackingMap } from '@/components/map/tracking-map';
 import { etaProvider, MAX_ETA_MINUTES } from '@/lib/eta';
 
@@ -16,6 +17,7 @@ export type ClientOrder = {
   pricePerLiter: number | null;
   totalAmount: number | null;
   paymentMethod: string | null;
+  scheduledFor: string | null;
   address: string | null;
   lat: number | null;
   lng: number | null;
@@ -40,7 +42,19 @@ export function OrderStatus({
   const t = useTranslations('orderStatus');
   const [order, setOrder] = useState<ClientOrder>(initial);
   const [courier, setCourier] = useState<Courier>(null);
+  const [cancelling, setCancelling] = useState(false);
   const fmt = useMemo(() => new Intl.NumberFormat('ru-RU'), []);
+  const dtTag = locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU';
+
+  const cancelScheduled = async () => {
+    setCancelling(true);
+    try {
+      const res = await fetch(`/api/orders/client/${initial.id}/cancel`, { method: 'POST' });
+      if (res.ok) setOrder((o) => ({ ...o, status: 'CANCELLED' }));
+    } finally {
+      setCancelling(false);
+    }
+  };
 
   // Poll status (+ courier tracking while the delivery is active) every 10s,
   // until the order reaches a terminal state.
@@ -71,6 +85,7 @@ export function OrderStatus({
 
   const activeIndex = STEPS.indexOf(order.status as (typeof STEPS)[number]);
   const cancelled = order.status === 'CANCELLED' || order.status === 'REJECTED';
+  const scheduled = order.status === 'SCHEDULED';
   const isActive = ACTIVE.has(order.status);
   const destination =
     order.lat != null && order.lng != null ? { lat: order.lat, lng: order.lng } : null;
@@ -110,6 +125,30 @@ export function OrderStatus({
 
       {cancelled ? (
         <p className="mt-6 rounded-card bg-red-500/10 px-4 py-3 text-sm text-red-600">{t('cancelled')}</p>
+      ) : scheduled ? (
+        <div className="mt-6 space-y-3 rounded-card border border-primary-100 bg-primary-50/50 p-5">
+          <p className="flex items-center gap-2 text-sm font-medium text-navy">
+            <CalendarClock className="h-4 w-4 text-primary-600" aria-hidden />
+            {t('scheduledFor', {
+              when: order.scheduledFor
+                ? new Date(order.scheduledFor).toLocaleString(dtTag, {
+                    day: 'numeric',
+                    month: 'long',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : '',
+            })}
+          </p>
+          <Button
+            variant="secondary"
+            className="rounded-control"
+            onClick={cancelScheduled}
+            disabled={cancelling}
+          >
+            {cancelling ? t('cancelling') : t('cancelOrder')}
+          </Button>
+        </div>
       ) : (
         <ol className="mt-8 space-y-4">
           {STEPS.map((step, i) => {

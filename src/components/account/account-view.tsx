@@ -19,6 +19,7 @@ export type AccountOrder = {
   dispensedVolume: number | null;
   totalAmount: number | null;
   clientCarId: string | null;
+  scheduledFor: string | null;
   createdAt: string;
 };
 export type AccountCar = { id: string; plate: string; model: string | null; tankCapacity: number | null };
@@ -273,14 +274,44 @@ function CarForm({ car, onDone, onCancel }: { car?: AccountCar; onDone: () => vo
 function OrdersTab({ locale, orders }: { locale: string; orders: AccountOrder[] }) {
   const t = useTranslations('account');
   const fmt = (n: number) => formatMoney(n, locale);
+  const dtTag = locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU';
+
+  // Nearest upcoming scheduled order (for the badge).
+  const nextScheduled = orders
+    .filter((o) => o.status === 'SCHEDULED' && o.scheduledFor)
+    .sort((a, b) => new Date(a.scheduledFor!).getTime() - new Date(b.scheduledFor!).getTime())[0];
 
   return (
     <div className="space-y-4">
-      <Button className="w-full rounded-control bg-primary-600 font-semibold text-white hover:bg-primary-500 sm:w-auto" asChild>
-        <Link href={`/${locale}/benzin`}>
-          <Plus className="h-4 w-4" /> {t('orders.new')}
+      {nextScheduled && (
+        <Link
+          href={`/${locale}/account/orders/${nextScheduled.id}`}
+          className="flex items-center gap-2.5 rounded-card border border-primary-100 bg-primary-50/60 px-4 py-3 text-sm text-primary-800 hover:bg-primary-50"
+        >
+          <Clock className="h-4 w-4 shrink-0 text-primary-600" aria-hidden />
+          {t('orders.scheduledBadge', {
+            when: new Date(nextScheduled.scheduledFor!).toLocaleString(dtTag, {
+              day: 'numeric',
+              month: 'long',
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          })}
         </Link>
-      </Button>
+      )}
+
+      <div className="flex flex-wrap gap-2">
+        <Button className="rounded-control bg-primary-600 font-semibold text-white hover:bg-primary-500" asChild>
+          <Link href={`/${locale}/benzin`}>
+            <Plus className="h-4 w-4" /> {t('orders.new')}
+          </Link>
+        </Button>
+        <Button variant="secondary" className="rounded-control" asChild>
+          <Link href={`/${locale}/benzin?schedule=1`}>
+            <Clock className="h-4 w-4" /> {t('orders.schedule')}
+          </Link>
+        </Button>
+      </div>
 
       {orders.length === 0 ? (
         <div className="rounded-card border border-gray-200 bg-white p-10 text-center">
