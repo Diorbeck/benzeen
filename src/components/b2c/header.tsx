@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { Fuel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
+import { B2CThemeToggle } from './theme-toggle';
 import { track } from '@/lib/analytics';
 import { siteConfig } from '@/lib/site-config';
 
@@ -29,7 +30,7 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
   const role = (session?.user as { role?: string } | undefined)?.role;
 
   return (
-    <header className="sticky top-0 z-header border-b border-gray-100 bg-white/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-header border-b border-gray-100 dark:border-white/10 bg-white/85 dark:bg-navy-900/85 backdrop-blur-xl">
       <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href={`/${locale}`}
@@ -38,20 +39,21 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
           <span className="flex h-9 w-9 items-center justify-center rounded-control bg-primary-600">
             <Fuel className="h-5 w-5 text-white" aria-hidden />
           </span>
-          <span className="text-lg font-semibold tracking-tight text-navy">{siteConfig.appName}</span>
+          <span className="text-lg font-semibold tracking-tight text-navy dark:text-white">{siteConfig.appName}</span>
         </Link>
 
         <div className="flex items-center gap-1.5 sm:gap-3">
           <Link
             href={`/${locale}#how`}
-            className="hidden rounded-control px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-navy md:inline-block"
+            className="hidden rounded-control px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-navy md:inline-block"
           >
             {t('howItWorks')}
           </Link>
           <LanguageSwitcher />
+          <B2CThemeToggle />
 
           {status === 'loading' ? (
-            <span className="h-9 w-20 animate-pulse rounded-control bg-gray-100" aria-hidden />
+            <span className="h-9 w-20 animate-pulse rounded-control bg-gray-100 dark:bg-white/10" aria-hidden />
           ) : role === 'CLIENT' ? (
             <Button variant="secondary" size="sm" className="rounded-control" asChild>
               <Link href={`/${locale}/account`}>{t('account')}</Link>
@@ -62,7 +64,7 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
             </Button>
           ) : (
             <>
-              <Button variant="ghost" size="sm" className="hidden rounded-control text-gray-600 hover:text-navy sm:inline-flex" asChild>
+              <Button variant="ghost" size="sm" className="hidden rounded-control text-gray-600 dark:text-gray-300 hover:text-navy sm:inline-flex" asChild>
                 <Link href={`/${locale}/client-login`} onClick={() => track('login_clicked', { where: 'header' })}>
                   {t('signIn')}
                 </Link>
