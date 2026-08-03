@@ -24,7 +24,7 @@ export default async function ClientOrderPage({
   if (!order) notFound();
 
   return (
-    <div className="min-h-screen bg-white text-gray-900">
+    <div className="min-h-screen bg-white dark:bg-navy-900 text-gray-900">
       <B2CHeader />
       <OrderStatus
         locale={locale}

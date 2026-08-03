@@ -691,25 +691,6 @@
         "desc": "Kuryer kelib quyadi. Toʻlov joyida karta orqali, chek — tarixda."
       }
     },
-    "adv": {
-      "title": "Nega Benzeen",
-      "price": {
-        "title": "Narx oldindan maʼlum",
-        "desc": "AZSdagidek — yakuniy summani buyurtmadan oldin koʻrasiz."
-      },
-      "card": {
-        "title": "Karta orqali toʻlov",
-        "desc": "Kuryerda terminal yoki QR. Naqd kerak emas."
-      },
-      "history": {
-        "title": "Buyurtmalar tarixi",
-        "desc": "Barcha buyurtma va cheklar kabinetingizda."
-      },
-      "support": {
-        "title": "Qoʻllab-quvvatlash",
-        "desc": "Nimadir notoʻgʻri ketsa, telefon orqali yordam beramiz."
-      }
-    },
     "faq": {
       "title": "Koʻp beriladigan savollar",
       "q1": {

@@ -691,25 +691,6 @@
         "desc": "The courier arrives and fuels up. Pay by card on the spot; the receipt is in your history."
       }
     },
-    "adv": {
-      "title": "Why Benzeen",
-      "price": {
-        "title": "Price known upfront",
-        "desc": "Like at the station — you see the total before ordering."
-      },
-      "card": {
-        "title": "Card payment",
-        "desc": "Terminal or QR with the courier. No cash needed."
-      },
-      "history": {
-        "title": "Order history",
-        "desc": "All orders and receipts in your account."
-      },
-      "support": {
-        "title": "Support",
-        "desc": "We help by phone if anything goes wrong."
-      }
-    },
     "faq": {
       "title": "FAQ",
       "q1": {

@@ -20,7 +20,7 @@ const FUEL_LABEL: Record<FuelType, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95
 export type ExistingCar = { id: string; plate: string; model: string | null; tankCapacity: number | null };
 
 const inputCls =
-  'w-full rounded-control border border-gray-200 bg-white px-4 py-3 text-navy placeholder-gray-400 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20';
+  'w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-3 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20';
 
 export function FuelOrderFlow({
   locale,
@@ -282,7 +282,7 @@ export function FuelOrderFlow({
       {/* Steps */}
       <div className="space-y-5 pb-40 lg:pb-8">
         {draftRestored && (
-          <div className="flex items-center justify-between gap-3 rounded-control border border-primary-100 bg-primary-50/60 px-4 py-3 text-sm text-primary-800">
+          <div className="flex items-center justify-between gap-3 rounded-control border border-primary-100 dark:border-primary-500/30 bg-primary-50/60 dark:bg-primary-500/15 px-4 py-3 text-sm text-primary-800 dark:text-primary-300">
             <span>{t('draftRestored')}</span>
             <button
               type="button"
@@ -291,7 +291,7 @@ export function FuelOrderFlow({
                 setDraftRestored(false);
                 window.location.reload();
               }}
-              className="shrink-0 font-medium text-primary-700 underline-offset-2 hover:underline"
+              className="shrink-0 font-medium text-primary-700 dark:text-primary-300 underline-offset-2 hover:underline"
             >
               {t('draftClear')}
             </button>
@@ -313,15 +313,15 @@ export function FuelOrderFlow({
                   }}
                   className={`flex w-full items-center justify-between rounded-control border px-4 py-3 text-left transition ${
                     !usingNewCar && carId === c.id
-                      ? 'border-primary-500 bg-primary-50/50 ring-2 ring-primary-500/20'
-                      : 'border-gray-200 bg-white hover:border-primary-200'
+                      ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 ring-2 ring-primary-500/20'
+                      : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
-                  <span className="text-sm font-medium text-navy">
+                  <span className="text-sm font-medium text-navy dark:text-white">
                     {c.plate}
                     {c.model ? ` · ${c.model}` : ''}
                   </span>
-                  {!usingNewCar && carId === c.id && <Check className="h-4 w-4 text-primary-600" />}
+                  {!usingNewCar && carId === c.id && <Check className="h-4 w-4 text-primary-600 dark:text-primary-400" />}
                 </button>
               ))}
               <button
@@ -331,7 +331,7 @@ export function FuelOrderFlow({
                   setCarId(null);
                 }}
                 className={`flex w-full items-center gap-2 rounded-control border px-4 py-3 text-left text-sm font-medium transition ${
-                  usingNewCar ? 'border-primary-500 bg-primary-50/50 text-primary-700' : 'border-dashed border-gray-300 text-gray-600 hover:border-primary-300'
+                  usingNewCar ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-dashed border-gray-300 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-500/40'
                 }`}
               >
                 <Plus className="h-4 w-4" /> {t('addCar')}
@@ -385,11 +385,11 @@ export function FuelOrderFlow({
                     track('fuel_selected', { fuel: f });
                   }}
                   className={`rounded-control border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    active ? 'border-primary-500 bg-primary-50/50 ring-2 ring-primary-500/20' : 'border-gray-200 bg-white hover:border-primary-200'
+                    active ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 ring-2 ring-primary-500/20' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
-                  <span className="block text-sm font-semibold text-navy">{FUEL_LABEL[f]}</span>
-                  <span className="mt-0.5 block text-xs text-gray-500">
+                  <span className="block text-sm font-semibold text-navy dark:text-white">{FUEL_LABEL[f]}</span>
+                  <span className="mt-0.5 block text-xs text-gray-500 dark:text-gray-400">
                     {p ? `${formatMoney(p, locale)} ${t('perLiter')}` : '—'}
                   </span>
                 </button>
@@ -410,7 +410,7 @@ export function FuelOrderFlow({
                     track('volume_selected', { liters: v });
                   }}
                   className={`min-h-[44px] rounded-control border px-4 text-sm font-medium transition ${
-                    active ? 'border-primary-500 bg-primary-50/50 text-primary-700' : 'border-gray-200 bg-white text-gray-700 hover:border-primary-200'
+                    active ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
                   {v} {t('liters')}
@@ -425,7 +425,7 @@ export function FuelOrderFlow({
                   track('volume_selected', { fullTank: true });
                 }}
                 className={`min-h-[44px] rounded-control border px-4 text-sm font-medium transition ${
-                  isFullTank ? 'border-primary-500 bg-primary-50/50 text-primary-700' : 'border-gray-200 bg-white text-gray-700 hover:border-primary-200'
+                  isFullTank ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
                 }`}
               >
                 {t('fullTank')}
@@ -434,19 +434,19 @@ export function FuelOrderFlow({
           </div>
 
           {isFullTank ? (
-            <p className="mt-3 rounded-control bg-amber-50 px-3 py-2 text-xs text-amber-700">
+            <p className="mt-3 rounded-control bg-amber-50 dark:bg-warning-500/10 px-3 py-2 text-xs text-amber-700 dark:text-warning-500">
               {t('fullTankNote', { max: knownTankCapacity ?? 0 })}
             </p>
           ) : (
             <div className="mt-3">
-              <label className="mb-1 block text-xs font-medium text-gray-500">{t('customVolume')}</label>
+              <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">{t('customVolume')}</label>
               <input
                 className={`${inputCls} max-w-[10rem]`}
                 inputMode="numeric"
                 value={String(volume)}
                 onChange={(e) => setVolume(Number(e.target.value.replace(/\D/g, '')) || 0)}
               />
-              <p className="mt-1 text-xs text-gray-500">{t('minVolume', { min: 30 })}</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('minVolume', { min: 30 })}</p>
             </div>
           )}
         </StepCard>
@@ -474,7 +474,7 @@ export function FuelOrderFlow({
         <StepCard step={4} title={t('when.title')} icon={CalendarClock}>
           <div className="space-y-2">
             {(['asap', 'schedule'] as const).map((w) => (
-              <label key={w} className="flex cursor-pointer items-center gap-2.5 text-sm text-navy">
+              <label key={w} className="flex cursor-pointer items-center gap-2.5 text-sm text-navy dark:text-white">
                 <input type="radio" name="when" checked={when === w} onChange={() => setWhen(w)} className="h-4 w-4 accent-primary-600" />
                 {t(`when.${w}`)}
               </label>
@@ -491,7 +491,7 @@ export function FuelOrderFlow({
                 value={scheduledLocal}
                 onChange={(e) => setScheduledLocal(e.target.value)}
               />
-              <p className="mt-1 text-xs text-gray-500">{t('when.hint')}</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('when.hint')}</p>
             </div>
           )}
         </StepCard>
@@ -521,12 +521,12 @@ export function FuelOrderFlow({
       </div>
 
       {/* Mobile fixed bottom bar */}
-      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-100 bg-white/95 p-3 backdrop-blur lg:hidden">
-        {block && <p className="mb-2 text-center text-xs text-amber-700">{t(`disabled.${block}`)}</p>}
-        {error && <p className="mb-2 text-center text-xs text-red-600">{error}</p>}
+      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-navy-900/95 p-3 backdrop-blur lg:hidden">
+        {block && <p className="mb-2 text-center text-xs text-amber-700 dark:text-warning-500">{t(`disabled.${block}`)}</p>}
+        {error && <p className="mb-2 text-center text-xs text-red-600 dark:text-red-400">{error}</p>}
         <div className="mb-2 flex items-center justify-between px-1 text-sm">
-          <span className="text-gray-500">{t('total')}</span>
-          <span className="text-lg font-bold text-navy">
+          <span className="text-gray-500 dark:text-gray-400">{t('total')}</span>
+          <span className="text-lg font-bold text-navy dark:text-white">
             {formatMoney(total, locale)} {t('sum')}
           </span>
         </div>
@@ -576,13 +576,13 @@ function StepCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-card border border-gray-200 bg-white p-5 shadow-soft sm:p-6">
+    <section className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft sm:p-6">
       <div className="mb-4 flex items-center gap-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-control bg-primary-50 text-primary-600">
+        <span className="flex h-8 w-8 items-center justify-center rounded-control bg-primary-50 dark:bg-primary-500/15 text-primary-600 dark:text-primary-400">
           <Icon className="h-4 w-4" aria-hidden />
         </span>
-        <h2 className="text-base font-semibold text-navy">
-          <span className="mr-1.5 text-gray-400">{step}.</span>
+        <h2 className="text-base font-semibold text-navy dark:text-white">
+          <span className="mr-1.5 text-gray-400 dark:text-gray-500">{step}.</span>
           {title}
         </h2>
       </div>
@@ -604,9 +604,9 @@ function Field({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-gray-500">
+      <label className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
         {label}
-        {optional && optionalText ? <span className="ml-1 text-gray-400">· {optionalText}</span> : null}
+        {optional && optionalText ? <span className="ml-1 text-gray-400 dark:text-gray-500">· {optionalText}</span> : null}
       </label>
       {children}
     </div>
@@ -649,8 +649,8 @@ function Summary({
   onSubmit: () => void;
 }) {
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-5 shadow-soft">
-      <h2 className="text-base font-semibold text-navy">{t('summaryTitle')}</h2>
+    <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft">
+      <h2 className="text-base font-semibold text-navy dark:text-white">{t('summaryTitle')}</h2>
       <dl className="mt-4 space-y-2 text-sm">
         {plate && <SummaryRow label={t('steps.car')} value={plate} />}
         <SummaryRow label={t('fuelTitle')} value={fuelLabel} />
@@ -658,14 +658,14 @@ function Summary({
         <SummaryRow label={t('pricePerLiterLabel')} value={`${formatMoney(pricePerLiter, locale)} ${t('sum')}`} />
         {address && <SummaryRow label={t('steps.address')} value={address} />}
         <div className="flex items-center justify-between pt-1">
-          <dt className="text-gray-500">{t('delivery')}</dt>
-          <dd className="font-medium text-success-600">{t('deliveryFree')}</dd>
+          <dt className="text-gray-500 dark:text-gray-400">{t('delivery')}</dt>
+          <dd className="font-medium text-success-600 dark:text-success-500">{t('deliveryFree')}</dd>
         </div>
       </dl>
 
-      <div className="mt-4 flex items-baseline justify-between border-t border-gray-100 pt-4">
-        <span className="text-sm font-medium text-gray-500">{t('total')}</span>
-        <span className="text-2xl font-bold text-navy">
+      <div className="mt-4 flex items-baseline justify-between border-t border-gray-100 dark:border-white/10 pt-4">
+        <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('total')}</span>
+        <span className="text-2xl font-bold text-navy dark:text-white">
           {formatMoney(total, locale)} {t('sum')}
         </span>
       </div>
@@ -674,21 +674,21 @@ function Summary({
       <div className="mt-4 space-y-2">
         {paymeAvailable ? (
           (['COURIER_POS', 'PAYME'] as const).map((m) => (
-            <label key={m} className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-700">
+            <label key={m} className="flex cursor-pointer items-center gap-2.5 text-sm text-gray-700 dark:text-gray-200">
               <input type="radio" name="pay" checked={payment === m} onChange={() => setPayment(m)} className="h-4 w-4 accent-primary-600" />
               {m === 'COURIER_POS' ? t('payCourier') : t('payOnline')}
             </label>
           ))
         ) : (
-          <p className="flex items-center gap-2 text-sm text-gray-500">
-            <Fuel className="h-4 w-4 text-primary-600" aria-hidden />
+          <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+            <Fuel className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
             {t('payCourier')}
           </p>
         )}
       </div>
 
-      {block && <p className="mt-3 text-sm text-amber-700">{t(`disabled.${block}`)}</p>}
-      {error && <p className="mt-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600">{error}</p>}
+      {block && <p className="mt-3 text-sm text-amber-700 dark:text-warning-500">{t(`disabled.${block}`)}</p>}
+      {error && <p className="mt-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       <Button
         onClick={onSubmit}
@@ -704,8 +704,8 @@ function Summary({
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <dt className="text-gray-500">{label}</dt>
-      <dd className="text-right font-medium text-navy">{value}</dd>
+      <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
+      <dd className="text-right font-medium text-navy dark:text-white">{value}</dd>
     </div>
   );
 }
@@ -742,25 +742,25 @@ function InlineLogin({
   return (
     <div className="fixed inset-0 z-modal flex items-end justify-center bg-black/40 sm:items-center" onClick={onClose}>
       <div
-        className="w-full max-w-md rounded-t-sheet bg-white p-6 shadow-soft-lg sm:rounded-card"
+        className="w-full max-w-md rounded-t-sheet bg-white dark:bg-navy-900 p-6 shadow-soft-lg sm:rounded-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
       >
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-navy">{t('login.title')}</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="text-lg font-semibold text-navy dark:text-white">{t('login.title')}</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {step === 'phone' ? t('login.subtitle') : t('login.subtitleCode', { phone })}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-control p-1.5 text-gray-400 hover:bg-gray-100" aria-label={t('login.cancel')}>
+          <button type="button" onClick={onClose} className="rounded-control p-1.5 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10" aria-label={t('login.cancel')}>
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        {error && <p className="mb-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600" role="alert">{error}</p>}
-        {info && !error && <p className="mb-3 rounded-control bg-primary-50 px-3 py-2 text-sm text-primary-700">{info}</p>}
+        {error && <p className="mb-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">{error}</p>}
+        {info && !error && <p className="mb-3 rounded-control bg-primary-50 dark:bg-primary-500/15 px-3 py-2 text-sm text-primary-700 dark:text-primary-300">{info}</p>}
 
         {step === 'phone' ? (
           <form onSubmit={(e) => { e.preventDefault(); onSend(); }} className="space-y-3">
@@ -784,7 +784,7 @@ function InlineLogin({
             <Button type="submit" disabled={busy} className="h-12 w-full rounded-control text-base font-semibold">
               {busy ? t('login.verifying') : t('login.verifyAndOrder')}
             </Button>
-            <button type="button" onClick={onBack} disabled={busy} className="w-full text-center text-sm text-gray-500 hover:text-primary-600">
+            <button type="button" onClick={onBack} disabled={busy} className="w-full text-center text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600">
               {t('login.changePhone')}
             </button>
           </form>

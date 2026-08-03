@@ -49,10 +49,10 @@ export default async function BenzinPage({
   const t = await getTranslations('benzin');
 
   return (
-    <div className="min-h-screen bg-gray-50 text-navy">
+    <div className="min-h-screen bg-gray-50 dark:bg-navy-950 text-navy dark:text-white">
       <B2CHeader />
       <main className="mx-auto max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <h1 className="mb-6 text-2xl font-bold tracking-tight text-navy sm:text-3xl">{t('title')}</h1>
+        <h1 className="mb-6 text-2xl font-bold tracking-tight text-navy dark:text-white sm:text-3xl">{t('title')}</h1>
         <FuelOrderFlow
           locale={locale}
           prices={prices}

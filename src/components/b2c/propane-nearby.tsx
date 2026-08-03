@@ -41,9 +41,9 @@ export function PropaneNearby() {
   return (
     <div className="space-y-6">
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" aria-hidden />
+        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" aria-hidden />
         <input
-          className="w-full rounded-control border border-gray-200 bg-white py-3 pl-10 pr-4 text-navy placeholder-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 py-3 pl-10 pr-4 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
           placeholder={t('searchPlaceholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -51,7 +51,7 @@ export function PropaneNearby() {
       </div>
 
       {/* Map placeholder — real tiles/markers land with the points API (M4). */}
-      <div className="relative h-56 overflow-hidden rounded-card border border-gray-200 bg-[#eef2f7] sm:h-72">
+      <div className="relative h-56 overflow-hidden rounded-card border border-gray-200 dark:border-white/10 bg-[#eef2f7] dark:bg-navy-900 sm:h-72">
         <div
           className="absolute inset-0 opacity-70"
           style={{
@@ -61,7 +61,7 @@ export function PropaneNearby() {
           aria-hidden
         />
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 text-xs font-medium text-gray-500 shadow-soft">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/90 dark:bg-navy-900/90 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 shadow-soft">
             <MapPin className="h-3.5 w-3.5" aria-hidden />
             {t('mapSoon')}
           </span>
@@ -71,14 +71,14 @@ export function PropaneNearby() {
       {state === 'loading' && (
         <div className="space-y-3" aria-busy>
           {[0, 1, 2].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-card border border-gray-100 bg-white" />
+            <div key={i} className="h-16 animate-pulse rounded-card border border-gray-100 dark:border-white/10 bg-white dark:bg-navy-900" />
           ))}
         </div>
       )}
 
       {state === 'error' && (
-        <div className="rounded-card border border-gray-200 bg-white p-8 text-center">
-          <p className="text-sm text-gray-600">{t('error')}</p>
+        <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-8 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-300">{t('error')}</p>
           <Button variant="secondary" className="mt-4 rounded-control" onClick={load}>
             <RefreshCw className="h-4 w-4" /> {t('retry')}
           </Button>
@@ -86,20 +86,20 @@ export function PropaneNearby() {
       )}
 
       {state === 'ready' && filtered.length === 0 && (
-        <div className="rounded-card border border-gray-200 bg-white p-10 text-center">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-control bg-primary-50 text-primary-600">
+        <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-10 text-center">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-control bg-primary-50 dark:bg-primary-500/15 text-primary-600 dark:text-primary-400">
             <Flame className="h-6 w-6" aria-hidden />
           </span>
-          <h2 className="mt-4 text-base font-semibold text-navy">{t('emptyTitle')}</h2>
-          <p className="mx-auto mt-1.5 max-w-sm text-sm text-gray-600">{t('emptyDesc')}</p>
+          <h2 className="mt-4 text-base font-semibold text-navy dark:text-white">{t('emptyTitle')}</h2>
+          <p className="mx-auto mt-1.5 max-w-sm text-sm text-gray-600 dark:text-gray-300">{t('emptyDesc')}</p>
         </div>
       )}
 
       {state === 'ready' && filtered.length > 0 && (
         <ul className="space-y-3">
           {filtered.map((p) => (
-            <li key={p.id} className="rounded-card border border-gray-200 bg-white p-4">
-              <p className="text-sm font-semibold text-navy">{p.name}</p>
+            <li key={p.id} className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-4">
+              <p className="text-sm font-semibold text-navy dark:text-white">{p.name}</p>
             </li>
           ))}
         </ul>

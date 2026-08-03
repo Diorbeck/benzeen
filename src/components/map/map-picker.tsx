@@ -100,13 +100,13 @@ export function MapPicker({
 
   return (
     <div className={className}>
-      <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-gray-200 sm:h-80">
+      <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10 sm:h-80">
         <div ref={containerRef} className="absolute inset-0" />
         <button
           type="button"
           onClick={locateMe}
           disabled={locating}
-          className="absolute right-3 top-3 z-10 flex items-center gap-1.5 rounded-lg bg-white/95 px-3 py-2 text-xs font-medium text-gray-700 shadow-md backdrop-blur transition hover:text-primary-600 disabled:opacity-60"
+          className="absolute right-3 top-3 z-10 flex items-center gap-1.5 rounded-lg bg-white/95 dark:bg-navy-900/95 px-3 py-2 text-xs font-medium text-gray-700 dark:text-gray-200 shadow-md backdrop-blur transition hover:text-primary-600 disabled:opacity-60"
         >
           <LocateFixed className="h-4 w-4" aria-hidden />
           {locating ? '…' : locateLabel}

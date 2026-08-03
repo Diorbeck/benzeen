@@ -117,7 +117,7 @@ export function TrackingMap({
 
   return (
     <div className={className}>
-      <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-gray-200 sm:h-80">
+      <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10 sm:h-80">
         <div ref={containerRef} className="absolute inset-0" />
       </div>
     </div>
