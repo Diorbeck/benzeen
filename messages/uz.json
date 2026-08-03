@@ -781,7 +781,34 @@
       "IN_DELIVERY": "Yo‘lda",
       "DELIVERED": "Yetkazildi",
       "CANCELLED": "Bekor qilingan",
-      "REJECTED": "Rad etilgan"
+      "REJECTED": "Rad etilgan",
+      "CREATED": "Yaratilgan"
+    },
+    "tabs": {
+      "profile": "Profil",
+      "orders": "Buyurtmalar"
+    },
+    "lastName": "Familiya",
+    "lastNamePlaceholder": "Familiyangiz (ixtiyoriy)",
+    "cars": {
+      "title": "Mening mashinalarim",
+      "add": "Mashina qoʻshish",
+      "plate": "Davlat raqami",
+      "model": "Rusumi",
+      "tank": "Bak hajmi, l",
+      "save": "Saqlash",
+      "cancel": "Bekor qilish",
+      "edit": "Tahrirlash",
+      "delete": "Oʻchirish",
+      "empty": "Hozircha mashina yoʻq. Birinchisini qoʻshing.",
+      "cannotDelete": "Oʻchirib boʻlmaydi: mashina faol buyurtmada."
+    },
+    "orders": {
+      "new": "Yangi buyurtma",
+      "repeat": "Takrorlash",
+      "empty": "Hozircha buyurtmalar yoʻq.",
+      "orderedN": "{n} l buyurtma",
+      "filledN": "{n} l quyildi"
     }
   },
   "benzin": {

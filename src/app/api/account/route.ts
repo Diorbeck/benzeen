@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 
 const patchSchema = z.object({
   name: z.string().trim().max(80).optional(),
+  lastName: z.string().trim().max(80).optional(),
 });
 
 // Update the signed-in client's own profile. CLIENT role only.
@@ -18,15 +19,19 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name } = patchSchema.parse(body);
+    const { name, lastName } = patchSchema.parse(body);
+
+    const data: { name?: string | null; lastName?: string | null } = {};
+    if (name !== undefined) data.name = name.length > 0 ? name : null;
+    if (lastName !== undefined) data.lastName = lastName.length > 0 ? lastName : null;
 
     const updated = await prisma.user.update({
       where: { id: user.id },
-      data: { name: name && name.length > 0 ? name : null },
-      select: { name: true },
+      data,
+      select: { name: true, lastName: true },
     });
 
-    return NextResponse.json({ ok: true, name: updated.name });
+    return NextResponse.json({ ok: true, name: updated.name, lastName: updated.lastName });
   } catch (err) {
     if (err instanceof z.ZodError) {
       return NextResponse.json({ error: 'invalid_input' }, { status: 400 });

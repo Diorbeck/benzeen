@@ -781,7 +781,34 @@
       "IN_DELIVERY": "On the way",
       "DELIVERED": "Delivered",
       "CANCELLED": "Cancelled",
-      "REJECTED": "Rejected"
+      "REJECTED": "Rejected",
+      "CREATED": "Created"
+    },
+    "tabs": {
+      "profile": "Profile",
+      "orders": "Orders"
+    },
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Your last name (optional)",
+    "cars": {
+      "title": "My cars",
+      "add": "Add a car",
+      "plate": "Plate number",
+      "model": "Model",
+      "tank": "Tank capacity, L",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete",
+      "empty": "No cars yet. Add your first.",
+      "cannotDelete": "Can't delete: the car is in an active order."
+    },
+    "orders": {
+      "new": "New order",
+      "repeat": "Repeat",
+      "empty": "No orders yet.",
+      "orderedN": "{n} L ordered",
+      "filledN": "{n} L filled"
     }
   },
   "benzin": {

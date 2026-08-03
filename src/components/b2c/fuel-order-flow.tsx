@@ -27,26 +27,35 @@ export function FuelOrderFlow({
   cars,
   isLoggedIn,
   paymeAvailable = false,
+  initialFuel,
+  initialVolume,
+  initialCarId,
 }: {
   locale: string;
   prices: Record<string, number>;
   cars: ExistingCar[];
   isLoggedIn: boolean;
   paymeAvailable?: boolean;
+  // "Repeat order" prefill (from /account → Повторить). Address is chosen anew.
+  initialFuel?: FuelType;
+  initialVolume?: number;
+  initialCarId?: string;
 }) {
   const t = useTranslations('benzin');
   const router = useRouter();
   const { status } = useSession();
   const loggedIn = isLoggedIn || status === 'authenticated';
+  const isRepeat = Boolean(initialFuel || initialVolume || initialCarId);
+  const initialCarValid = initialCarId && cars.some((c) => c.id === initialCarId) ? initialCarId : null;
 
   // --- order state ---
-  const [carId, setCarId] = useState<string | null>(cars[0]?.id ?? null);
-  const [addingCar, setAddingCar] = useState(cars.length === 0);
+  const [carId, setCarId] = useState<string | null>(initialCarValid ?? cars[0]?.id ?? null);
+  const [addingCar, setAddingCar] = useState(!initialCarValid && cars.length === 0);
   const [plate, setPlate] = useState('');
   const [model, setModel] = useState('');
   const [tankCapacity, setTankCapacity] = useState('');
-  const [fuelType, setFuelType] = useState<FuelType>('AI_92');
-  const [volume, setVolume] = useState<number>(VOLUME_PRESETS[0]);
+  const [fuelType, setFuelType] = useState<FuelType>(initialFuel ?? 'AI_92');
+  const [volume, setVolume] = useState<number>(initialVolume ?? VOLUME_PRESETS[0]);
   const [isFullTank, setIsFullTank] = useState(false);
   const [point, setPoint] = useState<LatLng | null>(null);
   const [address, setAddress] = useState('');
@@ -59,6 +68,11 @@ export function FuelOrderFlow({
   // Restore a guest draft once, on mount.
   useEffect(() => {
     track('order_started');
+    // Repeat-order prefill wins over any saved guest draft.
+    if (isRepeat) {
+      hydrated.current = true;
+      return;
+    }
     const d = loadDraft();
     if (d) {
       if (d.fuelType) setFuelType(d.fuelType);
@@ -76,6 +90,7 @@ export function FuelOrderFlow({
       setDraftRestored(true);
     }
     hydrated.current = true;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const usingNewCar = addingCar || !carId;
