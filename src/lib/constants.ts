@@ -26,3 +26,6 @@ export const SCHEDULE_MAX_AHEAD_MS = 7 * 24 * 60 * 60 * 1000; // +7 days
 export const SCHEDULE_ACTIVATE_WINDOW_MS = 30 * 60 * 1000; // 30 min
 // UI time step.
 export const SCHEDULE_STEP_MINUTES = 30;
+
+// --- Saved locations (M5) ---
+export const MAX_SAVED_LOCATIONS = 3;

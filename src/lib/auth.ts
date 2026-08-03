@@ -6,6 +6,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import type { Adapter } from 'next-auth/adapters';
 import { ensureSuperAdminFromEnv } from '@/lib/bootstrap';
 import { verifyCode } from '@/lib/verification';
+import { resolveReferrer } from '@/lib/referral';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
@@ -24,6 +25,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
         mode: { label: 'Mode', type: 'text' },
         vehicleNumber: { label: 'Vehicle Number', type: 'text' },
+        ref: { label: 'Referral', type: 'text' },
       },
       async authorize(credentials) {
         try {
@@ -64,8 +66,18 @@ export const authOptions: NextAuthOptions = {
             }
             if (!user) {
               const synthEmail = `${phone.replace(/\D/g, '')}@clients.benzeen.local`;
+              // Referral binding — only for brand-new users; ignore self/unknown.
+              let referredById: string | null = null;
+              const ref = credentials.ref?.trim();
+              if (ref) {
+                try {
+                  referredById = await resolveReferrer(ref, phone);
+                } catch {
+                  referredById = null;
+                }
+              }
               user = await prisma.user.create({
-                data: { phone, email: synthEmail, role: 'CLIENT' },
+                data: { phone, email: synthEmail, role: 'CLIENT', referredById },
               });
             }
             return {

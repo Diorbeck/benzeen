@@ -18,6 +18,7 @@ import { LanguageSwitcher } from '@/components/language-switcher';
 import { B2CHeader } from './header';
 import { track } from '@/lib/analytics';
 import { siteConfig } from '@/lib/site-config';
+import { captureRefFromUrl } from '@/lib/referral-client';
 
 export function B2CLanding() {
   const t = useTranslations('b2c');
@@ -27,6 +28,7 @@ export function B2CLanding() {
 
   useEffect(() => {
     track('home_viewed');
+    captureRefFromUrl();
   }, []);
 
   return (

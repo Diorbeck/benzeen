@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { AccountView } from '@/components/account/account-view';
+import { getReferralStats } from '@/lib/referral';
 
 export default async function AccountPage({
   params,
@@ -45,6 +46,15 @@ export default async function AccountPage({
   ]);
   if (!user) redirect(`/${locale}/client-login`);
 
+  const [referral, locations] = await Promise.all([
+    getReferralStats(sUser.id),
+    prisma.savedLocation.findMany({
+      where: { userId: sUser.id },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true, name: true, lat: true, lng: true },
+    }),
+  ]);
+
   return (
     <AccountView
       locale={locale}
@@ -52,6 +62,8 @@ export default async function AccountPage({
       name={user.name ?? ''}
       lastName={user.lastName ?? ''}
       cars={cars}
+      referral={referral}
+      locations={locations}
       orders={orders.map((o) => ({
         id: o.id,
         status: o.status,

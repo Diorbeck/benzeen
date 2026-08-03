@@ -4,20 +4,23 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { CalendarClock, Car, Check, Fuel, MapPin, Plus, X } from 'lucide-react';
+import { CalendarClock, Car, Check, Fuel, Gift, MapPin, Plus, Star, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MapPicker, type LatLng } from '@/components/map/map-picker';
 import { calcOrderPrice, type FuelType } from '@/lib/pricing';
+import { computeBonusUsed, computeTotal } from '@/lib/bonus';
 import { formatMoney } from '@/lib/format';
 import { FUEL_TYPES, VOLUME_PRESETS, resolveLiters, submitBlockReason } from '@/lib/order-form';
 import { SCHEDULE_MIN_LEAD_MS, SCHEDULE_MAX_AHEAD_MS, SCHEDULE_STEP_MINUTES } from '@/lib/constants';
 import { loadDraft, saveDraft, clearDraft, type OrderDraft } from '@/lib/order-draft';
 import { track } from '@/lib/analytics';
 import { formatPlate, normalizePhone } from '@/lib/input-format';
+import { getStoredRef, clearStoredRef } from '@/lib/referral-client';
 
 const FUEL_LABEL: Record<FuelType, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95', AI_100: 'АИ-100' };
 
 export type ExistingCar = { id: string; plate: string; model: string | null; tankCapacity: number | null };
+export type SavedLocationT = { id: string; name: string; lat: number; lng: number };
 
 const inputCls =
   'w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-3 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20';
@@ -32,6 +35,8 @@ export function FuelOrderFlow({
   initialVolume,
   initialCarId,
   initialScheduleOpen = false,
+  bonusBalance = 0,
+  savedLocations = [],
 }: {
   locale: string;
   prices: Record<string, number>;
@@ -44,6 +49,8 @@ export function FuelOrderFlow({
   initialCarId?: string;
   // Open the "When" step in schedule mode (from /account → Запланировать заказ).
   initialScheduleOpen?: boolean;
+  bonusBalance?: number;
+  savedLocations?: SavedLocationT[];
 }) {
   const t = useTranslations('benzin');
   const router = useRouter();
@@ -67,6 +74,10 @@ export function FuelOrderFlow({
   const [scheduledLocal, setScheduledLocal] = useState('');
   const [scheduleBounds, setScheduleBounds] = useState<{ min: string; max: string }>({ min: '', max: '' });
   const [payment, setPayment] = useState<'COURIER_POS' | 'PAYME'>('COURIER_POS');
+  const [useBonus, setUseBonus] = useState(false);
+  const [locations, setLocations] = useState<SavedLocationT[]>(savedLocations);
+  const [savingAddr, setSavingAddr] = useState(false);
+  const [addrName, setAddrName] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [draftRestored, setDraftRestored] = useState(false);
@@ -136,10 +147,14 @@ export function FuelOrderFlow({
 
   const pricePerLiter = prices[fuelType] ?? 0;
   const liters = resolveLiters({ isFullTank, volume, knownTankCapacity });
-  const { total } = useMemo(
+  const { total: grossTotal } = useMemo(
     () => calcOrderPrice({ pricePerLiter, volume: liters }),
     [pricePerLiter, liters],
   );
+  // Bonus liters (server re-computes authoritatively; this is the shown estimate).
+  const bonusUsable = computeBonusUsed(bonusBalance, liters);
+  const bonusApplied = useBonus ? bonusUsable : 0;
+  const total = computeTotal(liters, bonusApplied, pricePerLiter);
 
   const baseBlock = submitBlockReason({
     point,
@@ -177,6 +192,7 @@ export function FuelOrderFlow({
         paymentMethod: showPayme ? payment : 'COURIER_POS',
         scheduledFor:
           when === 'schedule' && scheduledLocal ? new Date(scheduledLocal).toISOString() : undefined,
+        useBonus: useBonus || undefined,
       };
       if (!usingNewCar && selectedCar) body.clientCarId = selectedCar.id;
       else body.newCar = { plate: plate.trim(), model: model.trim() || undefined, tankCapacity: tankCapacity ? Number(tankCapacity) : undefined };
@@ -204,6 +220,25 @@ export function FuelOrderFlow({
       setError(t('errors.generic'));
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const saveLocation = async () => {
+    if (!point || !addrName.trim()) return;
+    try {
+      const res = await fetch('/api/account/locations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: addrName.trim(), lat: point.lat, lng: point.lng }),
+      });
+      if (res.ok) {
+        const loc = (await res.json()) as SavedLocationT;
+        setLocations((prev) => [...prev, loc]);
+        setSavingAddr(false);
+        setAddrName('');
+      }
+    } catch {
+      /* ignore — non-critical */
     }
   };
 
@@ -262,12 +297,14 @@ export function FuelOrderFlow({
         identifier: normalizePhone(loginPhone),
         password: code,
         mode: 'client',
+        ref: getStoredRef(),
         redirect: false,
       });
       if (res?.error) {
         setLoginError(t('login.invalidCode'));
         return;
       }
+      clearStoredRef();
       setLoginOpen(false);
       await placeOrder();
     } catch {
@@ -453,6 +490,25 @@ export function FuelOrderFlow({
 
         {/* 3. Address */}
         <StepCard step={3} title={t('steps.address')} icon={MapPin}>
+          {locations.length > 0 && (
+            <div className="mb-3 flex flex-wrap gap-2">
+              {locations.map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  onClick={() => {
+                    setPoint({ lat: l.lat, lng: l.lng });
+                    setAddress(l.name);
+                    track('address_selected', { source: 'saved' });
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-3 py-2 text-sm text-navy dark:text-white hover:border-primary-200 dark:hover:border-primary-500/40"
+                >
+                  <Star className="h-3.5 w-3.5 text-primary-600 dark:text-primary-400" aria-hidden />
+                  {l.name}
+                </button>
+              ))}
+            </div>
+          )}
           <MapPicker
             value={point}
             onChange={(v) => {
@@ -468,6 +524,35 @@ export function FuelOrderFlow({
             onChange={(e) => setAddress(e.target.value)}
             maxLength={200}
           />
+          {loggedIn && point && locations.length < 3 && (
+            savingAddr ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <input
+                  className={`${inputCls} max-w-[12rem]`}
+                  placeholder={t('saveAddressName')}
+                  value={addrName}
+                  onChange={(e) => setAddrName(e.target.value)}
+                  maxLength={40}
+                  autoFocus
+                />
+                <Button type="button" size="sm" className="rounded-control" onClick={saveLocation} disabled={!addrName.trim()}>
+                  {t('saveAddressConfirm')}
+                </Button>
+                <Button type="button" size="sm" variant="ghost" className="rounded-control text-gray-600 dark:text-gray-300" onClick={() => { setSavingAddr(false); setAddrName(''); }}>
+                  {t('saveAddressCancel')}
+                </Button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setSavingAddr(true)}
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700"
+              >
+                <Star className="h-4 w-4" aria-hidden />
+                {t('saveAddress')}
+              </button>
+            )
+          )}
         </StepCard>
 
         {/* 4. When */}
@@ -495,6 +580,31 @@ export function FuelOrderFlow({
             </div>
           )}
         </StepCard>
+
+        {/* Mobile summary (bonus + payment live here on mobile; the bottom bar is a quick CTA) */}
+        <div className="lg:hidden">
+          <Summary
+            t={t}
+            locale={locale}
+            fuelLabel={FUEL_LABEL[fuelType]}
+            liters={liters}
+            pricePerLiter={pricePerLiter}
+            grossTotal={grossTotal}
+            total={total}
+            bonusUsable={bonusUsable}
+            useBonus={useBonus}
+            setUseBonus={setUseBonus}
+            plate={usingNewCar ? plate : selectedCar?.plate ?? ''}
+            address={address}
+            paymeAvailable={showPayme}
+            payment={payment}
+            setPayment={setPayment}
+            block={block}
+            submitting={submitting}
+            error={error}
+            onSubmit={onSubmit}
+          />
+        </div>
       </div>
 
       {/* Summary — sticky on desktop */}
@@ -506,7 +616,11 @@ export function FuelOrderFlow({
             fuelLabel={FUEL_LABEL[fuelType]}
             liters={liters}
             pricePerLiter={pricePerLiter}
+            grossTotal={grossTotal}
             total={total}
+            bonusUsable={bonusUsable}
+            useBonus={useBonus}
+            setUseBonus={setUseBonus}
             plate={usingNewCar ? plate : selectedCar?.plate ?? ''}
             address={address}
             paymeAvailable={showPayme}
@@ -621,7 +735,11 @@ function Summary({
   fuelLabel,
   liters,
   pricePerLiter,
+  grossTotal,
   total,
+  bonusUsable,
+  useBonus,
+  setUseBonus,
   plate,
   address,
   paymeAvailable,
@@ -637,7 +755,11 @@ function Summary({
   fuelLabel: string;
   liters: number;
   pricePerLiter: number;
+  grossTotal: number;
   total: number;
+  bonusUsable: number;
+  useBonus: boolean;
+  setUseBonus: (v: boolean) => void;
   plate: string;
   address: string;
   paymeAvailable: boolean;
@@ -661,11 +783,42 @@ function Summary({
           <dt className="text-gray-500 dark:text-gray-400">{t('delivery')}</dt>
           <dd className="font-medium text-success-600 dark:text-success-500">{t('deliveryFree')}</dd>
         </div>
+        {useBonus && bonusUsable > 0 && (
+          <div className="flex items-center justify-between">
+            <dt className="text-gray-500 dark:text-gray-400">{t('bonus.applied')}</dt>
+            <dd className="font-medium text-success-600 dark:text-success-500">
+              −{formatMoney(bonusUsable * pricePerLiter, locale)} {t('sum')}
+            </dd>
+          </div>
+        )}
       </dl>
+
+      {/* Bonus toggle */}
+      {bonusUsable > 0 && (
+        <label className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-control bg-primary-50/60 dark:bg-primary-500/15 px-3 py-2.5 text-sm">
+          <input
+            type="checkbox"
+            checked={useBonus}
+            onChange={(e) => setUseBonus(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-primary-600"
+          />
+          <span className="text-navy dark:text-white">
+            <span className="flex items-center gap-1.5 font-medium">
+              <Gift className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
+              {t('bonus.use', { liters: bonusUsable })}
+            </span>
+          </span>
+        </label>
+      )}
 
       <div className="mt-4 flex items-baseline justify-between border-t border-gray-100 dark:border-white/10 pt-4">
         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('total')}</span>
         <span className="text-2xl font-bold text-navy dark:text-white">
+          {useBonus && bonusUsable > 0 && (
+            <span className="mr-2 text-base font-normal text-gray-400 line-through dark:text-gray-500">
+              {formatMoney(grossTotal, locale)}
+            </span>
+          )}
           {formatMoney(total, locale)} {t('sum')}
         </span>
       </div>
