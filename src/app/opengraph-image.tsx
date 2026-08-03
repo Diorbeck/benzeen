@@ -2,7 +2,7 @@ import { ImageResponse } from 'next/og';
 
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-export const alt = 'Benzeen — управление топливом для автопарка';
+export const alt = 'Benzeen — топливо к вашей машине в Ташкенте';
 
 export default function OgImage() {
   return new ImageResponse(
@@ -39,10 +39,10 @@ export default function OgImage() {
           <div style={{ fontSize: 60, fontWeight: 700 }}>Benzeen</div>
         </div>
         <div style={{ fontSize: 46, fontWeight: 700, lineHeight: 1.15, maxWidth: 940 }}>
-          Управление топливом для современного автопарка
+          Топливо к вашей машине в Ташкенте
         </div>
         <div style={{ fontSize: 30, opacity: 0.85, marginTop: 24, maxWidth: 940 }}>
-          Экономия до 30% · доставка к машинам · контроль расхода в реальном времени
+          Цена как на АЗС · доставка бесплатно · круглосуточно
         </div>
       </div>
     ),
