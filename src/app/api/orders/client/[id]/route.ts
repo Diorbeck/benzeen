@@ -31,6 +31,7 @@ export async function GET(
     totalAmount: order.totalAmount,
     paymentMethod: order.paymentMethod,
     paymentStatus: order.paymentStatus,
+    scheduledFor: order.scheduledFor,
     address: order.address,
     lat: order.lat,
     lng: order.lng,

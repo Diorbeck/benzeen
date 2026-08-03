@@ -33,6 +33,7 @@ export default async function AccountPage({
         dispensedVolume: true,
         totalAmount: true,
         clientCarId: true,
+        scheduledFor: true,
         createdAt: true,
       },
     }),
@@ -59,6 +60,7 @@ export default async function AccountPage({
         dispensedVolume: o.dispensedVolume,
         totalAmount: o.totalAmount,
         clientCarId: o.clientCarId,
+        scheduledFor: o.scheduledFor ? o.scheduledFor.toISOString() : null,
         createdAt: o.createdAt.toISOString(),
       }))}
     />
