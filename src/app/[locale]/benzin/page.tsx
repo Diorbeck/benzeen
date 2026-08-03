@@ -4,7 +4,8 @@ import { getTranslations } from 'next-intl/server';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { B2CHeader } from '@/components/b2c/header';
-import { FuelOrderFlow, type ExistingCar } from '@/components/b2c/fuel-order-flow';
+import { FuelOrderFlow, type ExistingCar, type SavedLocationT } from '@/components/b2c/fuel-order-flow';
+import { getBonusBalance } from '@/lib/referral';
 
 const FUELS = ['AI_92', 'AI_95', 'AI_100'] as const;
 type Fuel = (typeof FUELS)[number];
@@ -31,11 +32,15 @@ export default async function BenzinPage({
   if (user?.id && user.role !== 'CLIENT') redirect(`/${locale}/dashboard`);
   const isLoggedIn = Boolean(user?.id && user.role === 'CLIENT');
 
-  const [priceRows, carRows] = await Promise.all([
+  const [priceRows, carRows, locationRows, bonusBalance] = await Promise.all([
     prisma.price.findMany(),
     isLoggedIn
       ? prisma.clientCar.findMany({ where: { userId: user!.id }, orderBy: { createdAt: 'desc' } })
       : Promise.resolve([]),
+    isLoggedIn
+      ? prisma.savedLocation.findMany({ where: { userId: user!.id }, orderBy: { createdAt: 'asc' } })
+      : Promise.resolve([]),
+    isLoggedIn ? getBonusBalance(user!.id!) : Promise.resolve(0),
   ]);
   const prices: Record<string, number> = {};
   for (const p of priceRows) prices[p.fuelType] = p.priceUzs;
@@ -44,6 +49,12 @@ export default async function BenzinPage({
     plate: c.plate,
     model: c.model,
     tankCapacity: c.tankCapacity,
+  }));
+  const savedLocations: SavedLocationT[] = locationRows.map((l) => ({
+    id: l.id,
+    name: l.name,
+    lat: l.lat,
+    lng: l.lng,
   }));
 
   const t = await getTranslations('benzin');
@@ -63,6 +74,8 @@ export default async function BenzinPage({
           initialVolume={initialVolume}
           initialCarId={initialCarId}
           initialScheduleOpen={initialScheduleOpen}
+          bonusBalance={bonusBalance}
+          savedLocations={savedLocations}
         />
       </main>
     </div>

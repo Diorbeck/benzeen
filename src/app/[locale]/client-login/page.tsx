@@ -6,6 +6,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { AuthLayout, inputClass } from '@/components/auth/auth-layout';
+import { getStoredRef, clearStoredRef } from '@/lib/referral-client';
 
 function normalizePhone(raw: string): string {
   return raw.replace(/[\s()-]/g, '');
@@ -77,12 +78,14 @@ function ClientLoginForm() {
         identifier: normalizePhone(phone),
         password: digits,
         mode: 'client',
+        ref: getStoredRef(),
         redirect: false,
       });
       if (res?.error) {
         setError(t('errors.invalidCode'));
         return;
       }
+      clearStoredRef();
       router.push(callbackUrl as string);
       router.refresh();
     } catch {

@@ -793,6 +793,23 @@
       "filledN": "{n} l quyildi",
       "schedule": "Buyurtmani rejalashtirish",
       "scheduledBadge": "Eng yaqin rejalashtirilgan buyurtma: {when}"
+    },
+    "referral": {
+      "title": "Doʻstlarni taklif qiling",
+      "desc": "Doʻstingiz birinchi toʻlangan buyurtma qilsa — sizga +1 litr. 10 doʻst — yana +10 litr.",
+      "balance": "Bonus litrlar",
+      "friends": "Taklif qilingan doʻstlar",
+      "share": "Ulashish",
+      "copied": "Nusxalandi",
+      "shareText": "Benzeen bilan yoqilgʻi oʻzi yetib keladi. Mana havolam:"
+    },
+    "bonus": {
+      "reason": {
+        "FRIEND_FIRST_ORDER": "Doʻst birinchi buyurtma qildi",
+        "TEN_FRIENDS_MILESTONE": "10 doʻst — bonus",
+        "SPENT": "Buyurtma uchun ishlatildi",
+        "REFUND": "Bekor qilish uchun qaytarildi"
+      }
     }
   },
   "benzin": {
@@ -869,7 +886,15 @@
       "asap": "Iloji boricha tezroq",
       "schedule": "Sana va vaqtni tanlash",
       "hint": "Yetkazish kunu tun. Vaqt — +1 soatdan +7 kungacha."
-    }
+    },
+    "bonus": {
+      "use": "Bonusdan foydalanish: {liters} l",
+      "applied": "Bonus"
+    },
+    "saveAddress": "Bu manzilni saqlash",
+    "saveAddressName": "Nomi (Uy, Ish…)",
+    "saveAddressConfirm": "Saqlash",
+    "saveAddressCancel": "Bekor qilish"
   },
   "orderStatus": {
     "title": "Buyurtma",

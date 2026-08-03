@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
+import { awardReferralOnDelivery } from '@/lib/referral';
 
 export async function CourierDashboard({ locale }: { locale: string }) {
   const session = await getServerSession(authOptions);
@@ -98,6 +99,11 @@ export async function CourierDashboard({ locale }: { locale: string }) {
         where: { id: orderId },
         data: { status: 'DELIVERED', deliveredAt: new Date(), dispensedVolume: volume },
       });
+      try {
+        await awardReferralOnDelivery(orderId);
+      } catch (e) {
+        console.error('[referral] award error:', e);
+      }
       revalidatePath(`/${locale}/dashboard`);
       return;
     }

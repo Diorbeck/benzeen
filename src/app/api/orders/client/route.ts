@@ -11,6 +11,7 @@ import {
 } from '@/lib/constants';
 import { dispatchB2COrderToNearest, redispatchStale } from '@/lib/order-dispatch';
 import { paymeCheckoutUrl } from '@/lib/payme';
+import { computeBonusUsed, computeTotal, bonusBalanceFrom } from '@/lib/bonus';
 
 const schema = z
   .object({
@@ -24,6 +25,8 @@ const schema = z
     paymentMethod: z.enum(['COURIER_POS', 'PAYME']).optional(),
     // ISO datetime for a planned order; absent = deliver ASAP.
     scheduledFor: z.string().datetime().optional(),
+    // Apply bonus liters (server computes the actual amount from the balance).
+    useBonus: z.boolean().optional(),
     // Either an existing car or a new one to create on first order.
     clientCarId: z.string().cuid().optional(),
     newCar: z
@@ -44,6 +47,7 @@ export async function POST(req: Request) {
     const user = session?.user as { id?: string; role?: string } | undefined;
     if (!user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     if (user.role !== 'CLIENT') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    const userId = user.id;
 
     const data = schema.parse(await req.json());
 
@@ -51,13 +55,13 @@ export async function POST(req: Request) {
     let car;
     if (data.clientCarId) {
       car = await prisma.clientCar.findFirst({
-        where: { id: data.clientCarId, userId: user.id },
+        where: { id: data.clientCarId, userId: userId },
       });
       if (!car) return NextResponse.json({ error: 'Car not found' }, { status: 404 });
     } else if (data.newCar) {
       car = await prisma.clientCar.create({
         data: {
-          userId: user.id,
+          userId: userId,
           plate: data.newCar.plate,
           model: data.newCar.model || null,
           tankCapacity: data.newCar.tankCapacity ?? null,
@@ -86,8 +90,6 @@ export async function POST(req: Request) {
       }
     }
 
-    const totalAmount = price.priceUzs * liters;
-
     // Scheduled order? Validate the window server-side (24/7, +1h … +7d).
     let scheduledFor: Date | null = null;
     if (data.scheduledFor) {
@@ -109,26 +111,46 @@ export async function POST(req: Request) {
     const merchantId = process.env.PAYME_MERCHANT_ID;
     const payOnline = !scheduled && data.paymentMethod === 'PAYME' && !!merchantId;
 
-    const order = await prisma.order.create({
-      data: {
-        clientId: user.id,
-        clientCarId: car.id,
-        carId: null,
-        fuelType: data.fuelType,
-        volume: liters,
-        isFullTank,
-        lat: data.lat,
-        lng: data.lng,
-        address: data.address || null,
-        pricePerLiter: price.priceUzs,
-        totalAmount,
-        scheduledFor,
-        // Scheduled: SCHEDULED + POS, NOT dispatched until its window opens.
-        // Online: PENDING + CREATED until PAID. POS: NOT_REQUIRED + RECEIVED, live now.
-        paymentMethod: payOnline ? 'PAYME' : 'COURIER_POS',
-        paymentStatus: payOnline ? 'PENDING' : 'NOT_REQUIRED',
-        status: scheduled ? 'SCHEDULED' : payOnline ? 'CREATED' : 'RECEIVED',
-      },
+    // Bonus liters — computed and spent strictly server-side, in the same
+    // transaction as the order, re-reading the balance inside the tx to prevent
+    // double-spend races. Courier still delivers the full `liters`.
+    const order = await prisma.$transaction(async (tx) => {
+      let bonusUsed = 0;
+      if (data.useBonus) {
+        const rows = await tx.bonusLedger.findMany({
+          where: { userId: userId },
+          select: { liters: true, reason: true },
+        });
+        bonusUsed = computeBonusUsed(bonusBalanceFrom(rows), liters);
+      }
+      const totalAmount = computeTotal(liters, bonusUsed, price.priceUzs);
+
+      const created = await tx.order.create({
+        data: {
+          clientId: userId,
+          clientCarId: car.id,
+          carId: null,
+          fuelType: data.fuelType,
+          volume: liters,
+          isFullTank,
+          lat: data.lat,
+          lng: data.lng,
+          address: data.address || null,
+          pricePerLiter: price.priceUzs,
+          totalAmount,
+          bonusLitersUsed: bonusUsed || null,
+          scheduledFor,
+          paymentMethod: payOnline ? 'PAYME' : 'COURIER_POS',
+          paymentStatus: payOnline ? 'PENDING' : 'NOT_REQUIRED',
+          status: scheduled ? 'SCHEDULED' : payOnline ? 'CREATED' : 'RECEIVED',
+        },
+      });
+      if (bonusUsed > 0) {
+        await tx.bonusLedger.create({
+          data: { userId: userId, liters: bonusUsed, reason: 'SPENT', orderId: created.id },
+        });
+      }
+      return created;
     });
 
     // Activity sweep for OTHER orders (activates due-soon scheduled + stale RECEIVED).
@@ -143,7 +165,7 @@ export async function POST(req: Request) {
       return NextResponse.json({
         id: order.id,
         status: order.status,
-        checkoutUrl: paymeCheckoutUrl(merchantId!, order.id, totalAmount * 100),
+        checkoutUrl: paymeCheckoutUrl(merchantId!, order.id, (order.totalAmount ?? 0) * 100),
       });
     }
 

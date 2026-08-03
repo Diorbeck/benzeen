@@ -6,6 +6,7 @@
 import { prisma } from './prisma';
 import { sendTelegramMessage, type InlineKeyboardMarkup } from './telegram';
 import { redispatchStale } from './order-dispatch';
+import { awardReferralOnDelivery } from './referral';
 
 export type CourierAction = 'TAKE' | 'ON_ROUTE' | 'DELIVERED';
 
@@ -56,6 +57,12 @@ export async function applyCourierAction(
         where: { id: orderId },
         data: { status: 'DELIVERED', deliveredAt: new Date(), dispensedVolume: volume },
       });
+      // M5: referral accrual on first delivered order (idempotent, never throws to caller).
+      try {
+        await awardReferralOnDelivery(order.id);
+      } catch (e) {
+        console.error('[referral] award error:', e);
+      }
       return { ok: true, status: 200, order: { id: order.id, status: 'DELIVERED' } };
     }
 

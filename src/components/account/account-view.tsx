@@ -1,15 +1,15 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Fuel, LogOut, Car, Plus, Pencil, Trash2, ChevronRight, Clock, RotateCcw } from 'lucide-react';
+import { Fuel, LogOut, Car, Plus, Pencil, Trash2, ChevronRight, Clock, RotateCcw, Gift, MapPin, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { B2CThemeToggle } from '@/components/b2c/theme-toggle';
-import { formatMoney } from '@/lib/format';
+import { formatMoney, formatLiters } from '@/lib/format';
 import { formatPlate } from '@/lib/input-format';
 
 export type AccountOrder = {
@@ -24,6 +24,14 @@ export type AccountOrder = {
   createdAt: string;
 };
 export type AccountCar = { id: string; plate: string; model: string | null; tankCapacity: number | null };
+export type AccountLocation = { id: string; name: string; lat: number; lng: number };
+export type ReferralStats = {
+  code: string;
+  balance: number;
+  friendCount: number;
+  milestoneAt: number;
+  ledger: { id: string; liters: number; reason: string; createdAt: string }[];
+};
 
 const FUEL_LABEL: Record<string, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95', AI_100: 'АИ-100' };
 const inputCls =
@@ -36,6 +44,8 @@ export function AccountView({
   lastName,
   orders = [],
   cars = [],
+  referral,
+  locations = [],
 }: {
   locale: string;
   phone: string;
@@ -43,6 +53,8 @@ export function AccountView({
   lastName: string;
   orders?: AccountOrder[];
   cars?: AccountCar[];
+  referral?: ReferralStats;
+  locations?: AccountLocation[];
 }) {
   const t = useTranslations('account');
   const [tab, setTab] = useState<'profile' | 'orders'>('profile');
@@ -90,7 +102,15 @@ export function AccountView({
         </div>
 
         {tab === 'profile' ? (
-          <ProfileTab phone={phone} name={name} lastName={lastName} cars={cars} />
+          <ProfileTab
+            locale={locale}
+            phone={phone}
+            name={name}
+            lastName={lastName}
+            cars={cars}
+            referral={referral}
+            locations={locations}
+          />
         ) : (
           <OrdersTab locale={locale} orders={orders} />
         )}
@@ -100,15 +120,21 @@ export function AccountView({
 }
 
 function ProfileTab({
+  locale,
   phone,
   name: initialName,
   lastName: initialLast,
   cars,
+  referral,
+  locations = [],
 }: {
+  locale: string;
   phone: string;
   name: string;
   lastName: string;
   cars: AccountCar[];
+  referral?: ReferralStats;
+  locations?: AccountLocation[];
 }) {
   const t = useTranslations('account');
   const [name, setName] = useState(initialName);
@@ -158,7 +184,151 @@ function ProfileTab({
       </section>
 
       <MyCars cars={cars} />
+      <MyAddresses locations={locations} />
+      {referral && <ReferralCard locale={locale} referral={referral} />}
     </div>
+  );
+}
+
+function ReferralCard({ locale, referral }: { locale: string; referral: ReferralStats }) {
+  const t = useTranslations('account');
+  const [link, setLink] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    setLink(`${window.location.origin}/${locale}?ref=${referral.code}`);
+  }, [locale, referral.code]);
+
+  const share = async () => {
+    const url = link || `/${locale}?ref=${referral.code}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Benzeen', text: t('referral.shareText'), url });
+        return;
+      }
+    } catch {
+      /* user cancelled or unsupported — fall through to copy */
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const reasonLabel = (r: string) => (t.has(`bonus.reason.${r}`) ? t(`bonus.reason.${r}`) : r);
+  const progress = Math.min(referral.friendCount, referral.milestoneAt);
+
+  return (
+    <section className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-6 sm:p-8">
+      <div className="mb-4 flex items-center gap-2.5">
+        <Gift className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
+        <h2 className="text-base font-semibold text-navy dark:text-white">{t('referral.title')}</h2>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-300">{t('referral.desc')}</p>
+
+      <div className="mt-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-control bg-primary-50/60 dark:bg-primary-500/15 p-4">
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('referral.balance')}</p>
+          <p className="mt-1 text-xl font-bold text-navy dark:text-white">{formatLiters(referral.balance, locale)}</p>
+        </div>
+        <div className="rounded-control bg-gray-50 dark:bg-white/5 p-4">
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('referral.friends')}</p>
+          <p className="mt-1 text-xl font-bold text-navy dark:text-white">
+            {progress} / {referral.milestoneAt}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-center gap-2">
+        <code className="min-w-0 flex-1 truncate rounded-control border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-3 py-2.5 text-sm text-navy dark:text-white">
+          {link || `/${locale}?ref=${referral.code}`}
+        </code>
+        <Button type="button" className="rounded-control shrink-0" onClick={share}>
+          <Share2 className="h-4 w-4" /> {copied ? t('referral.copied') : t('referral.share')}
+        </Button>
+      </div>
+
+      {referral.ledger.length > 0 && (
+        <ul className="mt-5 divide-y divide-gray-100 dark:divide-white/10 border-t border-gray-100 dark:border-white/10">
+          {referral.ledger.map((row) => (
+            <li key={row.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
+              <span className="text-gray-600 dark:text-gray-300">{reasonLabel(row.reason)}</span>
+              <span className={`font-medium ${row.reason === 'SPENT' ? 'text-gray-500 dark:text-gray-400' : 'text-success-600 dark:text-success-500'}`}>
+                {row.reason === 'SPENT' ? '−' : '+'}
+                {formatLiters(row.liters, locale)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function MyAddresses({ locations }: { locations: AccountLocation[] }) {
+  const t = useTranslations('account');
+  const router = useRouter();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+
+  const rename = async (id: string) => {
+    if (!editName.trim()) return;
+    const res = await fetch(`/api/account/locations/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: editName.trim() }),
+    });
+    if (res.ok) {
+      setEditingId(null);
+      router.refresh();
+    }
+  };
+  const del = async (id: string) => {
+    const res = await fetch(`/api/account/locations/${id}`, { method: 'DELETE' });
+    if (res.ok) router.refresh();
+  };
+
+  return (
+    <section className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-6 sm:p-8">
+      <div className="mb-4 flex items-center gap-2.5">
+        <MapPin className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
+        <h2 className="text-base font-semibold text-navy dark:text-white">{t('addresses')}</h2>
+      </div>
+      {locations.length === 0 ? (
+        <p className="text-sm text-gray-500 dark:text-gray-400">{t('addressesEmpty')}</p>
+      ) : (
+        <ul className="space-y-2">
+          {locations.map((l) =>
+            editingId === l.id ? (
+              <li key={l.id} className="flex flex-wrap items-center gap-2">
+                <input className={`${inputCls} max-w-[12rem]`} value={editName} maxLength={40} onChange={(e) => setEditName(e.target.value)} autoFocus />
+                <Button type="button" size="sm" className="rounded-control" onClick={() => rename(l.id)} disabled={!editName.trim()}>
+                  {t('cars.save')}
+                </Button>
+                <Button type="button" size="sm" variant="ghost" className="rounded-control text-gray-600 dark:text-gray-300" onClick={() => setEditingId(null)}>
+                  {t('cars.cancel')}
+                </Button>
+              </li>
+            ) : (
+              <li key={l.id} className="flex items-center justify-between gap-3 rounded-control border border-gray-200 dark:border-white/10 px-4 py-3">
+                <span className="min-w-0 truncate text-sm font-medium text-navy dark:text-white">{l.name}</span>
+                <span className="flex shrink-0 gap-1">
+                  <button type="button" onClick={() => { setEditingId(l.id); setEditName(l.name); }} className="rounded-control p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary-600" aria-label={t('cars.edit')}>
+                    <Pencil className="h-4 w-4" />
+                  </button>
+                  <button type="button" onClick={() => del(l.id)} className="rounded-control p-2 text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600" aria-label={t('cars.delete')}>
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </span>
+              </li>
+            ),
+          )}
+        </ul>
+      )}
+    </section>
   );
 }
 

@@ -37,6 +37,15 @@ enum PaymentStatus {
   PAID
 }
 
+// Bonus liters ledger (M5). Balance = sum of non-SPENT liters − sum of SPENT.
+// All rows store a positive `liters`; the reason decides the sign.
+enum BonusReason {
+  FRIEND_FIRST_ORDER      // +1 to referrer when a referred friend's 1st order is delivered
+  TEN_FRIENDS_MILESTONE   // +10 to referrer at 10 referred friends
+  SPENT                   // −N used on an order
+  REFUND                  // +N returned when a bonus-using order is cancelled
+}
+
 enum AuditAction {
   COMPANY_CREATE
   COMPANY_DELETE
@@ -76,6 +85,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
+  // Referrals (M5): a short unique code, and who referred this user.
+  referralCode  String?   @unique
+  referredById  String?
+
   company       Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   driverCars    DriverCar[]
   ordersCreated Order[]   @relation("CreatedBy")
@@ -87,6 +100,44 @@ model User {
   clientCars     ClientCar[]
   clientOrders   Order[]          @relation("ClientOrders")
   courierLocation CourierLocation?
+  // Referrals + bonus + saved locations (M5).
+  referredBy     User?            @relation("Referrals", fields: [referredById], references: [id])
+  referrals      User[]           @relation("Referrals")
+  bonusLedger    BonusLedger[]
+  savedLocations SavedLocation[]
+
+  @@index([referredById])
+}
+
+// One immutable row per bonus-liter movement (M5). Money-adjacent — only the
+// server writes here, always inside the order transaction for SPENT/REFUND.
+model BonusLedger {
+  id        String      @id @default(cuid())
+  userId    String
+  liters    Int         // always positive; sign implied by `reason`
+  reason    BonusReason
+  orderId   String?
+  createdAt DateTime    @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([orderId])
+}
+
+// Up to 3 saved delivery addresses per client (M5, limit enforced server-side).
+model SavedLocation {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  lat       Float
+  lng       Float
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // B2C client vehicle (M2). Created on the client's first fuel order; reused
@@ -237,6 +288,7 @@ model Order {
   paymentMethod PaymentMethod?
   paymentStatus PaymentStatus?
   scheduledFor  DateTime?          // B2C: planned delivery time (SCHEDULED orders)
+  bonusLitersUsed Int?             // M5: bonus liters applied (reduces totalAmount)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   deliveredAt DateTime?
@@ -247,6 +299,7 @@ model Order {
   client      User?      @relation("ClientOrders", fields: [clientId], references: [id])
   clientCar   ClientCar? @relation(fields: [clientCarId], references: [id])
   paymeTransactions PaymeTransaction[]
+  bonusLedger BonusLedger[]
 
   @@index([status])
   @@index([createdAt])
