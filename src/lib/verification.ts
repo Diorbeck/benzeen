@@ -1,8 +1,16 @@
 import { Resend } from 'resend';
+import * as Sentry from '@sentry/nextjs';
 import { prisma } from '@/lib/prisma';
 
 const CODE_EXPIRY_MINUTES = 15;
 const DIGITS = 6;
+
+// Mask a phone for logs/telemetry: keep the +998 prefix and last 2 digits only.
+function maskPhone(p: string): string {
+  const s = p.trim();
+  if (s.length <= 6) return '***';
+  return `${s.slice(0, 4)}${'*'.repeat(s.length - 6)}${s.slice(-2)}`;
+}
 
 function generateCode(): string {
   let s = '';
@@ -155,6 +163,15 @@ export async function createAndSendCode(params: {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       console.error('[Verification] Eskiz error:', msg);
+      // Report to Sentry with context, but never the full phone number.
+      const statusMatch = msg.match(/\((\d{3})\)/);
+      Sentry.captureException(err, {
+        tags: { area: 'eskiz_sms', purpose },
+        extra: {
+          responseStatus: statusMatch ? Number(statusMatch[1]) : undefined,
+          phone: maskPhone(identifier),
+        },
+      });
       return { ok: false, error: msg || 'Failed to send SMS' };
     }
   }
