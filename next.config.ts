@@ -67,11 +67,31 @@ const tgHeaders = [
   { key: 'Content-Security-Policy-Report-Only', value: tgCsp },
 ];
 
+// Canonical host: the Vercel-assigned domain (benzeen-murex.vercel.app) issues
+// a permanent (308) redirect to https://benzeen.uz for every path, so there is
+// a single indexable origin and social/OG crawlers never see the *.vercel.app
+// URL. Config redirects run before middleware and cover ALL paths, including
+// /api and metadata routes that the i18n middleware matcher skips. Preview
+// deployments (hashed *.vercel.app URLs) are unaffected — only the exact
+// production alias matches.
+const CANONICAL_HOST = 'benzeen.uz';
+const VERCEL_HOST = 'benzeen-murex.vercel.app';
+
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
     },
+  },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: VERCEL_HOST }],
+        destination: `https://${CANONICAL_HOST}/:path*`,
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     return [
