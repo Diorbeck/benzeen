@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { LocateFixed } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { mapProvider, TASHKENT_CENTER } from './provider';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -30,6 +31,10 @@ export function MapPicker({
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
   const [locating, setLocating] = useState(false);
+  // Read the theme at init time so MapTiler serves its dark basemap in dark mode.
+  const { resolvedTheme } = useTheme();
+  const darkRef = useRef(false);
+  darkRef.current = resolvedTheme === 'dark';
 
   // Initialize the map once (dynamic import keeps maplibre out of the SSR bundle).
   useEffect(() => {
@@ -43,7 +48,7 @@ export function MapPicker({
       const start = value ?? TASHKENT_CENTER;
       map = new maplibregl.Map({
         container: containerRef.current,
-        style: mapProvider.getStyle(),
+        style: mapProvider.getStyle({ dark: darkRef.current }),
         center: [start.lng, start.lat],
         zoom: value ? 15 : 12,
         attributionControl: { compact: true },

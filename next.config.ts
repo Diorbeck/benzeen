@@ -20,11 +20,16 @@ const cspReportOnly = [
   // blob: allows the MapLibre GL web worker (created from a blob URL).
   "script-src 'self' 'unsafe-inline' 'unsafe-eval' blob: https://telegram.org",
   "style-src 'self' 'unsafe-inline'",
-  // MapLibre raster tiles may be drawn as images; allow OSM tile hosts.
-  "img-src 'self' data: blob: https: https://*.tile.openstreetmap.org",
+  // MapLibre raster/vector tiles may be drawn as images. img-src already allows
+  // https: broadly; MapTiler (sprites/tile images) and the OSM apex host are
+  // listed explicitly for clarity.
+  "img-src 'self' data: blob: https: https://api.maptiler.com https://tile.openstreetmap.org",
   "font-src 'self' data:",
-  // API / telemetry + OSM tile fetches (MapLibre loads tiles via fetch).
-  "connect-src 'self' https://*.tile.openstreetmap.org https://*.upstash.io https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
+  // API / telemetry + map tile fetches (MapLibre loads style.json, vector
+  // tiles, glyphs and sprites via fetch/XHR — those go through connect-src).
+  // MapTiler = api.maptiler.com; OSM fallback uses the apex host (a
+  // *.tile.openstreetmap.org wildcard does NOT match the apex).
+  "connect-src 'self' https://api.maptiler.com https://tile.openstreetmap.org https://*.upstash.io https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.de.sentry.io",
   "worker-src 'self' blob:",
   // Some browsers consult child-src for workers instead of worker-src.
   "child-src 'self' blob:",

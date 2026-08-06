@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
+import { useTheme } from 'next-themes';
 import { mapProvider } from './provider';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -24,6 +25,10 @@ export function TrackingMap({
   const courierMarkerRef = useRef<Marker | null>(null);
   const animRef = useRef<number | null>(null);
   const readyRef = useRef(false);
+  // Read the theme at init time so MapTiler serves its dark basemap in dark mode.
+  const { resolvedTheme } = useTheme();
+  const darkRef = useRef(false);
+  darkRef.current = resolvedTheme === 'dark';
 
   // Init once.
   useEffect(() => {
@@ -36,7 +41,7 @@ export function TrackingMap({
 
       map = new maplibregl.Map({
         container: containerRef.current,
-        style: mapProvider.getStyle(),
+        style: mapProvider.getStyle({ dark: darkRef.current }),
         center: [destination.lng, destination.lat],
         zoom: 13,
         attributionControl: { compact: true },
