@@ -50,14 +50,25 @@ const osmProvider: MapProvider = {
 // OSM so the map is never blank.
 const MAPTILER_KEY = process.env.NEXT_PUBLIC_MAPTILER_KEY;
 
+// MapTiler style IDs, single source of truth for every map surface (/benzin
+// picker, order tracking, and the future /propan picker). We use the "dataviz"
+// pair — a deliberately muted, low-chroma basemap — instead of streets-v2, whose
+// bright road/POI colouring clashed with the app's minimalist look. If dataviz
+// is ever unavailable on our MapTiler plan, swap this pair for the equally muted
+// basic-v2 / basic-v2-dark (both are on the free tier):
+//   const MAPTILER_STYLE = { light: 'basic-v2', dark: 'basic-v2-dark' } as const;
+const MAPTILER_STYLE = {
+  light: 'dataviz-light',
+  dark: 'dataviz-dark',
+} as const;
+
 // Production provider: MapTiler vector tiles via a hosted style.json URL. Its
 // style, vector tiles, glyphs and sprites are fetched from api.maptiler.com
-// (needs CSP connect-src + img-src). streets-v2 for light, streets-v2-dark for
-// dark mode.
+// (needs CSP connect-src + img-src).
 const maptilerProvider: MapProvider = {
   id: 'maptiler',
   getStyle: (opts) => {
-    const style = opts?.dark ? 'streets-v2-dark' : 'streets-v2';
+    const style = opts?.dark ? MAPTILER_STYLE.dark : MAPTILER_STYLE.light;
     return `https://api.maptiler.com/maps/${style}/style.json?key=${MAPTILER_KEY}`;
   },
 };
