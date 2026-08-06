@@ -164,7 +164,7 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next|_vercel|tg$|tg/|.*\\..*).*)',
+    '/((?!api|_next|_vercel|opengraph-image|twitter-image|icon|apple-icon|tg$|tg/|.*\\..*).*)',
     '/api/auth/:path*',
   ],
 };
