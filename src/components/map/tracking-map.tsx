@@ -34,6 +34,7 @@ export function TrackingMap({
   useEffect(() => {
     let cancelled = false;
     let map: MlMap | null = null;
+    let ro: ResizeObserver | null = null;
 
     (async () => {
       const maplibregl = (await import('maplibre-gl')).default;
@@ -48,6 +49,24 @@ export function TrackingMap({
         interactive: true,
       });
       mapRef.current = map;
+
+      // Can init while the order page is still laying out at 0 height; resize
+      // whenever the container gains a real size so tiles actually load.
+      ro = new ResizeObserver(() => map?.resize());
+      ro.observe(containerRef.current);
+
+      // Data-driven icon-image in the MapTiler style can evaluate to '' →
+      // MapLibre warns "Image '' could not be loaded". We set no icon-image;
+      // register a transparent placeholder to silence it.
+      map.on('styleimagemissing', (e) => {
+        const id = e.id ?? '';
+        if (!map || map.hasImage(id)) return;
+        try {
+          map.addImage(id, { width: 1, height: 1, data: new Uint8Array(4) });
+        } catch {
+          /* empty/invalid image id — nothing to render, ignore */
+        }
+      });
 
       // Destination (client) — blue pin.
       destMarkerRef.current = new maplibregl.Marker({ color: '#2563eb' })
@@ -71,6 +90,7 @@ export function TrackingMap({
 
     return () => {
       cancelled = true;
+      ro?.disconnect();
       if (animRef.current) cancelAnimationFrame(animRef.current);
       map?.remove();
       mapRef.current = null;
@@ -122,8 +142,10 @@ export function TrackingMap({
 
   return (
     <div className={className}>
-      <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10 sm:h-80">
-        <div ref={containerRef} className="absolute inset-0" />
+      <div className="relative h-[320px] w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10 md:h-[400px]">
+        {/* h-full (not absolute inset-0): MapLibre forces position:relative on its
+            container, which cancels `absolute` and collapses inset-0 to 0 height. */}
+        <div ref={containerRef} className="h-full w-full" />
       </div>
     </div>
   );
