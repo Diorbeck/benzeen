@@ -40,6 +40,7 @@ export function MapPicker({
   useEffect(() => {
     let cancelled = false;
     let map: MlMap | null = null;
+    let ro: ResizeObserver | null = null;
 
     (async () => {
       const maplibregl = (await import('maplibre-gl')).default;
@@ -54,6 +55,25 @@ export function MapPicker({
         attributionControl: { compact: true },
       });
       mapRef.current = map;
+
+      // The picker mounts inside a stepped flow and can init while its container
+      // is still 0-height; resize whenever it gains a real size so MapLibre
+      // actually requests tiles (otherwise the basemap stays blank).
+      ro = new ResizeObserver(() => map?.resize());
+      ro.observe(containerRef.current);
+
+      // The MapTiler style carries data-driven icon-image that can evaluate to ''
+      // for some features → MapLibre warns "Image '' could not be loaded". Our own
+      // code sets no icon-image; register a transparent placeholder to silence it.
+      map.on('styleimagemissing', (e) => {
+        const id = e.id ?? '';
+        if (!map || map.hasImage(id)) return;
+        try {
+          map.addImage(id, { width: 1, height: 1, data: new Uint8Array(4) });
+        } catch {
+          /* empty/invalid image id — nothing to render, ignore */
+        }
+      });
 
       const marker = new maplibregl.Marker({ color: '#2563eb', draggable: true })
         .setLngLat([start.lng, start.lat])
@@ -73,6 +93,7 @@ export function MapPicker({
 
     return () => {
       cancelled = true;
+      ro?.disconnect();
       map?.remove();
       mapRef.current = null;
       markerRef.current = null;
@@ -105,8 +126,10 @@ export function MapPicker({
 
   return (
     <div className={className}>
-      <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10 sm:h-80">
-        <div ref={containerRef} className="absolute inset-0" />
+      <div className="relative h-[320px] w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10 md:h-[400px]">
+        {/* h-full (not absolute inset-0): MapLibre forces position:relative on its
+            container, which cancels `absolute` and collapses inset-0 to 0 height. */}
+        <div ref={containerRef} className="h-full w-full" />
         <button
           type="button"
           onClick={locateMe}
