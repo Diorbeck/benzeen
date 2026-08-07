@@ -1,5 +1,6 @@
 import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { encode as defaultJwtEncode, decode as defaultJwtDecode } from 'next-auth/jwt';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { PrismaAdapter } from '@auth/prisma-adapter';
@@ -7,12 +8,31 @@ import type { Adapter } from 'next-auth/adapters';
 import { ensureSuperAdminFromEnv } from '@/lib/bootstrap';
 import { verifyCode } from '@/lib/verification';
 import { resolveReferrer } from '@/lib/referral';
+import {
+  CLIENT_SESSION_MAX_AGE,
+  SESSION_UPDATE_AGE,
+  sessionMaxAgeSeconds,
+} from '@/lib/session-policy';
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    // Cookie/session envelope lives for the longest role (clients, 180d); the
+    // real per-role token expiry is stamped in `jwt.encode` below.
+    maxAge: CLIENT_SESSION_MAX_AGE,
+    updateAge: SESSION_UPDATE_AGE, // rolling session
+  },
+  jwt: {
+    maxAge: CLIENT_SESSION_MAX_AGE,
+    // Role-aware token lifetime: CLIENT → 180d, staff → 30d (unchanged). We just
+    // delegate to NextAuth's default encoder with a role-based maxAge, so a staff
+    // token still expires at 30 days even though the cookie envelope is longer.
+    async encode(params) {
+      const role = (params.token as { role?: string } | undefined)?.role;
+      return defaultJwtEncode({ ...params, maxAge: sessionMaxAgeSeconds(role) });
+    },
+    decode: defaultJwtDecode,
   },
   pages: {
     signIn: '/login',
