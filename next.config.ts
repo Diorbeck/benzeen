@@ -88,6 +88,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  images: {
+    // Car photos are stored on Vercel Blob (public bucket).
+    remotePatterns: [{ protocol: 'https', hostname: '*.public.blob.vercel-storage.com' }],
+  },
   async redirects() {
     return [
       {

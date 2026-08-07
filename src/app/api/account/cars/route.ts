@@ -1,43 +1,62 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { getCurrentClient } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
+
+const carSelect = {
+  id: true,
+  plate: true,
+  model: true,
+  tankCapacity: true,
+  brand: true,
+  color: true,
+  fuelType: true,
+  oilType: true,
+  photoUrl: true,
+} as const;
 
 const carSchema = z.object({
   plate: z.string().trim().min(1).max(20),
   model: z.string().trim().max(60).optional(),
   tankCapacity: z.number().int().min(20).max(200).optional(),
+  brand: z.string().trim().max(60).optional(),
+  color: z.string().trim().max(40).optional(),
+  fuelType: z.enum(['AI_92', 'AI_95', 'AI_100']).optional(),
+  oilType: z.string().trim().max(60).optional(),
+  photoUrl: z.string().url().max(2048).optional(),
 });
-
-async function requireClient() {
-  const session = await getServerSession(authOptions);
-  const user = session?.user as { id?: string; role?: string } | undefined;
-  if (!user?.id || user.role !== 'CLIENT') return null;
-  return user.id;
-}
 
 // List the signed-in client's own cars.
 export async function GET() {
-  const userId = await requireClient();
-  if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  const client = await getCurrentClient();
+  if (!client) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   const cars = await prisma.clientCar.findMany({
-    where: { userId },
+    where: { userId: client.id },
     orderBy: { createdAt: 'desc' },
-    select: { id: true, plate: true, model: true, tankCapacity: true },
+    select: carSelect,
   });
   return NextResponse.json(cars);
 }
 
 // Add a car to the signed-in client.
 export async function POST(req: Request) {
-  const userId = await requireClient();
-  if (!userId) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
+  const client = await getCurrentClient();
+  if (!client) return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   try {
-    const { plate, model, tankCapacity } = carSchema.parse(await req.json());
+    const p = carSchema.parse(await req.json());
     const car = await prisma.clientCar.create({
-      data: { userId, plate, model: model || null, tankCapacity: tankCapacity ?? null },
-      select: { id: true, plate: true, model: true, tankCapacity: true },
+      data: {
+        userId: client.id,
+        plate: p.plate,
+        model: p.model || null,
+        tankCapacity: p.tankCapacity ?? null,
+        brand: p.brand || null,
+        color: p.color || null,
+        fuelType: p.fuelType ?? null,
+        oilType: p.oilType || null,
+        photoUrl: p.photoUrl || null,
+      },
+      select: carSelect,
     });
     return NextResponse.json(car);
   } catch (err) {

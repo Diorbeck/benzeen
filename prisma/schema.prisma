@@ -46,6 +46,18 @@ enum BonusReason {
   REFUND                  // +N returned when a bonus-using order is cancelled
 }
 
+// Support tickets (Кабинет 2.0, PR-A). Client-submitted; admin triage is a later PR.
+enum SupportTicketType {
+  COMPLAINT
+  SUGGESTION
+  QUESTION
+}
+
+enum SupportTicketStatus {
+  NEW
+  RESOLVED
+}
+
 enum AuditAction {
   COMPANY_CREATE
   COMPANY_DELETE
@@ -110,6 +122,7 @@ model User {
   referrals      User[]           @relation("Referrals")
   bonusLedger    BonusLedger[]
   savedLocations SavedLocation[]
+  supportTickets SupportTicket[]
 
   @@index([referredById])
 }
@@ -145,6 +158,22 @@ model SavedLocation {
   @@index([userId])
 }
 
+// Client support tickets (Кабинет 2.0, PR-A). One row per submission; rate-limited
+// server-side to 3/hour/user. Admin "Обращения" triage lands in a later PR.
+model SupportTicket {
+  id        String              @id @default(cuid())
+  userId    String
+  type      SupportTicketType
+  text      String
+  status    SupportTicketStatus @default(NEW)
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
 // B2C client vehicle (M2). Created on the client's first fuel order; reused
 // afterwards. Separate from the B2B `Car` model (which has company + limits).
 model ClientCar {
@@ -153,6 +182,12 @@ model ClientCar {
   plate        String
   model        String?
   tankCapacity Int?     // liters; enables the "full tank" option when known
+  // Кабинет 2.0 (PR-A): richer car profile. All optional.
+  brand        String?    // e.g. "Chevrolet"
+  color        String?    // free-text colour label
+  fuelType     FuelType?  // the car's usual fuel — prefills the order flow
+  oilType      String?    // preferred engine-oil grade (free text)
+  photoUrl     String?    // Vercel Blob URL of the car photo
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
