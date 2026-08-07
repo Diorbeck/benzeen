@@ -15,7 +15,7 @@ import {
   dispatchOrder,
   requestFullTankApproval,
 } from '@/lib/order-dispatch';
-import { applyCourierAction } from '@/lib/courier-actions';
+import { applyCourierAction, courierOrderActions } from '@/lib/courier-actions';
 import { createNotification } from '@/lib/notifications';
 import { COURIER_LOCATION_MAX_AGE_MS } from '@/lib/constants';
 
@@ -84,7 +84,14 @@ export async function POST(req: Request) {
 async function handleText(message: NonNullable<TgUpdate['message']>) {
   const chatId = message.chat?.id;
   const text = (message.text || '').trim();
-  if (!chatId || !text.startsWith('/start')) return;
+  if (!chatId) return;
+
+  if (text.startsWith('/orders')) {
+    await handleOrdersCommand(chatId, message.from?.id ?? chatId);
+    return;
+  }
+
+  if (!text.startsWith('/start')) return;
 
   const miniAppUrl = getMiniAppUrl();
   const replyMarkup: InlineKeyboardMarkup | undefined = miniAppUrl
@@ -96,6 +103,69 @@ async function handleText(message: NonNullable<TgUpdate['message']>) {
     'Добро пожаловать в <b>Benzeen</b>!\n\nНажмите кнопку ниже, чтобы открыть приложение.',
     replyMarkup,
   );
+}
+
+/**
+ * /orders — lists the courier's ACTIVE orders (COURIER_ASSIGNED / IN_DELIVERY),
+ * each as its own card with the same next-step action button as the live order
+ * card (Выехал → Доставлено). Read-only aside from letting the courier advance
+ * the order via the shared action buttons.
+ */
+async function handleOrdersCommand(chatId: number, fromId: number) {
+  const user = await prisma.user.findUnique({
+    where: { telegramId: String(fromId) },
+    select: { id: true, role: true },
+  });
+  if (!user) {
+    await sendTelegramMessage(chatId, 'Аккаунт не привязан. Откройте приложение, чтобы войти.');
+    return;
+  }
+  if (user.role !== 'COURIER') {
+    await sendTelegramMessage(chatId, 'Команда доступна только курьерам.');
+    return;
+  }
+
+  const orders = await prisma.order.findMany({
+    where: {
+      assignedToId: user.id,
+      status: { in: ['COURIER_ASSIGNED', 'IN_DELIVERY'] },
+    },
+    orderBy: { createdAt: 'asc' },
+    include: {
+      car: { select: { plateNumber: true } },
+      clientCar: { select: { plate: true } },
+      client: { select: { phone: true } },
+    },
+  });
+
+  if (orders.length === 0) {
+    await sendTelegramMessage(chatId, '📭 У вас нет активных заказов.');
+    return;
+  }
+
+  await sendTelegramMessage(
+    chatId,
+    `📋 <b>Активные заказы: ${orders.length}</b>`,
+  );
+
+  for (const order of orders) {
+    const stage = order.status === 'IN_DELIVERY' ? '🛣️ В пути' : '🚚 Назначен';
+    const text =
+      `${stage}\n\n` +
+      orderSummary({
+        fuelType: order.fuelType,
+        volume: order.volume,
+        isFullTank: order.isFullTank,
+        address: order.address,
+        lat: order.lat,
+        lng: order.lng,
+        car: order.car,
+        clientCar: order.clientCar,
+        clientPhone: order.client?.phone,
+        scheduledFor: order.scheduledFor,
+      });
+    await sendTelegramMessage(chatId, text, courierOrderActions(order));
+  }
 }
 
 async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
@@ -125,12 +195,32 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { car: { select: { plateNumber: true } } },
+    include: {
+      car: { select: { plateNumber: true } },
+      clientCar: { select: { plate: true } },
+      client: { select: { phone: true } },
+    },
   });
   if (!order) {
     await answerCallbackQuery(cq.id, 'Заказ не найден');
     return;
   }
+
+  // Courier order card, mapped from the fetched order (bold fuel/liters, map
+  // link, tel: link, scheduled time). Reused by the take + on-route cards.
+  const courierCard = () =>
+    orderSummary({
+      fuelType: order.fuelType,
+      volume: order.volume,
+      isFullTank: order.isFullTank,
+      address: order.address,
+      lat: order.lat,
+      lng: order.lng,
+      car: order.car,
+      clientCar: order.clientCar,
+      clientPhone: order.client?.phone,
+      scheduledFor: order.scheduledFor,
+    });
 
   if (verb === 'take') {
     if (user.role !== 'COURIER') {
@@ -144,7 +234,7 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
         await editMessageText(
           chatId,
           messageId,
-          `❌ ${result.error}\n\n` + orderSummary(order),
+          `❌ ${result.error}\n\n` + courierCard(),
         );
       }
       return;
@@ -160,15 +250,49 @@ async function handleCallback(cq: NonNullable<TgUpdate['callback_query']>) {
     const freshLoc = loc && Date.now() - loc.updatedAt.getTime() <= COURIER_LOCATION_MAX_AGE_MS;
     if (!freshLoc) {
       takeExtra =
-        '\n\n📍 Включи трансляцию геопозиции (скрепка → Геопозиция → Транслировать), чтобы клиент видел тебя на карте.';
+        '\n\n📍 Включите трансляцию геопозиции (скрепка → Геопозиция → Транслировать), чтобы клиент видел вас на карте.';
     }
     if (chatId && messageId) {
       await editMessageText(
         chatId,
         messageId,
-        `✅ <b>Вы взяли заказ</b>\n\n` + orderSummary(order) + takeExtra,
+        `✅ <b>Вы взяли заказ</b>\n\n` + courierCard() + takeExtra,
+        courierOrderActions({ id: order.id, status: 'COURIER_ASSIGNED' }),
       );
     }
+    return;
+  }
+
+  if (verb === 'on_route') {
+    if (user.role !== 'COURIER') {
+      await answerCallbackQuery(cq.id, 'Только для курьеров');
+      return;
+    }
+    const result = await applyCourierAction(user.id, orderId, 'ON_ROUTE');
+    if (!result.ok) {
+      await answerCallbackQuery(cq.id, result.error);
+      return;
+    }
+    await answerCallbackQuery(cq.id, 'В пути');
+    if (chatId && messageId) {
+      await editMessageText(
+        chatId,
+        messageId,
+        `🛣️ <b>Вы в пути к клиенту</b>\n\n` + courierCard(),
+        courierOrderActions({ id: order.id, status: 'IN_DELIVERY' }),
+      );
+    }
+    return;
+  }
+
+  if (verb === 'delivered') {
+    // Fallback when the Mini App URL is unset: liters are entered in the app,
+    // which owns the money/limit logic. Just point the courier there.
+    if (user.role !== 'COURIER') {
+      await answerCallbackQuery(cq.id, 'Только для курьеров');
+      return;
+    }
+    await answerCallbackQuery(cq.id, 'Укажите литры в приложении');
     return;
   }
 
