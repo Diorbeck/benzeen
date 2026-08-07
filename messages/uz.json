@@ -738,7 +738,8 @@
       "invalidPhone": "+998XXXXXXXXX ko‘rinishida to‘g‘ri raqam kiriting",
       "invalidCode": "Kod noto‘g‘ri yoki muddati o‘tgan",
       "generic": "Xatolik yuz berdi. Yana urinib ko‘ring.",
-      "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring"
+      "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring",
+      "rateLimited": "Juda koʻp urinish — bir daqiqa kuting"
     }
   },
   "account": {
@@ -934,6 +935,7 @@
       "subtitleCode": "{phone} raqamiga yuborilgan kodni kiriting",
       "invalidPhone": "+998XXXXXXXXX koʻrinishida raqam kiriting",
       "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring",
+      "rateLimited": "Juda koʻp urinish — bir daqiqa kuting",
       "invalidCode": "Kod notoʻgʻri yoki muddati oʻtgan",
       "devHint": "Kod yuborildi.",
       "send": "Kod olish",
