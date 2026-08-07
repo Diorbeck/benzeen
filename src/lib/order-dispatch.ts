@@ -20,6 +20,7 @@ import {
   sendTelegramMessage,
   getMiniAppUrl,
   FUEL_LABEL_RU,
+  escapeHtml,
   type InlineKeyboardMarkup,
 } from './telegram';
 
@@ -34,27 +35,74 @@ interface OrderForSummary {
   car?: { plateNumber: string } | null;
   clientCar?: { plate: string } | null;
   clientPhone?: string | null;
+  // B2C scheduled orders carry the planned delivery time.
+  scheduledFor?: Date | null;
 }
 
-/** Builds the multi-line order summary shown to drivers and couriers. */
+/** Yandex.Maps deep link to a point (lng,lat is the order Yandex expects). */
+function mapUrl(lat: number, lng: number): string {
+  return `https://yandex.ru/maps/?pt=${lng},${lat}&z=17&l=map`;
+}
+
+/** Formats a delivery time in Tashkent local time, e.g. "07.08 в 14:30". */
+export function formatDeliveryTime(date: Date): string {
+  const parts = new Intl.DateTimeFormat('ru-RU', {
+    timeZone: 'Asia/Tashkent',
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).formatToParts(date);
+  const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+  return `${get('day')}.${get('month')} в ${get('hour')}:${get('minute')}`;
+}
+
+/**
+ * Builds the multi-line order summary shown to drivers and couriers.
+ *
+ * FUEL and LITERS are bold; the delivery address renders as a tappable map link
+ * (when coordinates are known) and the client phone as a `tel:` link. Scheduled
+ * orders show the planned delivery time prominently at the top. All dynamic
+ * values are HTML-escaped for Telegram's HTML parse mode.
+ */
 export function orderSummary(order: OrderForSummary): string {
   const fuel = FUEL_LABEL_RU[order.fuelType] ?? order.fuelType;
   const volume = order.isFullTank
     ? `полный бак (${order.volume} л)`
     : `${order.volume} л`;
   const plate = order.car?.plateNumber ?? order.clientCar?.plate ?? '—';
-  const lines = [
-    `Машина: <b>${plate}</b>`,
-    `Топливо: ${fuel}`,
-    `Объём: ${volume}`,
-  ];
-  if (order.clientPhone) lines.push(`Клиент: ${order.clientPhone}`);
-  if (order.address) lines.push(`Адрес: ${order.address}`);
-  if (order.lat != null && order.lng != null) {
+
+  const lines: string[] = [];
+
+  // Scheduled orders: surface the delivery time first, prominently.
+  if (order.scheduledFor) {
+    lines.push(`⏰ <b>К ${formatDeliveryTime(order.scheduledFor)}</b>`, '');
+  }
+
+  lines.push(
+    `Машина: <b>${escapeHtml(plate)}</b>`,
+    `Топливо: <b>${escapeHtml(fuel)}</b>`,
+    `Объём: <b>${escapeHtml(volume)}</b>`,
+  );
+
+  if (order.clientPhone) {
+    const digits = order.clientPhone.replace(/[^\d+]/g, '');
     lines.push(
-      `Карта: https://yandex.ru/maps/?pt=${order.lng},${order.lat}&z=17&l=map`,
+      `Клиент: <a href="tel:${escapeHtml(digits)}">${escapeHtml(order.clientPhone)}</a>`,
     );
   }
+
+  if (order.address) {
+    const hasCoords = order.lat != null && order.lng != null;
+    lines.push(
+      hasCoords
+        ? `Адрес: <a href="${mapUrl(order.lat!, order.lng!)}">${escapeHtml(order.address)}</a>`
+        : `Адрес: ${escapeHtml(order.address)}`,
+    );
+  } else if (order.lat != null && order.lng != null) {
+    lines.push(`Карта: <a href="${mapUrl(order.lat, order.lng)}">открыть на карте</a>`);
+  }
+
   return lines.join('\n');
 }
 
@@ -99,6 +147,7 @@ async function notifyCouriers(orderId: string, chatIds: string[]): Promise<void>
       car: order.car,
       clientCar: order.clientCar,
       clientPhone: order.client?.phone,
+      scheduledFor: order.scheduledFor,
     });
 
   const miniAppUrl = getMiniAppUrl();
