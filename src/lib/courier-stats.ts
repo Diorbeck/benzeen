@@ -33,6 +33,41 @@ export function startOfLast7Days(now: Date = new Date()): Date {
 }
 
 /**
+ * Converts an admin-supplied inclusive `from`/`to` date range (each a
+ * "YYYY-MM-DD" string in Tashkent local time) into a half-open UTC window
+ * `[start, end)` suitable for a `deliveredAt` filter. `end` is the start of the
+ * day AFTER `to`, so the whole `to` day is included. Invalid/blank inputs fall
+ * back to a single-day (today) window so callers never build a broken query.
+ */
+export function tashkentRangeToUtc(
+  from: string | undefined | null,
+  to: string | undefined | null,
+  now: Date = new Date(),
+): { start: Date; end: Date } {
+  const parse = (s: string | undefined | null): Date | null => {
+    if (!s) return null;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s.trim());
+    if (!m) return null;
+    const y = Number(m[1]);
+    const mo = Number(m[2]);
+    const d = Number(m[3]);
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+    // Tashkent local midnight expressed as a UTC instant.
+    return new Date(Date.UTC(y, mo - 1, d) - TASHKENT_OFFSET_MS);
+  };
+  const today = startOfTashkentDay(now);
+  const start = parse(from) ?? today;
+  const toStart = parse(to) ?? today;
+  // Half-open: include the full `to` day by ending at the next day's start.
+  let end = new Date(toStart.getTime() + DAY_MS);
+  if (end.getTime() <= start.getTime()) {
+    // Guard against inverted ranges — collapse to a single-day window.
+    end = new Date(start.getTime() + DAY_MS);
+  }
+  return { start, end };
+}
+
+/**
  * Aggregates a set of delivered rows: count, total liters, and the average
  * TAKE→DELIVERED time (only over rows that carry both timestamps). Rows without
  * a deliveredAt are ignored defensively.

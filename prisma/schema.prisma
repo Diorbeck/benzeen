@@ -82,6 +82,10 @@ enum AuditAction {
   BONUS_APPROVE
   BONUS_REJECT
   SUPPORT_RESOLVE
+  // Курьер 2.0 admin: deactivation toggle + privacy-critical CSV export.
+  COURIER_DEACTIVATE
+  COURIER_ACTIVATE
+  COURIER_CSV_EXPORT
 }
 
 enum OrderStatus {
@@ -127,6 +131,11 @@ model User {
   // toggled via the bot's "На смене" / "Завершить смену" buttons. Only couriers
   // that are onDuty AND have a fresh live location get offered new orders.
   onDuty        Boolean   @default(false)
+
+  // Courier deactivation (Курьер 2.0 admin). When set, the courier is blocked
+  // from authenticating and is excluded from every dispatch path. Nullable —
+  // NULL means active. Additive; semantically used only for COURIER users.
+  deactivatedAt DateTime?
 
   // B2C: the client's default vehicle, used to prefill the order flow. Nullable
   // FK to one of their own ClientCars; SET NULL if that car is deleted.

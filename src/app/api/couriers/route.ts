@@ -3,15 +3,30 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { writeAuditLog } from '@/lib/audit';
+import { getMiniAppUrl } from '@/lib/telegram';
 import { z } from 'zod';
 import * as bcrypt from 'bcryptjs';
+import { randomInt } from 'crypto';
 
 const schema = z.object({
   name: z.string().min(1).max(200),
   phone: z.string().min(1).max(50),
-  password: z.string().min(6).max(64),
+  // Optional: when omitted the server generates a temporary password and returns
+  // it once so the admin can relay it to the courier ("Передай курьеру").
+  password: z.string().min(6).max(64).optional(),
   vehicleNumber: z.string().max(50).optional(),
 });
+
+/**
+ * Generates a readable temporary password: 10 chars from an unambiguous
+ * alphabet (no 0/O/1/I/l). Used when the admin doesn't supply one.
+ */
+function generateTempPassword(): string {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+  let out = '';
+  for (let i = 0; i < 10; i++) out += alphabet[randomInt(alphabet.length)];
+  return out;
+}
 
 export async function POST(req: Request) {
   try {
@@ -44,7 +59,9 @@ export async function POST(req: Request) {
       );
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 10);
+    // Use the admin-supplied password, or mint a temporary one to hand off.
+    const tempPassword = data.password ?? generateTempPassword();
+    const passwordHash = await bcrypt.hash(tempPassword, 10);
     const sanitized = phone.replace(/\D/g, '');
     const email = `courier+${sanitized}@benzeen.local`;
 
@@ -69,7 +86,15 @@ export async function POST(req: Request) {
       metadata: { name: courier.name },
     });
 
-    return NextResponse.json({ id: courier.id });
+    // Hand-off block ("Передай курьеру"): the login (phone), the temporary
+    // password (returned exactly once — never stored in plaintext), and the bot
+    // link the courier opens to link their Telegram + start a shift.
+    return NextResponse.json({
+      id: courier.id,
+      login: courier.phone,
+      tempPassword,
+      botLink: getMiniAppUrl(),
+    });
   } catch (e) {
     if (e instanceof z.ZodError) {
       return NextResponse.json(

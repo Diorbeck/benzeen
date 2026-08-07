@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
+import { getTranslations } from 'next-intl/server';
 import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { CouriersManager } from '@/components/dashboard/couriers-manager';
+import { fetchCourierList } from '@/lib/courier-admin';
+import { CouriersSection } from '@/components/dashboard/couriers-section';
 
 export default async function CouriersPage({
   params,
@@ -16,22 +17,34 @@ export default async function CouriersPage({
   const { role } = session.user as { role?: string };
   if (role !== 'SUPER_ADMIN') redirect(`/${locale}/dashboard`);
 
-  const couriers = await prisma.user.findMany({
-    where: { role: 'COURIER' },
-    orderBy: { createdAt: 'desc' },
-    select: { id: true, name: true, phone: true, vehicleNumber: true },
-  });
+  const t = await getTranslations('adminCouriers');
+  const couriers = await fetchCourierList();
+
+  // Serialize dates for the client component.
+  const rows = couriers.map((c) => ({
+    id: c.id,
+    name: c.name,
+    phone: c.phone,
+    vehicleNumber: c.vehicleNumber,
+    telegramLinked: c.telegramLinked,
+    onDuty: c.onDuty,
+    deactivated: c.deactivatedAt != null,
+    locationFresh: c.locationFresh,
+    locationUpdatedAt: c.locationUpdatedAt ? c.locationUpdatedAt.toISOString() : null,
+    activeOrders: c.activeOrders,
+    deliveredToday: c.deliveredToday,
+    litersToday: c.litersToday,
+  }));
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-        Курьеры
-      </h1>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        Регистрируйте курьеров, редактируйте и удаляйте их. Курьер входит в систему
-        по номеру телефона и паролю.
-      </p>
-      <CouriersManager couriers={couriers} />
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {t('title')}
+        </h1>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('subtitle')}</p>
+      </div>
+      <CouriersSection couriers={rows} locale={locale} />
     </div>
   );
 }
