@@ -63,13 +63,13 @@ export function AccountView({
     <div className="min-h-screen bg-gray-50 dark:bg-navy-950 text-navy dark:text-white">
       <header className="sticky top-0 z-header border-b border-gray-100 dark:border-white/10 bg-white/85 dark:bg-navy-900/85 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-3xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link href={`/${locale}`} className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-control bg-primary-600">
+          <Link href={`/${locale}`} className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary-600">
               <Fuel className="h-5 w-5 text-white" aria-hidden />
             </span>
-            <span className="text-lg font-semibold tracking-tight text-navy dark:text-white">{t('title')}</span>
+            <span className="truncate text-lg font-semibold tracking-tight text-navy dark:text-white">{t('title')}</span>
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             <LanguageSwitcher />
             <B2CThemeToggle />
             <button
@@ -255,8 +255,8 @@ function ReferralCard({ locale, referral }: { locale: string; referral: Referral
         <ul className="mt-5 divide-y divide-gray-100 dark:divide-white/10 border-t border-gray-100 dark:border-white/10">
           {referral.ledger.map((row) => (
             <li key={row.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-              <span className="text-gray-600 dark:text-gray-300">{reasonLabel(row.reason)}</span>
-              <span className={`font-medium ${row.reason === 'SPENT' ? 'text-gray-500 dark:text-gray-400' : 'text-success-600 dark:text-success-500'}`}>
+              <span className="min-w-0 truncate text-gray-600 dark:text-gray-300">{reasonLabel(row.reason)}</span>
+              <span className={`shrink-0 font-medium ${row.reason === 'SPENT' ? 'text-gray-500 dark:text-gray-400' : 'text-success-600 dark:text-success-500'}`}>
                 {row.reason === 'SPENT' ? '−' : '+'}
                 {formatLiters(row.liters, locale)}
               </span>
