@@ -123,6 +123,11 @@ model User {
   // blocked for this user; the balance stays visible. Toggled by super-admins.
   bonusFrozen   Boolean   @default(false)
 
+  // Courier shifts (Курьер 2.0). Semantically used only for COURIER users:
+  // toggled via the bot's "На смене" / "Завершить смену" buttons. Only couriers
+  // that are onDuty AND have a fresh live location get offered new orders.
+  onDuty        Boolean   @default(false)
+
   // B2C: the client's default vehicle, used to prefill the order flow. Nullable
   // FK to one of their own ClientCars; SET NULL if that car is deleted.
   defaultCarId  String?
@@ -366,6 +371,9 @@ model Order {
   bonusLitersUsed Int?             // M5: bonus liters applied (reduces totalAmount)
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
+  // Set when a courier TAKEs the order; paired with deliveredAt to measure the
+  // TAKE→DELIVERED duration in /stats. Nullable; only populated going forward.
+  takenAt    DateTime?
   deliveredAt DateTime?
 
   car         Car?  @relation(fields: [carId], references: [id], onDelete: Cascade)

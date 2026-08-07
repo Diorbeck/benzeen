@@ -7,6 +7,7 @@
 // All Telegram calls are fire-and-forget and degrade to no-ops when the bot is
 // unconfigured, so order mutations are never blocked by a Telegram outage.
 
+import * as Sentry from '@sentry/nextjs';
 import { prisma } from './prisma';
 import { createNotification } from './notifications';
 import { haversineKm } from './geo';
@@ -107,18 +108,35 @@ export function orderSummary(order: OrderForSummary): string {
 }
 
 /**
- * Notifies every courier who has linked their Telegram account about a new live
+ * Eligible couriers for a new-order offer (Курьер 2.0): linked Telegram account,
+ * currently ON DUTY, AND a live location fresher than COURIER_LOCATION_MAX_AGE_MS.
+ * Off-duty couriers and couriers whose location has gone stale are excluded from
+ * every dispatch path (nearest geo-dispatch and the broadcast backstop).
+ */
+async function eligibleCourierLocations(): Promise<
+  { chatId: string; lat: number; lng: number }[]
+> {
+  const since = new Date(Date.now() - COURIER_LOCATION_MAX_AGE_MS);
+  const locations = await prisma.courierLocation.findMany({
+    where: {
+      updatedAt: { gte: since },
+      courier: { role: 'COURIER', telegramId: { not: null }, onDuty: true },
+    },
+    include: { courier: { select: { telegramId: true } } },
+  });
+  return locations.map((l) => ({ chatId: l.courier.telegramId!, lat: l.lat, lng: l.lng }));
+}
+
+/**
+ * Notifies eligible couriers (on-duty + fresh live location) about a new live
  * order. Each gets a "Взять заказ" inline button (callback take:<orderId>).
  */
 export async function notifyCouriersNewOrder(orderId: string): Promise<void> {
-  const couriers = await prisma.user.findMany({
-    where: { role: 'COURIER', telegramId: { not: null } },
-    select: { telegramId: true },
-  });
-  if (couriers.length === 0) return;
+  const eligible = await eligibleCourierLocations();
+  if (eligible.length === 0) return;
   await notifyCouriers(
     orderId,
-    couriers.map((c) => c.telegramId).filter((t): t is string => !!t),
+    eligible.map((c) => c.chatId),
   );
 }
 
@@ -166,10 +184,15 @@ async function notifyCouriers(orderId: string, chatIds: string[]): Promise<void>
 }
 
 /**
- * B2C geo-dispatch: offer a freshly-created RECEIVED order to the N couriers with
- * the freshest live location, nearest first (haversine). Couriers without a
- * recent location are skipped — the stale-order cron falls back to a broadcast.
- * Returns the number of couriers offered the order.
+ * B2C geo-dispatch: offer a freshly-created RECEIVED order to the N on-duty
+ * couriers with the freshest live location, nearest first (haversine). Off-duty
+ * couriers and stale locations are skipped (see eligibleCourierLocations).
+ *
+ * When NO courier is eligible the order is left untouched in RECEIVED — the
+ * activity/cron redispatch path (redispatchStale) re-offers it once a courier
+ * comes on shift, so it is never lost — and a Sentry "no couriers on duty"
+ * warning is emitted so operators are alerted. Returns the number of couriers
+ * offered the order (0 when none were eligible).
  */
 export async function dispatchB2COrderToNearest(orderId: string): Promise<number> {
   const order = await prisma.order.findUnique({
@@ -178,16 +201,23 @@ export async function dispatchB2COrderToNearest(orderId: string): Promise<number
   });
   if (!order || order.lat == null || order.lng == null) return 0;
 
-  const since = new Date(Date.now() - COURIER_LOCATION_MAX_AGE_MS);
-  const locations = await prisma.courierLocation.findMany({
-    where: { updatedAt: { gte: since }, courier: { role: 'COURIER', telegramId: { not: null } } },
-    include: { courier: { select: { telegramId: true } } },
-  });
-  if (locations.length === 0) return 0;
+  const eligible = await eligibleCourierLocations();
+  if (eligible.length === 0) {
+    // No on-duty courier with a fresh location. Do NOT fail/unassign the order —
+    // it stays RECEIVED for redispatchStale to pick up. Alert operators via
+    // Sentry (alerts are already enabled). No operator Telegram channel exists
+    // in the codebase, so we don't post there.
+    Sentry.captureMessage('no couriers on duty', {
+      level: 'warning',
+      tags: { area: 'dispatch', orderType: 'b2c' },
+      extra: { orderId },
+    });
+    return 0;
+  }
 
   const origin = { lat: order.lat, lng: order.lng };
-  const nearest = locations
-    .map((l) => ({ chatId: l.courier.telegramId!, dist: haversineKm(origin, { lat: l.lat, lng: l.lng }) }))
+  const nearest = eligible
+    .map((l) => ({ chatId: l.chatId, dist: haversineKm(origin, { lat: l.lat, lng: l.lng }) }))
     .sort((a, b) => a.dist - b.dist)
     .slice(0, DISPATCH_NEAREST_COUNT);
 

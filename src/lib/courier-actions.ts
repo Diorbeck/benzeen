@@ -146,10 +146,13 @@ export async function applyCourierAction(
 
   let newStatus = order.status;
   let assignedToId: string | undefined;
+  // Курьер 2.0: stamp the take time so /stats can measure TAKE→DELIVERED.
+  let takenAt: Date | undefined;
 
   if (action === 'TAKE') {
     newStatus = 'COURIER_ASSIGNED';
     assignedToId = courierId;
+    takenAt = new Date();
   } else if (action === 'ON_ROUTE') {
     newStatus = 'IN_DELIVERY';
   }
@@ -159,6 +162,7 @@ export async function applyCourierAction(
     data: {
       status: newStatus,
       ...(assignedToId ? { assignedToId } : {}),
+      ...(takenAt ? { takenAt } : {}),
     },
   });
 
