@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { B2CHeader } from '@/components/b2c/header';
-import { FuelOrderFlow, type ExistingCar, type SavedLocationT } from '@/components/b2c/fuel-order-flow';
+import { FuelOrderFlow, type ExistingCar, type SavedLocationT, type LastOrderT } from '@/components/b2c/fuel-order-flow';
 import { getBonusBalance } from '@/lib/referral';
 import { getDefaultCarId } from '@/lib/session';
 
@@ -33,7 +33,7 @@ export default async function BenzinPage({
   if (user?.id && user.role !== 'CLIENT') redirect(`/${locale}/dashboard`);
   const isLoggedIn = Boolean(user?.id && user.role === 'CLIENT');
 
-  const [priceRows, carRows, locationRows, bonusBalance] = await Promise.all([
+  const [priceRows, carRows, locationRows, bonusBalance, lastOrderRow] = await Promise.all([
     prisma.price.findMany(),
     isLoggedIn
       ? prisma.clientCar.findMany({ where: { userId: user!.id }, orderBy: { createdAt: 'desc' } })
@@ -42,6 +42,14 @@ export default async function BenzinPage({
       ? prisma.savedLocation.findMany({ where: { userId: user!.id }, orderBy: { createdAt: 'asc' } })
       : Promise.resolve([]),
     isLoggedIn ? getBonusBalance(user!.id!) : Promise.resolve(0),
+    // Most recent client order — powers the "Repeat last order" fork on entry.
+    isLoggedIn
+      ? prisma.order.findFirst({
+          where: { clientId: user!.id },
+          orderBy: { createdAt: 'desc' },
+          include: { clientCar: { select: { plate: true, model: true } } },
+        })
+      : Promise.resolve(null),
   ]);
   const prices: Record<string, number> = {};
   for (const p of priceRows) prices[p.fuelType] = p.priceUzs;
@@ -50,6 +58,9 @@ export default async function BenzinPage({
     plate: c.plate,
     model: c.model,
     tankCapacity: c.tankCapacity,
+    // PR-A: the car's usual fuel — used to auto-preselect on the fuel step.
+    fuelType: (c.fuelType as ExistingCar['fuelType']) ?? null,
+    brand: c.brand ?? null,
   }));
   const savedLocations: SavedLocationT[] = locationRows.map((l) => ({
     id: l.id,
@@ -57,6 +68,21 @@ export default async function BenzinPage({
     lat: l.lat,
     lng: l.lng,
   }));
+
+  // "Repeat last order" prefill — car, fuel, liters and delivery point/address.
+  const lastOrder: LastOrderT | null = lastOrderRow
+    ? {
+        fuelType: lastOrderRow.fuelType as LastOrderT['fuelType'],
+        volume: lastOrderRow.volume,
+        isFullTank: lastOrderRow.isFullTank,
+        address: lastOrderRow.address,
+        lat: lastOrderRow.lat,
+        lng: lastOrderRow.lng,
+        clientCarId: lastOrderRow.clientCarId,
+        carPlate: lastOrderRow.clientCar?.plate ?? null,
+        carModel: lastOrderRow.clientCar?.model ?? null,
+      }
+    : null;
 
   // Prefill the client's default car when the URL doesn't pin one (prereq:
   // session + default car). Falls back to most-recently-used → most-recent car.
@@ -82,6 +108,8 @@ export default async function BenzinPage({
           initialScheduleOpen={initialScheduleOpen}
           bonusBalance={bonusBalance}
           savedLocations={savedLocations}
+          lastOrder={lastOrder}
+          hasPrefill={Boolean(initialFuel || initialVolume || initialCarId || initialScheduleOpen)}
         />
       </main>
     </div>

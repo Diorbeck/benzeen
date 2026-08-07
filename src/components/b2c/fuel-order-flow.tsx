@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { CalendarClock, Car, Check, Fuel, Gift, MapPin, Plus, Star, X } from 'lucide-react';
+import { CalendarClock, Car, Check, Fuel, Gift, MapPin, Plus, RotateCcw, Star, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MapPicker, type LatLng } from '@/components/map/map-picker';
 import { calcOrderPrice, type FuelType } from '@/lib/pricing';
@@ -19,8 +19,33 @@ import { getStoredRef, clearStoredRef } from '@/lib/referral-client';
 
 const FUEL_LABEL: Record<FuelType, string> = { AI_92: 'АИ-92', AI_95: 'АИ-95', AI_100: 'АИ-100' };
 
-export type ExistingCar = { id: string; plate: string; model: string | null; tankCapacity: number | null };
+export type ExistingCar = {
+  id: string;
+  plate: string;
+  model: string | null;
+  tankCapacity: number | null;
+  // PR-A car profile: the car's usual fuel — preselected on the fuel step.
+  fuelType: FuelType | null;
+  brand: string | null;
+};
 export type SavedLocationT = { id: string; name: string; lat: number; lng: number };
+// Most recent order — powers the "Repeat last order" fork shown on entry.
+export type LastOrderT = {
+  fuelType: FuelType;
+  volume: number;
+  isFullTank: boolean;
+  address: string | null;
+  lat: number | null;
+  lng: number | null;
+  clientCarId: string | null;
+  carPlate: string | null;
+  carModel: string | null;
+};
+
+/** Compare two plates ignoring case/spacing so "01A123BC" == "01 A 123 BC". */
+function plateKey(raw: string): string {
+  return raw.toUpperCase().replace(/[^0-9A-Z]/g, '');
+}
 
 const inputCls =
   'w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-3 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20';
@@ -37,6 +62,8 @@ export function FuelOrderFlow({
   initialScheduleOpen = false,
   bonusBalance = 0,
   savedLocations = [],
+  lastOrder = null,
+  hasPrefill = false,
 }: {
   locale: string;
   prices: Record<string, number>;
@@ -51,6 +78,11 @@ export function FuelOrderFlow({
   initialScheduleOpen?: boolean;
   bonusBalance?: number;
   savedLocations?: SavedLocationT[];
+  // Most recent order (logged-in clients only) — the "Repeat last order" fork.
+  lastOrder?: LastOrderT | null;
+  // True when the URL already pins a specific order (fuel/volume/carId/schedule),
+  // so we skip the fork and honor that prefill directly.
+  hasPrefill?: boolean;
 }) {
   const t = useTranslations('benzin');
   const router = useRouter();
@@ -58,6 +90,12 @@ export function FuelOrderFlow({
   const loggedIn = isLoggedIn || status === 'authenticated';
   const isRepeat = Boolean(initialFuel || initialVolume || initialCarId);
   const initialCarValid = initialCarId && cars.some((c) => c.id === initialCarId) ? initialCarId : null;
+  const initialCarObj = cars.find((c) => c.id === (initialCarValid ?? cars[0]?.id)) ?? null;
+
+  // Show the "Repeat last order / New order" fork only when a logged-in client
+  // has a past order AND the URL didn't already pin a specific order.
+  const canFork = Boolean(lastOrder) && !hasPrefill;
+  const [showFork, setShowFork] = useState(canFork);
 
   // --- order state ---
   const [carId, setCarId] = useState<string | null>(initialCarValid ?? cars[0]?.id ?? null);
@@ -65,7 +103,8 @@ export function FuelOrderFlow({
   const [plate, setPlate] = useState('');
   const [model, setModel] = useState('');
   const [tankCapacity, setTankCapacity] = useState('');
-  const [fuelType, setFuelType] = useState<FuelType>(initialFuel ?? 'AI_92');
+  // Fuel: explicit URL prefill wins, else the selected car's usual fuel, else AI_92.
+  const [fuelType, setFuelType] = useState<FuelType>(initialFuel ?? initialCarObj?.fuelType ?? 'AI_92');
   const [volume, setVolume] = useState<number>(initialVolume ?? VOLUME_PRESETS[0]);
   const [isFullTank, setIsFullTank] = useState(false);
   const [point, setPoint] = useState<LatLng | null>(null);
@@ -86,8 +125,8 @@ export function FuelOrderFlow({
   // Restore a guest draft once, on mount.
   useEffect(() => {
     track('order_started');
-    // Repeat-order prefill wins over any saved guest draft.
-    if (isRepeat) {
+    // Repeat-order prefill (URL) or the entry fork wins over any saved guest draft.
+    if (isRepeat || canFork) {
       hydrated.current = true;
       return;
     }
@@ -129,6 +168,53 @@ export function FuelOrderFlow({
       ? Number(tankCapacity)
       : null
     : selectedCar?.tankCapacity ?? null;
+
+  // Pick a saved car: select it and (task 3) preselect its usual fuel if known.
+  const selectCar = (c: ExistingCar) => {
+    setCarId(c.id);
+    setAddingCar(false);
+    if (c.fuelType) setFuelType(c.fuelType);
+    track('vehicle_selected', { saved: true });
+  };
+
+  // Plate autocomplete (task 2): while adding a car, if what the user typed
+  // matches one of their saved cars, offer to autofill the whole car.
+  const plateMatch =
+    usingNewCar && plate.trim().length >= 3
+      ? cars.find((c) => plateKey(c.plate) === plateKey(plate)) ?? null
+      : null;
+
+  // "Repeat last order": prefill everything from the most recent order and drop
+  // the user straight into the ready-to-confirm flow.
+  const repeatLastOrder = () => {
+    if (!lastOrder) return;
+    const savedCar = lastOrder.clientCarId
+      ? cars.find((c) => c.id === lastOrder.clientCarId) ?? null
+      : null;
+    if (savedCar) {
+      setCarId(savedCar.id);
+      setAddingCar(false);
+    } else if (lastOrder.carPlate) {
+      // Car was deleted — fall back to a new-car entry prefilled from the order.
+      setAddingCar(true);
+      setCarId(null);
+      setPlate(lastOrder.carPlate);
+      setModel(lastOrder.carModel ?? '');
+    }
+    setFuelType(lastOrder.fuelType);
+    if (lastOrder.isFullTank) {
+      setIsFullTank(true);
+    } else {
+      setIsFullTank(false);
+      setVolume(lastOrder.volume);
+    }
+    if (typeof lastOrder.lat === 'number' && typeof lastOrder.lng === 'number') {
+      setPoint({ lat: lastOrder.lat, lng: lastOrder.lng });
+    }
+    if (lastOrder.address) setAddress(lastOrder.address);
+    setShowFork(false);
+    track('order_repeat_last');
+  };
 
   // Persist the draft as the guest builds (skip the initial hydration render).
   useEffect(() => {
@@ -319,6 +405,27 @@ export function FuelOrderFlow({
     }
   };
 
+  // Entry fork: repeat the last order in one tap, or start a fresh flow.
+  if (showFork && lastOrder) {
+    const repeatLiters = lastOrder.isFullTank ? null : lastOrder.volume;
+    return (
+      <RepeatFork
+        t={t}
+        fuelLabel={FUEL_LABEL[lastOrder.fuelType]}
+        liters={repeatLiters}
+        carLabel={
+          [lastOrder.carPlate, lastOrder.carModel].filter(Boolean).join(' · ') || null
+        }
+        address={lastOrder.address}
+        onRepeat={repeatLastOrder}
+        onNew={() => {
+          setShowFork(false);
+          track('order_new_after_fork');
+        }}
+      />
+    );
+  }
+
   return (
     <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8">
       {/* Steps */}
@@ -348,11 +455,7 @@ export function FuelOrderFlow({
                 <button
                   key={c.id}
                   type="button"
-                  onClick={() => {
-                    setCarId(c.id);
-                    setAddingCar(false);
-                    track('vehicle_selected', { saved: true });
-                  }}
+                  onClick={() => selectCar(c)}
                   className={`flex w-full items-center justify-between rounded-control border px-4 py-3 text-left transition ${
                     !usingNewCar && carId === c.id
                       ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 ring-2 ring-primary-500/20'
@@ -393,6 +496,24 @@ export function FuelOrderFlow({
                   inputMode="text"
                   autoCapitalize="characters"
                 />
+                {plateMatch && (
+                  <button
+                    type="button"
+                    onClick={() => selectCar(plateMatch)}
+                    className="mt-2 flex w-full items-center gap-2 rounded-control border border-primary-200 dark:border-primary-500/40 bg-primary-50/60 dark:bg-primary-500/15 px-3 py-2.5 text-left text-sm text-primary-800 dark:text-primary-200 transition hover:border-primary-400"
+                  >
+                    <Car className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
+                    <span>
+                      {t('plateMatch')}{' '}
+                      <span className="font-semibold">
+                        {plateMatch.plate}
+                        {plateMatch.brand || plateMatch.model
+                          ? ` · ${[plateMatch.brand, plateMatch.model].filter(Boolean).join(' ')}`
+                          : ''}
+                      </span>
+                    </span>
+                  </button>
+                )}
               </Field>
               <Field label={t('modelLabel')} optional optionalText={t('optional')}>
                 <input className={inputCls} value={model} onChange={(e) => setModel(e.target.value)} placeholder={t('modelPlaceholder')} maxLength={60} />
@@ -488,7 +609,14 @@ export function FuelOrderFlow({
                 value={String(volume)}
                 onChange={(e) => setVolume(Number(e.target.value.replace(/\D/g, '')) || 0)}
               />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('minVolume', { min: 30 })}</p>
+              {/* Persistent minimum-order hint (client UX only; server validates 30L). */}
+              <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">{t('minOrderHint', { min: 30 })}</p>
+              {/* Clear message when the entered amount is below the minimum. */}
+              {volume > 0 && volume < 30 && (
+                <p className="mt-1.5 rounded-control bg-amber-50 dark:bg-warning-500/10 px-3 py-2 text-xs font-medium text-amber-700 dark:text-warning-500">
+                  {t('belowMin', { min: 30 })}
+                </p>
+              )}
             </div>
           )}
         </StepCard>
@@ -679,6 +807,76 @@ export function FuelOrderFlow({
           }}
         />
       )}
+    </div>
+  );
+}
+
+function RepeatFork({
+  t,
+  fuelLabel,
+  liters,
+  carLabel,
+  address,
+  onRepeat,
+  onNew,
+}: {
+  t: TFn;
+  fuelLabel: string;
+  liters: number | null;
+  carLabel: string | null;
+  address: string | null;
+  onRepeat: () => void;
+  onNew: () => void;
+}) {
+  return (
+    <div className="mx-auto max-w-lg space-y-4">
+      <p className="text-sm text-gray-500 dark:text-gray-400">{t('repeat.intro')}</p>
+
+      {/* Repeat last order card */}
+      <button
+        type="button"
+        onClick={onRepeat}
+        className="group flex w-full flex-col gap-3 rounded-card border border-primary-200 dark:border-primary-500/40 bg-primary-50/50 dark:bg-primary-500/10 p-5 text-left shadow-soft transition hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/15"
+      >
+        <span className="flex items-center gap-2 text-base font-semibold text-primary-800 dark:text-primary-200">
+          <RotateCcw className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
+          {t('repeat.repeatTitle')}
+        </span>
+        <dl className="space-y-1.5 text-sm">
+          {carLabel && (
+            <div className="flex items-center gap-2 text-navy dark:text-white">
+              <Car className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" aria-hidden />
+              <span className="font-medium">{carLabel}</span>
+            </div>
+          )}
+          <div className="flex items-center gap-2 text-navy dark:text-white">
+            <Fuel className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" aria-hidden />
+            <span className="font-medium">
+              {fuelLabel}
+              {liters != null ? ` · ${liters} ${t('liters')}` : ` · ${t('fullTank')}`}
+            </span>
+          </div>
+          {address && (
+            <div className="flex items-center gap-2 text-navy dark:text-white">
+              <MapPin className="h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500" aria-hidden />
+              <span className="truncate font-medium">{address}</span>
+            </div>
+          )}
+        </dl>
+        <span className="mt-1 inline-flex items-center justify-center rounded-control bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-500">
+          {t('repeat.repeatCta')}
+        </span>
+      </button>
+
+      {/* New order */}
+      <button
+        type="button"
+        onClick={onNew}
+        className="flex w-full items-center justify-center gap-2 rounded-card border border-dashed border-gray-300 dark:border-white/15 bg-white dark:bg-navy-900 px-4 py-4 text-sm font-medium text-gray-600 dark:text-gray-300 transition hover:border-primary-300 dark:hover:border-primary-500/40 hover:text-primary-600"
+      >
+        <Plus className="h-4 w-4" aria-hidden />
+        {t('repeat.newCta')}
+      </button>
     </div>
   );
 }
