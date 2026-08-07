@@ -60,11 +60,15 @@ jobs:
           STAMP=$(date -u +%Y%m%d-%H%M%S)
           FILE="benzeen-${STAMP}.dump.gz.enc"
           echo "FILE=$FILE" >> "$GITHUB_ENV"
+          # Use the freshly installed client explicitly — the runner ships an
+          # older pg_dump (16) earlier in PATH, which refuses a newer server.
+          PG_DUMP=/usr/lib/postgresql/18/bin/pg_dump
+          "$PG_DUMP" --version
           # pg_dump custom format (-Fc: compressed, selective restore) → gzip →
           # AES-256-CBC (PBKDF2, random salt). Secrets stay in env; nothing
           # sensitive is echoed or passed on the command line.
           set -o pipefail
-          pg_dump --no-owner --no-privileges -Fc "$DATABASE_URL" \
+          "$PG_DUMP" --no-owner --no-privileges -Fc "$DATABASE_URL" \
             | gzip \
             | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:BACKUP_PASSPHRASE \
             > "$FILE"
