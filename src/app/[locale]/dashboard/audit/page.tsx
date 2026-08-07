@@ -12,6 +12,12 @@ const ACTION_LABELS: Record<string, string> = {
   COURIER_CREATE: 'Создан курьер',
   COURIER_DELETE: 'Удалён курьер',
   LIMIT_CHANGE: 'Изменён лимит',
+  BONUS_FREEZE: 'Бонусы заморожены',
+  BONUS_UNFREEZE: 'Бонусы разморожены',
+  BONUS_ADJUSTMENT: 'Корректировка бонусов',
+  BONUS_APPROVE: 'Начисление подтверждено',
+  BONUS_REJECT: 'Начисление отклонено',
+  SUPPORT_RESOLVE: 'Обращение закрыто',
 };
 
 function formatMeta(metadata: Prisma.JsonValue | null): string {

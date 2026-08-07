@@ -1,5 +1,13 @@
 import { describe, it, expect } from 'vitest';
-import { computeBonusUsed, computeTotal, bonusBalanceFrom } from './bonus';
+import {
+  computeBonusUsed,
+  computeTotal,
+  bonusBalanceFrom,
+  spendableBonus,
+  postedFriendFirstOrderCount,
+  accrualStatusForDay,
+  FRIEND_FIRST_ORDER_DAILY_CAP,
+} from './bonus';
 
 describe('computeBonusUsed (caps)', () => {
   it('uses the full balance when it fits under volume-1', () => {
@@ -55,5 +63,60 @@ describe('bonusBalanceFrom (ledger)', () => {
   });
   it('never negative', () => {
     expect(bonusBalanceFrom([{ liters: 5, reason: 'SPENT' }])).toBe(0);
+  });
+});
+
+// ── PR-C money invariants ─────────────────────────────────────────────────────
+
+describe('INVARIANT: balance counts ONLY POSTED rows', () => {
+  it('excludes PENDING and REJECTED accruals from the balance', () => {
+    const rows = [
+      { liters: 5, reason: 'FRIEND_FIRST_ORDER', status: 'POSTED' as const },
+      { liters: 3, reason: 'FRIEND_FIRST_ORDER', status: 'PENDING' as const }, // ignored
+      { liters: 7, reason: 'ADMIN_ADJUSTMENT', status: 'REJECTED' as const }, // ignored
+    ];
+    expect(bonusBalanceFrom(rows)).toBe(5);
+  });
+  it('legacy rows without a status are treated as POSTED', () => {
+    expect(bonusBalanceFrom([{ liters: 4, reason: 'FRIEND_FIRST_ORDER' }])).toBe(4);
+  });
+  it('a POSTED ADMIN_ADJUSTMENT credits the balance', () => {
+    expect(
+      bonusBalanceFrom([{ liters: 6, reason: 'ADMIN_ADJUSTMENT', status: 'POSTED' }]),
+    ).toBe(6);
+  });
+});
+
+describe('INVARIANT: the "10 friends" milestone counts ONLY POSTED', () => {
+  it('excludes PENDING/REJECTED FRIEND_FIRST_ORDER rows', () => {
+    const rows = [
+      { liters: 1, reason: 'FRIEND_FIRST_ORDER', status: 'POSTED' as const },
+      { liters: 1, reason: 'FRIEND_FIRST_ORDER', status: 'POSTED' as const },
+      { liters: 1, reason: 'FRIEND_FIRST_ORDER', status: 'PENDING' as const },
+      { liters: 1, reason: 'FRIEND_FIRST_ORDER', status: 'REJECTED' as const },
+      { liters: 10, reason: 'TEN_FRIENDS_MILESTONE', status: 'POSTED' as const },
+    ];
+    expect(postedFriendFirstOrderCount(rows)).toBe(2);
+  });
+});
+
+describe('INVARIANT: a frozen user can never spend bonus', () => {
+  it('spendableBonus returns 0 when frozen, regardless of balance', () => {
+    expect(spendableBonus(true, 50, 30)).toBe(0);
+  });
+  it('spends normally (capped at volume-1) when not frozen', () => {
+    expect(spendableBonus(false, 50, 30)).toBe(29);
+    expect(spendableBonus(false, 5, 30)).toBe(5);
+  });
+});
+
+describe('INVARIANT: rate-cap — the 4th daily accrual is PENDING', () => {
+  it('1st–3rd of the day are POSTED, the 4th+ are PENDING', () => {
+    expect(accrualStatusForDay(0)).toBe('POSTED'); // 1st
+    expect(accrualStatusForDay(1)).toBe('POSTED'); // 2nd
+    expect(accrualStatusForDay(2)).toBe('POSTED'); // 3rd
+    expect(accrualStatusForDay(3)).toBe('PENDING'); // 4th
+    expect(accrualStatusForDay(4)).toBe('PENDING'); // 5th
+    expect(FRIEND_FIRST_ORDER_DAILY_CAP).toBe(3);
   });
 });

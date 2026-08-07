@@ -23,6 +23,9 @@ import {
   BarChart3,
   Bike,
   ScrollText,
+  UserRound,
+  Gift,
+  MessageSquare,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { B2B_ENABLED } from '@/lib/features';
@@ -44,6 +47,9 @@ type NavKey =
   | 'reports'
   | 'invoices'
   | 'couriers'
+  | 'clients'
+  | 'bonuses'
+  | 'support'
   | 'audit'
   | 'settings'
   | 'myCars'
@@ -68,6 +74,9 @@ const navByRole: Record<
     { path: '/deliveries', labelKey: 'deliveries', icon: Truck },
     { path: '/invoices', labelKey: 'reports', icon: BarChart3 },
     { path: '/couriers', labelKey: 'couriers', icon: Bike },
+    { path: '/clients', labelKey: 'clients', icon: UserRound },
+    { path: '/bonuses', labelKey: 'bonuses', icon: Gift },
+    { path: '/support', labelKey: 'support', icon: MessageSquare },
     { path: '/audit', labelKey: 'audit', icon: ScrollText },
     { path: '/settings', labelKey: 'settings', icon: Settings },
   ],

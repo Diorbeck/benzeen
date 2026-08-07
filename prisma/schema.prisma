@@ -44,6 +44,17 @@ enum BonusReason {
   TEN_FRIENDS_MILESTONE   // +10 to referrer at 10 referred friends
   SPENT                   // −N used on an order
   REFUND                  // +N returned when a bonus-using order is cancelled
+  ADMIN_ADJUSTMENT        // +N manual correction by a super-admin (append-only, with a comment)
+}
+
+// Lifecycle of a ledger row (PR-C, bonus-program protection). Only POSTED rows
+// count toward the balance AND the "10 friends" milestone. Rate-capped accruals
+// land as PENDING and are Approved (→POSTED) or Rejected (→REJECTED) by an admin.
+// This `status` is the ONLY field on an existing ledger row that may ever change.
+enum BonusLedgerStatus {
+  POSTED
+  PENDING
+  REJECTED
 }
 
 // Support tickets (Кабинет 2.0, PR-A). Client-submitted; admin triage is a later PR.
@@ -64,6 +75,13 @@ enum AuditAction {
   COURIER_CREATE
   COURIER_DELETE
   LIMIT_CHANGE
+  // Bonus-program protection (PR-C). Every admin bonus action is logged.
+  BONUS_FREEZE
+  BONUS_UNFREEZE
+  BONUS_ADJUSTMENT
+  BONUS_APPROVE
+  BONUS_REJECT
+  SUPPORT_RESOLVE
 }
 
 enum OrderStatus {
@@ -101,6 +119,10 @@ model User {
   referralCode  String?   @unique
   referredById  String?
 
+  // Bonus-program protection (PR-C). When true, BOTH accrual and spending are
+  // blocked for this user; the balance stays visible. Toggled by super-admins.
+  bonusFrozen   Boolean   @default(false)
+
   // B2C: the client's default vehicle, used to prefill the order flow. Nullable
   // FK to one of their own ClientCars; SET NULL if that car is deleted.
   defaultCarId  String?
@@ -130,18 +152,28 @@ model User {
 // One immutable row per bonus-liter movement (M5). Money-adjacent — only the
 // server writes here, always inside the order transaction for SPENT/REFUND.
 model BonusLedger {
-  id        String      @id @default(cuid())
+  id        String            @id @default(cuid())
   userId    String
-  liters    Int         // always positive; sign implied by `reason`
+  liters    Int               // always positive; sign implied by `reason`
   reason    BonusReason
+  // Only POSTED rows count toward balance + milestone (PR-C). The row's
+  // `status` is the ONLY mutable field (approve/reject flips it); liters/reason
+  // are never updated and rows are never deleted — corrections are new rows.
+  status    BonusLedgerStatus @default(POSTED)
+  // Free-text admin note for ADMIN_ADJUSTMENT rows (required at write time).
+  adminComment String?
+  // Super-admin who created/decided this row, for the audit trail.
+  adminId   String?
   orderId   String?
-  createdAt DateTime    @default(now())
+  createdAt DateTime          @default(now())
 
   user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([orderId])
+  @@index([status])
+  @@index([reason, status])
 }
 
 // Up to 3 saved delivery addresses per client (M5, limit enforced server-side).
