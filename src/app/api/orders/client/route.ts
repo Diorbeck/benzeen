@@ -11,7 +11,7 @@ import {
 } from '@/lib/constants';
 import { dispatchB2COrderToNearest, redispatchStale } from '@/lib/order-dispatch';
 import { paymeCheckoutUrl } from '@/lib/payme';
-import { computeBonusUsed, computeTotal, bonusBalanceFrom } from '@/lib/bonus';
+import { spendableBonus, computeTotal, bonusBalanceFrom } from '@/lib/bonus';
 
 const schema = z
   .object({
@@ -117,11 +117,16 @@ export async function POST(req: Request) {
     const order = await prisma.$transaction(async (tx) => {
       let bonusUsed = 0;
       if (data.useBonus) {
-        const rows = await tx.bonusLedger.findMany({
-          where: { userId: userId },
-          select: { liters: true, reason: true },
-        });
-        bonusUsed = computeBonusUsed(bonusBalanceFrom(rows), liters);
+        // PR-C: a frozen user can never deduct bonus. Re-read the flag inside the
+        // tx alongside the balance so the gate is atomic with the spend.
+        const [rows, spender] = await Promise.all([
+          tx.bonusLedger.findMany({
+            where: { userId: userId },
+            select: { liters: true, reason: true, status: true },
+          }),
+          tx.user.findUnique({ where: { id: userId }, select: { bonusFrozen: true } }),
+        ]);
+        bonusUsed = spendableBonus(spender?.bonusFrozen ?? false, bonusBalanceFrom(rows), liters);
       }
       const totalAmount = computeTotal(liters, bonusUsed, price.priceUzs);
 

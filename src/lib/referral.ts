@@ -4,7 +4,10 @@ import {
   FRIEND_FIRST_ORDER_BONUS,
   TEN_FRIENDS_BONUS,
   TEN_FRIENDS_AT,
+  FRIEND_FIRST_ORDER_DAILY_CAP,
   bonusBalanceFrom,
+  accrualStatusForDay,
+  utcDayRange,
 } from './bonus';
 
 // Unambiguous alphabet (no 0/O/1/I).
@@ -36,7 +39,11 @@ export async function ensureReferralCode(userId: string): Promise<string> {
 }
 
 export async function getBonusBalance(userId: string): Promise<number> {
-  const rows = await prisma.bonusLedger.findMany({ where: { userId }, select: { liters: true, reason: true } });
+  // PR-C: only POSTED rows count. bonusBalanceFrom filters on status.
+  const rows = await prisma.bonusLedger.findMany({
+    where: { userId },
+    select: { liters: true, reason: true, status: true },
+  });
   return bonusBalanceFrom(rows);
 }
 
@@ -47,16 +54,25 @@ export async function getReferralStats(userId: string) {
       where: { userId },
       orderBy: { createdAt: 'desc' },
       take: 50,
-      select: { id: true, liters: true, reason: true, createdAt: true },
+      select: { id: true, liters: true, reason: true, status: true, createdAt: true },
     }),
-    prisma.bonusLedger.count({ where: { userId, reason: 'FRIEND_FIRST_ORDER' } }),
+    // Milestone progress counts POSTED FRIEND_FIRST_ORDER only (PR-C).
+    prisma.bonusLedger.count({
+      where: { userId, reason: 'FRIEND_FIRST_ORDER', status: 'POSTED' },
+    }),
   ]);
   return {
     code,
     balance: bonusBalanceFrom(rows),
     friendCount,
     milestoneAt: TEN_FRIENDS_AT,
-    ledger: rows.map((r) => ({ id: r.id, liters: r.liters, reason: r.reason, createdAt: r.createdAt.toISOString() })),
+    ledger: rows.map((r) => ({
+      id: r.id,
+      liters: r.liters,
+      reason: r.reason,
+      status: r.status,
+      createdAt: r.createdAt.toISOString(),
+    })),
   };
 }
 
@@ -92,6 +108,14 @@ export async function awardReferralOnDelivery(orderId: string): Promise<void> {
   const referrerId = client?.referredById;
   if (!referrerId) return;
 
+  // PR-C: a frozen referrer accrues NOTHING (no FRIEND_FIRST_ORDER, no
+  // milestone). The balance stays visible; only new postings are blocked.
+  const referrer = await prisma.user.findUnique({
+    where: { id: referrerId },
+    select: { bonusFrozen: true },
+  });
+  if (referrer?.bonusFrozen) return;
+
   // Only the friend's FIRST delivered order counts.
   const deliveredCount = await prisma.order.count({
     where: { clientId: order.clientId, status: 'DELIVERED' },
@@ -102,10 +126,36 @@ export async function awardReferralOnDelivery(orderId: string): Promise<void> {
     // Idempotency guard inside the tx (by orderId).
     const already = await tx.bonusLedger.findFirst({ where: { reason: 'FRIEND_FIRST_ORDER', orderId } });
     if (already) return;
-    await tx.bonusLedger.create({
-      data: { userId: referrerId, liters: FRIEND_FIRST_ORDER_BONUS, reason: 'FRIEND_FIRST_ORDER', orderId },
+
+    // PR-C rate-cap: ≤3 POSTED FRIEND_FIRST_ORDER accruals per referrer per UTC
+    // day. The 4th+ today lands as PENDING for admin review (never auto-blocked).
+    const { start, end } = utcDayRange(new Date());
+    const todayPosted = await tx.bonusLedger.count({
+      where: {
+        userId: referrerId,
+        reason: 'FRIEND_FIRST_ORDER',
+        status: 'POSTED',
+        createdAt: { gte: start, lt: end },
+      },
     });
-    const friendCount = await tx.bonusLedger.count({ where: { userId: referrerId, reason: 'FRIEND_FIRST_ORDER' } });
+    const status = accrualStatusForDay(todayPosted, FRIEND_FIRST_ORDER_DAILY_CAP);
+
+    await tx.bonusLedger.create({
+      data: {
+        userId: referrerId,
+        liters: FRIEND_FIRST_ORDER_BONUS,
+        reason: 'FRIEND_FIRST_ORDER',
+        status,
+        orderId,
+      },
+    });
+
+    // A PENDING accrual does not advance the milestone; only POSTED rows count.
+    if (status !== 'POSTED') return;
+
+    const friendCount = await tx.bonusLedger.count({
+      where: { userId: referrerId, reason: 'FRIEND_FIRST_ORDER', status: 'POSTED' },
+    });
     if (friendCount === TEN_FRIENDS_AT) {
       const milestone = await tx.bonusLedger.findFirst({
         where: { userId: referrerId, reason: 'TEN_FRIENDS_MILESTONE' },
