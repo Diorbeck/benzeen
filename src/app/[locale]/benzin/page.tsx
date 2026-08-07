@@ -6,6 +6,7 @@ import { prisma } from '@/lib/prisma';
 import { B2CHeader } from '@/components/b2c/header';
 import { FuelOrderFlow, type ExistingCar, type SavedLocationT } from '@/components/b2c/fuel-order-flow';
 import { getBonusBalance } from '@/lib/referral';
+import { getDefaultCarId } from '@/lib/session';
 
 const FUELS = ['AI_92', 'AI_95', 'AI_100'] as const;
 type Fuel = (typeof FUELS)[number];
@@ -57,6 +58,11 @@ export default async function BenzinPage({
     lng: l.lng,
   }));
 
+  // Prefill the client's default car when the URL doesn't pin one (prereq:
+  // session + default car). Falls back to most-recently-used → most-recent car.
+  const resolvedInitialCarId =
+    initialCarId ?? (isLoggedIn ? (await getDefaultCarId(user!.id!)) ?? undefined : undefined);
+
   const t = await getTranslations('benzin');
 
   return (
@@ -72,7 +78,7 @@ export default async function BenzinPage({
           paymeAvailable={!!process.env.PAYME_MERCHANT_ID}
           initialFuel={initialFuel}
           initialVolume={initialVolume}
-          initialCarId={initialCarId}
+          initialCarId={resolvedInitialCarId}
           initialScheduleOpen={initialScheduleOpen}
           bonusBalance={bonusBalance}
           savedLocations={savedLocations}

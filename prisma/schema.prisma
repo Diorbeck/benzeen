@@ -89,6 +89,10 @@ model User {
   referralCode  String?   @unique
   referredById  String?
 
+  // B2C: the client's default vehicle, used to prefill the order flow. Nullable
+  // FK to one of their own ClientCars; SET NULL if that car is deleted.
+  defaultCarId  String?
+
   company       Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   driverCars    DriverCar[]
   ordersCreated Order[]   @relation("CreatedBy")
@@ -97,7 +101,8 @@ model User {
   sessions      Session[]
   notifications Notification[]
   // B2C (M2): a CLIENT's saved cars, their orders, and (for couriers) live location.
-  clientCars     ClientCar[]
+  clientCars     ClientCar[]      @relation("CarOwner")
+  defaultCar     ClientCar?       @relation("UserDefaultCar", fields: [defaultCarId], references: [id], onDelete: SetNull)
   clientOrders   Order[]          @relation("ClientOrders")
   courierLocation CourierLocation?
   // Referrals + bonus + saved locations (M5).
@@ -151,8 +156,11 @@ model ClientCar {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User    @relation("CarOwner", fields: [userId], references: [id], onDelete: Cascade)
   orders Order[]
+  // Users who picked this car as their default (the "UserDefaultCar" relation,
+  // in practice at most the owner). Reverse side of User.defaultCar.
+  defaultOf User[] @relation("UserDefaultCar")
 
   @@index([userId])
 }
