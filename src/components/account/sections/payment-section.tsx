@@ -77,9 +77,9 @@ export function PaymentSection({ locale, referral }: { locale: string; referral?
               <ul className="divide-y divide-gray-100 dark:divide-white/10 border-t border-gray-100 dark:border-white/10">
                 {referral.ledger.map((row) => (
                   <li key={row.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
-                    <span className="text-gray-600 dark:text-gray-300">{reasonLabel(row.reason)}</span>
+                    <span className="min-w-0 truncate text-gray-600 dark:text-gray-300">{reasonLabel(row.reason)}</span>
                     <span
-                      className={`font-medium ${
+                      className={`shrink-0 font-medium ${
                         row.reason === 'SPENT' ? 'text-gray-500 dark:text-gray-400' : 'text-success-600 dark:text-success-500'
                       }`}
                     >

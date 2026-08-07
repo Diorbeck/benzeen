@@ -738,7 +738,8 @@
       "invalidPhone": "Enter a valid number in +998XXXXXXXXX format",
       "invalidCode": "Invalid or expired code",
       "generic": "Something went wrong. Please try again.",
-      "smsUnavailable": "SMS is temporarily unavailable, please try again later"
+      "smsUnavailable": "SMS is temporarily unavailable, please try again later",
+      "rateLimited": "Too many attempts — please wait a minute"
     }
   },
   "account": {
@@ -934,6 +935,7 @@
       "subtitleCode": "Enter the code sent to {phone}",
       "invalidPhone": "Enter a valid +998XXXXXXXXX number",
       "smsUnavailable": "SMS is temporarily unavailable, please try again later",
+      "rateLimited": "Too many attempts — please wait a minute",
       "invalidCode": "Invalid or expired code",
       "devHint": "Code sent.",
       "send": "Get code",

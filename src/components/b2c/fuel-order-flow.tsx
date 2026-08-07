@@ -270,6 +270,11 @@ export function FuelOrderFlow({
         body: JSON.stringify({ phone }),
       });
       if (!res.ok) {
+        // Rate limited by the auth middleware → distinct "slow down" message.
+        if (res.status === 429) {
+          setLoginError(t('login.rateLimited'));
+          return;
+        }
         const d = await res.json().catch(() => null);
         setLoginError(d?.error === 'invalid_phone' ? t('login.invalidPhone') : t('login.smsUnavailable'));
         return;
@@ -354,11 +359,11 @@ export function FuelOrderFlow({
                       : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
-                  <span className="text-sm font-medium text-navy dark:text-white">
+                  <span className="min-w-0 truncate text-sm font-medium text-navy dark:text-white">
                     {c.plate}
                     {c.model ? ` · ${c.model}` : ''}
                   </span>
-                  {!usingNewCar && carId === c.id && <Check className="h-4 w-4 text-primary-600 dark:text-primary-400" />}
+                  {!usingNewCar && carId === c.id && <Check className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" />}
                 </button>
               ))}
               <button
@@ -501,10 +506,10 @@ export function FuelOrderFlow({
                     setAddress(l.name);
                     track('address_selected', { source: 'saved' });
                   }}
-                  className="inline-flex items-center gap-1.5 rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-3 py-2 text-sm text-navy dark:text-white hover:border-primary-200 dark:hover:border-primary-500/40"
+                  className="inline-flex max-w-full items-center gap-1.5 rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-3 py-2 text-sm text-navy dark:text-white hover:border-primary-200 dark:hover:border-primary-500/40"
                 >
-                  <Star className="h-3.5 w-3.5 text-primary-600 dark:text-primary-400" aria-hidden />
-                  {l.name}
+                  <Star className="h-3.5 w-3.5 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
+                  <span className="min-w-0 truncate">{l.name}</span>
                 </button>
               ))}
             </div>
@@ -857,8 +862,8 @@ function Summary({
 function SummaryRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4">
-      <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
-      <dd className="text-right font-medium text-navy dark:text-white">{value}</dd>
+      <dt className="shrink-0 text-gray-500 dark:text-gray-400">{label}</dt>
+      <dd className="min-w-0 break-words text-right font-medium text-navy dark:text-white">{value}</dd>
     </div>
   );
 }
