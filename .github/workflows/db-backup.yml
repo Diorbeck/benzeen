@@ -34,13 +34,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - name: Install PostgreSQL 16 client
+      - name: Install PostgreSQL client
+        # Must be >= the Neon server major (currently 18) — pg_dump refuses to
+        # dump a server newer than itself. Bump this if Neon upgrades its major.
         run: |
           sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
           curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /usr/share/keyrings/postgresql.gpg
           sudo sed -i 's|deb |deb [signed-by=/usr/share/keyrings/postgresql.gpg] |' /etc/apt/sources.list.d/pgdg.list
           sudo apt-get update
-          sudo apt-get install -y postgresql-client-16
+          sudo apt-get install -y postgresql-client-18
 
       - name: Create encrypted dump
         env:
