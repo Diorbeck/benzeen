@@ -239,6 +239,18 @@ export async function editMessageText(
   }
 }
 
+/**
+ * Escapes text for Telegram HTML parse mode. Only `&`, `<`, `>` are special in
+ * message text; escaping them keeps dynamic values (addresses, plates, phones)
+ * from breaking the markup or being interpreted as tags.
+ */
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 /** Human label for a fuel type, used in bot messages. */
 export const FUEL_LABEL_RU: Record<string, string> = {
   AI_92: 'АИ-92',

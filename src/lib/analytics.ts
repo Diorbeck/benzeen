@@ -7,6 +7,8 @@ export type AnalyticsEvent =
   | 'gasoline_order_clicked'
   | 'propane_points_clicked'
   | 'order_started'
+  | 'order_repeat_last'
+  | 'order_new_after_fork'
   | 'vehicle_selected'
   | 'fuel_selected'
   | 'volume_selected'

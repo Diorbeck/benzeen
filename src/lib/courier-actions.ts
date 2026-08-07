@@ -4,11 +4,48 @@
 // Returns a discriminated result so callers can map it to an HTTP status.
 
 import { prisma } from './prisma';
-import { sendTelegramMessage, type InlineKeyboardMarkup } from './telegram';
+import { sendTelegramMessage, getMiniAppUrl, type InlineKeyboardMarkup } from './telegram';
 import { redispatchStale } from './order-dispatch';
 import { awardReferralOnDelivery } from './referral';
 
 export type CourierAction = 'TAKE' | 'ON_ROUTE' | 'DELIVERED';
+
+/**
+ * Inline keyboard for a courier's ACTIVE order card, matching the order status.
+ * Shared by the live "you took this order" card and the `/orders` list so both
+ * expose the same next-step action:
+ *   - COURIER_ASSIGNED → "Выехал к клиенту" (callback `on_route:<id>`)
+ *   - IN_DELIVERY      → "Доставлено" — opens the Mini App to enter actual
+ *                        liters (falls back to a callback hint if the Mini App
+ *                        URL is unset). Liters entry stays in the app so the
+ *                        money/limit logic is untouched.
+ * Any other status has no courier action → returns undefined.
+ */
+export function courierOrderActions(order: {
+  id: string;
+  status: string;
+}): InlineKeyboardMarkup | undefined {
+  if (order.status === 'COURIER_ASSIGNED') {
+    return {
+      inline_keyboard: [
+        [{ text: '🚚 Выехал к клиенту', callback_data: `on_route:${order.id}` }],
+      ],
+    };
+  }
+  if (order.status === 'IN_DELIVERY') {
+    const miniAppUrl = getMiniAppUrl();
+    return {
+      inline_keyboard: [
+        [
+          miniAppUrl
+            ? { text: '✅ Доставлено', web_app: { url: miniAppUrl } }
+            : { text: '✅ Доставлено', callback_data: `delivered:${order.id}` },
+        ],
+      ],
+    };
+  }
+  return undefined;
+}
 
 export type CourierActionResult =
   | { ok: true; status: number; order: { id: string; status: string } }

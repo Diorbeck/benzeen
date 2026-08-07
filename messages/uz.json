@@ -741,7 +741,8 @@
       "invalidPhone": "+998XXXXXXXXX ko‘rinishida to‘g‘ri raqam kiriting",
       "invalidCode": "Kod noto‘g‘ri yoki muddati o‘tgan",
       "generic": "Xatolik yuz berdi. Yana urinib ko‘ring.",
-      "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring"
+      "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring",
+      "rateLimited": "Juda koʻp urinish — bir daqiqa kuting"
     }
   },
   "account": {
@@ -937,6 +938,7 @@
       "subtitleCode": "{phone} raqamiga yuborilgan kodni kiriting",
       "invalidPhone": "+998XXXXXXXXX koʻrinishida raqam kiriting",
       "smsUnavailable": "SMS vaqtincha ishlamayapti, keyinroq urinib koʻring",
+      "rateLimited": "Juda koʻp urinish — bir daqiqa kuting",
       "invalidCode": "Kod notoʻgʻri yoki muddati oʻtgan",
       "devHint": "Kod yuborildi.",
       "send": "Kod olish",
@@ -959,7 +961,16 @@
     "saveAddress": "Bu manzilni saqlash",
     "saveAddressName": "Nomi (Uy, Ish…)",
     "saveAddressConfirm": "Saqlash",
-    "saveAddressCancel": "Bekor qilish"
+    "saveAddressCancel": "Bekor qilish",
+    "plateMatch": "Bu sizning saqlangan avtomobilingiz:",
+    "minOrderHint": "Buyurtma uchun eng kami — {min} litr",
+    "belowMin": "Buyurtmaning eng kam hajmi — {min} litr. Hajmni oshiring.",
+    "repeat": {
+      "intro": "Xush kelibsiz — bir tegishda qayta buyurtma bering yoki yangisini boshlang.",
+      "repeatTitle": "Oxirgi buyurtmani takrorlash",
+      "repeatCta": "Shu buyurtmani takrorlash",
+      "newCta": "Yangi buyurtma"
+    }
   },
   "orderStatus": {
     "title": "Buyurtma",

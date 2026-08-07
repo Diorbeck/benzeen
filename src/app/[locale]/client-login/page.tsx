@@ -44,6 +44,12 @@ function ClientLoginForm() {
         body: JSON.stringify({ phone: normalized }),
       });
       if (!res.ok) {
+        // Rate limited by the auth middleware → distinct "slow down" message
+        // so the user knows to wait rather than think SMS is broken.
+        if (res.status === 429) {
+          setError(t('errors.rateLimited'));
+          return;
+        }
         const data = await res.json().catch(() => null);
         // Bad number → field error; anything else (Eskiz/gateway) → honest
         // "SMS temporarily unavailable" instead of a vague generic error.

@@ -1,22 +1,28 @@
 name: Daily DB Backup
 
-# Runs a daily logical backup of the production PostgreSQL database with
-# pg_dump, gzips it, and stores it as a PRIVATE GitHub Actions artifact
-# (retention: 30 days). Optionally mirrors the dump to S3 when AWS secrets
-# are present. The dump is never printed to logs.
+# Daily logical backup of the production PostgreSQL database.
 #
-# Required repo secret:
+# The dump contains customer PII (phone numbers, addresses). This repository is
+# PUBLIC, so the artifact is ALWAYS encrypted at rest with AES-256-CBC before it
+# leaves the runner — the job hard-fails rather than ever writing a plaintext
+# dump. pg_dump (-Fc) → gzip → openssl enc. The connection string and passphrase
+# are passed via env and never printed to logs or placed on argv.
+#
+# Required repo secrets:
 #   DATABASE_URL            full postgres connection string (prod)
-# Optional repo secrets (enable S3 upload when ALL are set):
+#   BACKUP_PASSPHRASE       symmetric passphrase used to encrypt/decrypt the dump
+# Optional repo secrets (enable S3 mirror of the ENCRYPTED file when all set):
 #   AWS_ACCESS_KEY_ID
 #   AWS_SECRET_ACCESS_KEY
 #   AWS_REGION              e.g. eu-central-1
 #   BACKUP_S3_BUCKET        e.g. s3://my-bucket/benzeen-backups
+#
+# Restore instructions: docs/BACKUP.md
 
 on:
   schedule:
-    # 02:30 UTC every day (~07:30 Tashkent). Adjust as needed.
-    - cron: '30 2 * * *'
+    # 02:00 UTC every day (~07:00 Tashkent).
+    - cron: '0 2 * * *'
   workflow_dispatch: {}
 
 concurrency:
@@ -36,30 +42,43 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client-16
 
-      - name: Create dump
+      - name: Create encrypted dump
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          BACKUP_PASSPHRASE: ${{ secrets.BACKUP_PASSPHRASE }}
         run: |
           if [ -z "$DATABASE_URL" ]; then
             echo "::error::DATABASE_URL secret is not set"; exit 1
           fi
+          # Refuse to run without a passphrase — a public repo must never hold a
+          # plaintext dump with customer PII.
+          if [ -z "$BACKUP_PASSPHRASE" ]; then
+            echo "::error::BACKUP_PASSPHRASE secret is not set — refusing to write an unencrypted dump"; exit 1
+          fi
           STAMP=$(date -u +%Y%m%d-%H%M%S)
-          FILE="benzeen-${STAMP}.dump.gz"
+          FILE="benzeen-${STAMP}.dump.gz.enc"
           echo "FILE=$FILE" >> "$GITHUB_ENV"
-          # Custom format (-Fc) is compressed + supports selective restore.
-          # Pipe straight to gzip; the URL is passed via env, never echoed.
-          pg_dump --no-owner --no-privileges -Fc "$DATABASE_URL" | gzip > "$FILE"
+          # pg_dump custom format (-Fc: compressed, selective restore) → gzip →
+          # AES-256-CBC (PBKDF2, random salt). Secrets stay in env; nothing
+          # sensitive is echoed or passed on the command line.
+          set -o pipefail
+          pg_dump --no-owner --no-privileges -Fc "$DATABASE_URL" \
+            | gzip \
+            | openssl enc -aes-256-cbc -pbkdf2 -salt -pass env:BACKUP_PASSPHRASE \
+            > "$FILE"
+          # Sanity: the encrypted file must exist and be non-empty.
+          test -s "$FILE"
           ls -lh "$FILE"
 
-      - name: Upload artifact (private, 30-day retention)
+      - name: Upload artifact (private, 14-day retention)
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.FILE }}
           path: ${{ env.FILE }}
-          retention-days: 30
+          retention-days: 14
           if-no-files-found: error
 
-      - name: Mirror to S3 (optional)
+      - name: Mirror encrypted dump to S3 (optional)
         if: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.BACKUP_S3_BUCKET != '' }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -68,4 +87,4 @@ jobs:
           BUCKET: ${{ secrets.BACKUP_S3_BUCKET }}
         run: |
           aws s3 cp "$FILE" "$BUCKET/$FILE" --only-show-errors
-          echo "Uploaded $FILE to $BUCKET"
+          echo "Uploaded encrypted $FILE to $BUCKET"
