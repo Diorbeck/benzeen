@@ -956,7 +956,16 @@
     "saveAddress": "Bu manzilni saqlash",
     "saveAddressName": "Nomi (Uy, Ish…)",
     "saveAddressConfirm": "Saqlash",
-    "saveAddressCancel": "Bekor qilish"
+    "saveAddressCancel": "Bekor qilish",
+    "plateMatch": "Bu sizning saqlangan avtomobilingiz:",
+    "minOrderHint": "Buyurtma uchun eng kami — {min} litr",
+    "belowMin": "Buyurtmaning eng kam hajmi — {min} litr. Hajmni oshiring.",
+    "repeat": {
+      "intro": "Xush kelibsiz — bir tegishda qayta buyurtma bering yoki yangisini boshlang.",
+      "repeatTitle": "Oxirgi buyurtmani takrorlash",
+      "repeatCta": "Shu buyurtmani takrorlash",
+      "newCta": "Yangi buyurtma"
+    }
   },
   "orderStatus": {
     "title": "Buyurtma",

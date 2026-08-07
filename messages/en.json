@@ -956,7 +956,16 @@
     "saveAddress": "Save this address",
     "saveAddressName": "Name (Home, Work…)",
     "saveAddressConfirm": "Save",
-    "saveAddressCancel": "Cancel"
+    "saveAddressCancel": "Cancel",
+    "plateMatch": "This is your saved car:",
+    "minOrderHint": "Minimum order — {min} liters",
+    "belowMin": "The minimum order is {min} liters — please increase the amount.",
+    "repeat": {
+      "intro": "Welcome back — reorder in one tap or start a new order.",
+      "repeatTitle": "Repeat last order",
+      "repeatCta": "Repeat this order",
+      "newCta": "New order"
+    }
   },
   "orderStatus": {
     "title": "Order",
