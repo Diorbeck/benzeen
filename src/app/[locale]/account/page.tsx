@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { AccountView } from '@/components/account/account-view';
 import { getReferralStats } from '@/lib/referral';
+import { getDefaultCarId } from '@/lib/session';
 
 export default async function AccountPage({
   params,
@@ -41,18 +42,29 @@ export default async function AccountPage({
     prisma.clientCar.findMany({
       where: { userId: sUser.id },
       orderBy: { createdAt: 'desc' },
-      select: { id: true, plate: true, model: true, tankCapacity: true },
+      select: {
+        id: true,
+        plate: true,
+        model: true,
+        tankCapacity: true,
+        brand: true,
+        color: true,
+        fuelType: true,
+        oilType: true,
+        photoUrl: true,
+      },
     }),
   ]);
   if (!user) redirect(`/${locale}/client-login`);
 
-  const [referral, locations] = await Promise.all([
+  const [referral, locations, defaultCarId] = await Promise.all([
     getReferralStats(sUser.id),
     prisma.savedLocation.findMany({
       where: { userId: sUser.id },
       orderBy: { createdAt: 'asc' },
       select: { id: true, name: true, lat: true, lng: true },
     }),
+    getDefaultCarId(sUser.id),
   ]);
 
   return (
@@ -64,6 +76,7 @@ export default async function AccountPage({
       cars={cars}
       referral={referral}
       locations={locations}
+      defaultCarId={defaultCarId}
       orders={orders.map((o) => ({
         id: o.id,
         status: o.status,

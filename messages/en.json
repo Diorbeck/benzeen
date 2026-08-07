@@ -744,17 +744,15 @@
   },
   "account": {
     "title": "My account",
+    "logout": "Log out",
     "phone": "Phone",
     "name": "Name",
     "namePlaceholder": "Your name (optional)",
+    "lastName": "Last name",
+    "lastNamePlaceholder": "Your last name (optional)",
     "save": "Save",
     "saving": "Saving…",
     "saved": "Saved",
-    "orderHistory": "Order history",
-    "orderHistoryEmpty": "Your orders will appear here.",
-    "addresses": "My addresses",
-    "addressesEmpty": "Your saved addresses will appear here.",
-    "logout": "Log out",
     "liters": "L",
     "sum": "UZS",
     "status": {
@@ -769,40 +767,99 @@
     },
     "tabs": {
       "profile": "Profile",
-      "orders": "Orders"
+      "cars": "My cars",
+      "payment": "Payment",
+      "locations": "Locations",
+      "history": "History",
+      "support": "Support"
     },
-    "lastName": "Last name",
-    "lastNamePlaceholder": "Your last name (optional)",
+    "profile": {
+      "title": "Profile"
+    },
     "cars": {
       "title": "My cars",
       "add": "Add a car",
       "plate": "Plate number",
       "model": "Model",
+      "brand": "Brand",
+      "color": "Color",
+      "fuelType": "Preferred fuel",
+      "fuelNone": "Not set",
+      "oilType": "Engine oil",
       "tank": "Tank capacity, L",
+      "photo": "Photo",
+      "photoAdd": "Add photo",
+      "photoChange": "Change photo",
+      "photoRemove": "Remove photo",
+      "photoHint": "JPG or PNG, up to 5 MB",
+      "photoTooLarge": "The image is larger than 5 MB.",
+      "photoInvalid": "Please choose an image file.",
+      "photoUploadFailed": "Upload failed. Please try again.",
       "save": "Save",
       "cancel": "Cancel",
       "edit": "Edit",
       "delete": "Delete",
       "empty": "No cars yet. Add your first.",
-      "cannotDelete": "Can't delete: the car is in an active order."
+      "cannotDelete": "Can't delete: the car is in an active order.",
+      "makeDefault": "Set as primary",
+      "defaultBadge": "Primary"
     },
-    "orders": {
-      "new": "New order",
-      "repeat": "Repeat",
+    "payment": {
+      "title": "Payment",
+      "bonusTitle": "Bonus liters",
+      "bonusBalance": "Balance",
+      "bonusHistory": "Accrual history",
+      "bonusEmpty": "No accruals yet.",
+      "referralTitle": "Invite friends",
+      "referralDesc": "A friend's first paid order gives you +1 liter. 10 friends — another +10 liters.",
+      "referralFriends": "Friends invited",
+      "referralLink": "Your referral link",
+      "copy": "Copy",
+      "copied": "Copied",
+      "cardsTitle": "Bank cards",
+      "cardsStub": "Card linking will become available once online payment is enabled."
+    },
+    "locations": {
+      "title": "Locations",
+      "empty": "Your saved addresses will appear here.",
+      "hint": "Up to 3 saved addresses.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "history": {
+      "title": "History",
       "empty": "No orders yet.",
+      "new": "New order",
+      "schedule": "Schedule an order",
+      "repeat": "Repeat",
       "orderedN": "{n} L ordered",
       "filledN": "{n} L filled",
-      "schedule": "Schedule an order",
+      "ordered": "Ordered",
+      "dispensed": "Dispensed",
+      "amount": "Amount",
+      "track": "Track",
       "scheduledBadge": "Next scheduled order: {when}"
     },
-    "referral": {
-      "title": "Invite friends",
-      "desc": "A friend's first paid order gives you +1 liter. 10 friends — another +10 liters.",
-      "balance": "Bonus liters",
-      "friends": "Friends invited",
-      "share": "Share",
-      "copied": "Copied",
-      "shareText": "Fuel comes to you with Benzeen. Here's my link:"
+    "support": {
+      "title": "Support",
+      "desc": "Tell us about a problem, a suggestion, or ask a question. We reply as soon as we can.",
+      "type": "Topic",
+      "typeCOMPLAINT": "Complaint",
+      "typeSUGGESTION": "Suggestion",
+      "typeQUESTION": "Question",
+      "text": "Message",
+      "textPlaceholder": "Describe your request…",
+      "charsLeft": "{n} characters left",
+      "submit": "Send",
+      "submitting": "Sending…",
+      "submitted": "Thanks! We received your message.",
+      "error": "Could not send. Please try again.",
+      "rateLimited": "Too many requests. Please try again in an hour.",
+      "callTitle": "Prefer to call?",
+      "call": "Call us",
+      "available247": "We work 24/7."
     },
     "bonus": {
       "reason": {
@@ -811,6 +868,11 @@
         "SPENT": "Used on an order",
         "REFUND": "Refund for cancellation"
       }
+    },
+    "fuel": {
+      "AI_92": "AI-92",
+      "AI_95": "AI-95",
+      "AI_100": "AI-100"
     }
   },
   "benzin": {
