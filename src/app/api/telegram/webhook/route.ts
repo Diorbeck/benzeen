@@ -18,10 +18,47 @@ import {
 import { applyCourierAction, courierOrderActions } from '@/lib/courier-actions';
 import { createNotification } from '@/lib/notifications';
 import { COURIER_LOCATION_MAX_AGE_MS } from '@/lib/constants';
+import {
+  computeBucket,
+  formatAvgDuration,
+  startOfTashkentDay,
+  startOfLast7Days,
+} from '@/lib/courier-stats';
 
 export const runtime = 'nodejs';
 
 const SECRET_HEADER = 'x-telegram-bot-api-secret-token';
+
+// Courier shift reply-keyboard buttons (Курьер 2.0). Tapping a button sends its
+// text as a normal message, which handleText routes to the duty toggle.
+const COURIER_ON_DUTY_BTN = '🟢 На смене';
+const COURIER_OFF_DUTY_BTN = '🔴 Завершить смену';
+
+// Polite onboarding reply for someone hitting a courier-only surface without a
+// courier account. No system internals — just points them to an admin.
+const COURIER_ONBOARDING_TEXT =
+  'Похоже, у вас пока нет доступа курьера.\n\n' +
+  'Пожалуйста, попросите администратора создать вам доступ.';
+
+/** Persistent reply keyboard shown to couriers: shift toggle + stats hint. */
+function courierDutyKeyboard(): ReplyKeyboardMarkup {
+  return {
+    keyboard: [[{ text: COURIER_ON_DUTY_BTN }, { text: COURIER_OFF_DUTY_BTN }]],
+    resize_keyboard: true,
+    is_persistent: true,
+  };
+}
+
+/** Step-by-step prompt to turn on Telegram live-location sharing. */
+function liveLocationHelpText(): string {
+  return (
+    '📍 <b>Как включить трансляцию геопозиции:</b>\n' +
+    '1. Нажмите скрепку 📎 (или «+») в этом чате.\n' +
+    '2. Выберите «Геопозиция».\n' +
+    '3. Нажмите «Транслировать мою геопозицию» и выберите срок (например, 8 часов).\n\n' +
+    'Пока вы не транслируете геопозицию, новые заказы приходить не будут.'
+  );
+}
 
 interface TgMessage {
   message_id?: number;
@@ -85,13 +122,46 @@ async function handleText(message: NonNullable<TgUpdate['message']>) {
   const chatId = message.chat?.id;
   const text = (message.text || '').trim();
   if (!chatId) return;
+  const fromId = message.from?.id ?? chatId;
+
+  // Courier shift toggle (reply-keyboard buttons).
+  if (text === COURIER_ON_DUTY_BTN) {
+    await handleDutyToggle(chatId, fromId, true);
+    return;
+  }
+  if (text === COURIER_OFF_DUTY_BTN) {
+    await handleDutyToggle(chatId, fromId, false);
+    return;
+  }
+
+  if (text.startsWith('/stats')) {
+    await handleStatsCommand(chatId, fromId);
+    return;
+  }
 
   if (text.startsWith('/orders')) {
-    await handleOrdersCommand(chatId, message.from?.id ?? chatId);
+    await handleOrdersCommand(chatId, fromId);
     return;
   }
 
   if (!text.startsWith('/start')) return;
+
+  // Known couriers get the shift keyboard; everyone else keeps the existing
+  // B2C welcome (this bot is shared with clients, so /start must not gate them).
+  const courier = await prisma.user.findUnique({
+    where: { telegramId: String(fromId) },
+    select: { role: true },
+  });
+  if (courier?.role === 'COURIER') {
+    await sendTelegramMessage(
+      chatId,
+      'Добро пожаловать, курьер! 🚚\n\n' +
+        'Нажмите <b>«На смене»</b>, чтобы начать получать заказы, и включите трансляцию геопозиции.\n' +
+        'Команды: /orders — активные заказы, /stats — ваша статистика.',
+      courierDutyKeyboard(),
+    );
+    return;
+  }
 
   const miniAppUrl = getMiniAppUrl();
   const replyMarkup: InlineKeyboardMarkup | undefined = miniAppUrl
@@ -106,6 +176,117 @@ async function handleText(message: NonNullable<TgUpdate['message']>) {
 }
 
 /**
+ * Toggles a courier's on/off duty flag (Курьер 2.0).
+ *  - ON DUTY: mark onDuty=true. If there's no fresh live location, still mark
+ *    them on-duty but clearly tell them they won't get orders until they share
+ *    live location (step-by-step prompt).
+ *  - OFF DUTY: mark onDuty=false. If they still have an active order it STAYS
+ *    assigned to them — we only warn them to finish it.
+ * Non-couriers / unlinked users get the polite onboarding message.
+ */
+async function handleDutyToggle(chatId: number, fromId: number, onDuty: boolean) {
+  const user = await prisma.user.findUnique({
+    where: { telegramId: String(fromId) },
+    select: { id: true, role: true },
+  });
+  if (!user || user.role !== 'COURIER') {
+    await sendTelegramMessage(chatId, COURIER_ONBOARDING_TEXT);
+    return;
+  }
+
+  await prisma.user.update({ where: { id: user.id }, data: { onDuty } });
+
+  if (onDuty) {
+    const loc = await prisma.courierLocation.findUnique({
+      where: { courierId: user.id },
+      select: { updatedAt: true },
+    });
+    const freshLoc =
+      loc && Date.now() - loc.updatedAt.getTime() <= COURIER_LOCATION_MAX_AGE_MS;
+    if (freshLoc) {
+      await sendTelegramMessage(
+        chatId,
+        '🟢 Вы <b>на смене</b>. Ожидайте новые заказы — они придут сюда.',
+        courierDutyKeyboard(),
+      );
+    } else {
+      // On-duty, but no usable location yet — be explicit that no orders will
+      // come until they start sharing live location.
+      await sendTelegramMessage(
+        chatId,
+        '🟢 Вы <b>на смене</b>, но мы пока не видим вашу геопозицию.\n\n' +
+          liveLocationHelpText(),
+        courierDutyKeyboard(),
+      );
+    }
+    return;
+  }
+
+  // Going OFF duty: the order (if any) stays assigned — just warn.
+  const activeCount = await prisma.order.count({
+    where: {
+      assignedToId: user.id,
+      status: { in: ['COURIER_ASSIGNED', 'IN_DELIVERY'] },
+    },
+  });
+  let msg = '🔴 Вы <b>завершили смену</b>. Новые заказы поступать не будут.';
+  if (activeCount > 0) {
+    msg +=
+      `\n\n⚠️ У вас ${activeCount === 1 ? 'есть незакрытый заказ' : `есть незакрытые заказы (${activeCount})`}. ` +
+      'Он остаётся за вами — пожалуйста, завершите доставку.';
+  }
+  await sendTelegramMessage(chatId, msg, courierDutyKeyboard());
+}
+
+/**
+ * /stats — the courier's OWN delivery stats for today and the last 7 days:
+ * delivered count, total liters, and average TAKE→DELIVERED time (only over
+ * orders that have both timestamps). No other courier's numbers are shown.
+ */
+async function handleStatsCommand(chatId: number, fromId: number) {
+  const user = await prisma.user.findUnique({
+    where: { telegramId: String(fromId) },
+    select: { id: true, role: true },
+  });
+  if (!user || user.role !== 'COURIER') {
+    await sendTelegramMessage(chatId, COURIER_ONBOARDING_TEXT);
+    return;
+  }
+
+  const now = new Date();
+  const todayStart = startOfTashkentDay(now);
+  const weekStart = startOfLast7Days(now);
+
+  const rows = await prisma.order.findMany({
+    where: {
+      assignedToId: user.id,
+      status: 'DELIVERED',
+      deliveredAt: { gte: weekStart },
+    },
+    select: { deliveredAt: true, takenAt: true, dispensedVolume: true },
+  });
+
+  const week = computeBucket(rows);
+  const today = computeBucket(
+    rows.filter((r) => r.deliveredAt != null && r.deliveredAt >= todayStart),
+  );
+
+  const block = (title: string, b: ReturnType<typeof computeBucket>) =>
+    `<b>${title}</b>\n` +
+    `• Доставлено: <b>${b.count}</b>\n` +
+    `• Литров: <b>${b.liters}</b>\n` +
+    `• Среднее время (взял → доставил): <b>${formatAvgDuration(b.avgTakeToDeliverMs)}</b>`;
+
+  await sendTelegramMessage(
+    chatId,
+    `📊 <b>Ваша статистика</b>\n\n` +
+      block('Сегодня', today) +
+      '\n\n' +
+      block('За 7 дней', week),
+  );
+}
+
+/**
  * /orders — lists the courier's ACTIVE orders (COURIER_ASSIGNED / IN_DELIVERY),
  * each as its own card with the same next-step action button as the live order
  * card (Выехал → Доставлено). Read-only aside from letting the courier advance
@@ -116,12 +297,8 @@ async function handleOrdersCommand(chatId: number, fromId: number) {
     where: { telegramId: String(fromId) },
     select: { id: true, role: true },
   });
-  if (!user) {
-    await sendTelegramMessage(chatId, 'Аккаунт не привязан. Откройте приложение, чтобы войти.');
-    return;
-  }
-  if (user.role !== 'COURIER') {
-    await sendTelegramMessage(chatId, 'Команда доступна только курьерам.');
+  if (!user || user.role !== 'COURIER') {
+    await sendTelegramMessage(chatId, COURIER_ONBOARDING_TEXT);
     return;
   }
 
