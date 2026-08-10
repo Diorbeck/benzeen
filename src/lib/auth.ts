@@ -140,6 +140,9 @@ export const authOptions: NextAuthOptions = {
               where: { phone, role: 'COURIER' },
             });
             if (!user?.passwordHash) return null;
+            // Курьер 2.0 admin: a deactivated courier cannot log in. Scoped to
+            // the courier path only — other roles/flows are untouched.
+            if (user.deactivatedAt) return null;
           } else {
             const email = credentials.identifier.trim().toLowerCase();
             user = await prisma.user.findUnique({ where: { email } });

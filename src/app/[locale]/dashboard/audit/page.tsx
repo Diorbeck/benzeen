@@ -18,6 +18,9 @@ const ACTION_LABELS: Record<string, string> = {
   BONUS_APPROVE: 'Начисление подтверждено',
   BONUS_REJECT: 'Начисление отклонено',
   SUPPORT_RESOLVE: 'Обращение закрыто',
+  COURIER_DEACTIVATE: 'Курьер деактивирован',
+  COURIER_ACTIVATE: 'Курьер активирован',
+  COURIER_CSV_EXPORT: 'Экспорт курьеров (CSV)',
 };
 
 function formatMeta(metadata: Prisma.JsonValue | null): string {

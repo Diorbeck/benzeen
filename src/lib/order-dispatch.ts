@@ -120,7 +120,13 @@ async function eligibleCourierLocations(): Promise<
   const locations = await prisma.courierLocation.findMany({
     where: {
       updatedAt: { gte: since },
-      courier: { role: 'COURIER', telegramId: { not: null }, onDuty: true },
+      courier: {
+        role: 'COURIER',
+        telegramId: { not: null },
+        onDuty: true,
+        // Курьер 2.0 admin: deactivated couriers never receive new orders.
+        deactivatedAt: null,
+      },
     },
     include: { courier: { select: { telegramId: true } } },
   });
