@@ -13,6 +13,7 @@ import {
   Users,
   Package,
   FileText,
+  Flame,
   Settings,
   Menu,
   X,
@@ -47,6 +48,7 @@ type NavKey =
   | 'reports'
   | 'invoices'
   | 'couriers'
+  | 'propane'
   | 'clients'
   | 'bonuses'
   | 'support'
@@ -74,6 +76,7 @@ const navByRole: Record<
     { path: '/deliveries', labelKey: 'deliveries', icon: Truck },
     { path: '/invoices', labelKey: 'reports', icon: BarChart3 },
     { path: '/couriers', labelKey: 'couriers', icon: Bike },
+    { path: '/propane', labelKey: 'propane', icon: Flame },
     { path: '/clients', labelKey: 'clients', icon: UserRound },
     { path: '/bonuses', labelKey: 'bonuses', icon: Gift },
     { path: '/support', labelKey: 'support', icon: MessageSquare },
@@ -107,6 +110,11 @@ const navByRole: Record<
   COURIER: [
     { path: '', labelKey: 'overview', icon: LayoutDashboard },
     { path: '/orders', labelKey: 'orders', icon: Package },
+    { path: '/settings', labelKey: 'settings', icon: Settings },
+  ],
+  PROPANE_OPERATOR: [
+    { path: '', labelKey: 'overview', icon: LayoutDashboard },
+    { path: '/propane', labelKey: 'propane', icon: Flame },
     { path: '/settings', labelKey: 'settings', icon: Settings },
   ],
 };

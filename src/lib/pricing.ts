@@ -4,6 +4,11 @@
 
 export type FuelType = 'AI_92' | 'AI_95' | 'AI_100';
 
+/** Narrow a DB fuel value (which may be PROPANE, M4) to the gasoline union. */
+export function asGasoline(fuel: string | null | undefined): FuelType | null {
+  return fuel === 'AI_92' || fuel === 'AI_95' || fuel === 'AI_100' ? fuel : null;
+}
+
 export interface OrderPriceInput {
   /** UZS per liter, snapshot from the Price table. */
   pricePerLiter: number;
