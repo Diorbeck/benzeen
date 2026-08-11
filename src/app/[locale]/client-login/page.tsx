@@ -109,12 +109,12 @@ function ClientLoginForm() {
       backLabel={t('backToHome')}
     >
       {error && (
-        <p className="mb-4 rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400" role="alert">
+        <p className="mb-4 rounded-control bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
       )}
       {info && !error && (
-        <p className="mb-4 rounded-xl bg-primary-500/10 px-4 py-3 text-sm text-primary-700 dark:text-primary-300" role="status">
+        <p className="mb-4 rounded-control bg-primary-50 dark:bg-primary-500/15 px-4 py-3 text-sm text-primary-700 dark:text-primary-300" role="status">
           {info}
         </p>
       )}
@@ -122,7 +122,7 @@ function ClientLoginForm() {
       {step === 'phone' ? (
         <form onSubmit={sendCode} className="space-y-4">
           <div>
-            <label htmlFor="client-phone" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            <label htmlFor="client-phone" className="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
               {t('phoneLabel')}
             </label>
             <input
@@ -145,7 +145,7 @@ function ClientLoginForm() {
       ) : (
         <form onSubmit={verify} className="space-y-4">
           <div>
-            <label htmlFor="client-code" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            <label htmlFor="client-code" className="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
               {t('codeLabel')}
             </label>
             <input
@@ -174,7 +174,7 @@ function ClientLoginForm() {
               setError('');
               setInfo('');
             }}
-            className="w-full text-center text-sm text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400"
+            className="min-h-11 w-full rounded-full text-center text-sm font-medium text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
             disabled={loading}
           >
             {t('changePhone')}
@@ -188,7 +188,7 @@ function ClientLoginForm() {
 function ClientLoginFallback() {
   return (
     <div className="flex min-h-screen items-center justify-center" role="status" aria-live="polite">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-600 border-t-transparent dark:border-primary-400 dark:border-t-transparent" />
     </div>
   );
 }

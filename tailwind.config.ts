@@ -11,19 +11,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Deep Blue primary
+        // Cobalt — the ONE accent (benzeen-design doctrine). 600 is the brand value.
         primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#0A1F44',
+          50: '#F0F4FF',
+          100: '#DEE7FF',
+          200: '#C3D3FF',
+          300: '#9DB5FF',
+          400: '#6B8AFF', // accent on dark surfaces
+          500: '#4A6EFF',
+          600: '#2E5BFF', // brand accent
+          700: '#2450E6', // hover
+          800: '#1D41C4', // active/pressed
+          900: '#1A379E',
+          950: '#13224F',
         },
         // Dark petrol
         petrol: {
@@ -45,13 +45,13 @@ const config: Config = {
           400: '#9ca3af',
           500: '#6b7280',
         },
-        // Deep navy — B2C text/contrast on light surfaces.
+        // Deep navy — text on light surfaces + the dark-theme surface family.
         navy: {
-          DEFAULT: '#0A1F44',
-          700: '#13294f',
-          800: '#0d1f3c',
-          900: '#0A1F44',
-          950: '#06132b',
+          DEFAULT: '#13224F', // primary text on light
+          700: '#253464', // subtle elevated / borders on dark
+          800: '#1B2749', // elevated dark surface
+          900: '#141E3D', // dark surface (cards, header)
+          950: '#0B1226', // dark background
         },
         // Semantic — success only for success, warning only for warnings.
         success: { DEFAULT: '#059669', 500: '#10b981', 600: '#059669' },
@@ -67,9 +67,12 @@ const config: Config = {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'monospace'],
       },
+      // Type scale (benzeen-design): large text tight, small text open.
       fontSize: {
-        'display': ['2.25rem', { lineHeight: '1.2', fontWeight: '700' }],
-        'heading': ['1.5rem', { lineHeight: '1.3', fontWeight: '600' }],
+        'display': ['3.5rem', { lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'title': ['2.25rem', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'heading': ['1.5rem', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '600' }],
+        'subheading': ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],
         'body': ['1rem', { lineHeight: '1.5', fontWeight: '400' }],
         'caption': ['0.875rem', { lineHeight: '1.4', fontWeight: '500' }],
         'button': ['0.875rem', { lineHeight: '1.2', fontWeight: '600' }],

@@ -57,7 +57,7 @@ export function AccountView({
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-navy-950 text-navy dark:text-white">
-      <header className="sticky top-0 z-header border-b border-gray-100 dark:border-white/10 bg-white/85 dark:bg-navy-900/85 backdrop-blur-xl">
+      <header className="sticky top-0 z-header border-b border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href={`/${locale}`} className="flex min-w-0 items-center gap-2.5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary-600">
@@ -87,9 +87,9 @@ export function AccountView({
                   type="button"
                   onClick={() => setTab(key)}
                   aria-current={active ? 'page' : undefined}
-                  className={`flex shrink-0 items-center gap-2.5 whitespace-nowrap rounded-control px-4 py-2.5 text-sm font-medium transition lg:w-full ${
+                  className={`flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-950 lg:w-full ${
                     active
-                      ? 'bg-primary-600 text-white shadow-sm'
+                      ? 'bg-primary-600 text-white'
                       : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-navy-900 dark:text-gray-300 dark:hover:bg-white/10 lg:border-transparent lg:bg-transparent lg:dark:bg-transparent'
                   }`}
                 >

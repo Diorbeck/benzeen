@@ -48,14 +48,14 @@ export function SupportSection() {
     <div className="space-y-6">
       <section className={cardCls}>
         <div className="mb-3 flex items-center gap-2.5">
-          <LifeBuoy className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
-          <h2 className="text-base font-semibold text-navy dark:text-white">{t('support.title')}</h2>
+          <LifeBuoy className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
+          <h2 className="text-heading text-navy dark:text-white">{t('support.title')}</h2>
         </div>
-        <p className="mb-4 text-sm text-gray-600 dark:text-gray-300">{t('support.desc')}</p>
+        <p className="mb-6 text-sm text-gray-600 dark:text-gray-300">{t('support.desc')}</p>
 
         <form onSubmit={submit} className="space-y-4">
           <div>
-            <label htmlFor="sup-type" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            <label htmlFor="sup-type" className="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
               {t('support.type')}
             </label>
             <select
@@ -72,7 +72,7 @@ export function SupportSection() {
             </select>
           </div>
           <div>
-            <label htmlFor="sup-text" className="mb-1 block text-xs font-medium text-gray-500 dark:text-gray-400">
+            <label htmlFor="sup-text" className="mb-1.5 block text-sm font-medium text-gray-500 dark:text-gray-400">
               {t('support.text')}
             </label>
             <textarea
@@ -86,18 +86,18 @@ export function SupportSection() {
                 setStatus('idle');
               }}
             />
-            <p className="mt-1 text-right text-[11px] text-gray-400 dark:text-gray-500">
+            <p className="mt-1 text-right text-xs tabular-nums text-gray-500 dark:text-gray-400">
               {t('support.charsLeft', { n: MAX_TEXT - text.length })}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Button type="submit" disabled={busy || !text.trim()} className="rounded-control">
+            <Button type="submit" disabled={busy || !text.trim()}>
               {busy ? t('support.submitting') : t('support.submit')}
             </Button>
             {status === 'ok' && <span className="text-sm text-success-600 dark:text-success-500">{t('support.submitted')}</span>}
             {status === 'error' && <span className="text-sm text-red-600 dark:text-red-400">{t('support.error')}</span>}
-            {status === 'limited' && <span className="text-sm text-amber-700 dark:text-warning-500">{t('support.rateLimited')}</span>}
+            {status === 'limited' && <span className="text-sm text-warning-600 dark:text-warning-500">{t('support.rateLimited')}</span>}
           </div>
         </form>
       </section>
@@ -105,10 +105,10 @@ export function SupportSection() {
       <section className={cardCls}>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-semibold text-navy dark:text-white">{t('support.callTitle')}</h3>
+            <h3 className="text-subheading text-navy dark:text-white">{t('support.callTitle')}</h3>
             <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{t('support.available247')}</p>
           </div>
-          <Button asChild variant="secondary" className="rounded-control">
+          <Button asChild variant="secondary">
             <a href={`tel:${siteConfig.supportPhone}`}>
               <Phone className="h-4 w-4" /> {t('support.call')}
             </a>
