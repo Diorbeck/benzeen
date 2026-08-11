@@ -17,7 +17,9 @@ export type AnalyticsEvent =
   | 'order_submitted'
   | 'order_failed'
   | 'login_clicked'
-  | 'language_changed';
+  | 'language_changed'
+  | 'propane_slot_booked'
+  | 'propane_booking_cancelled';
 
 export type AnalyticsProps = Record<string, string | number | boolean | null | undefined>;
 

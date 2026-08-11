@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
+import { asGasoline } from '@/lib/pricing';
 import { AccountView } from '@/components/account/account-view';
 import { getReferralStats } from '@/lib/referral';
 import { getDefaultCarId } from '@/lib/session';
@@ -73,7 +74,7 @@ export default async function AccountPage({
       phone={user.phone ?? ''}
       name={user.name ?? ''}
       lastName={user.lastName ?? ''}
-      cars={cars}
+      cars={cars.map((c) => ({ ...c, fuelType: asGasoline(c.fuelType) }))}
       referral={referral}
       locations={locations}
       defaultCarId={defaultCarId}

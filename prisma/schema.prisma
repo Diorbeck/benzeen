@@ -15,12 +15,14 @@ enum Role {
   COURIER
   DISPATCHER
   CLIENT
+  PROPANE_OPERATOR
 }
 
 enum FuelType {
   AI_92
   AI_95
   AI_100
+  PROPANE
 }
 
 // B2C payment (M2). B2B orders leave these null (paymentStatus NOT_REQUIRED).
@@ -118,6 +120,9 @@ model User {
   companyId     String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+
+  // M4 Propane: this client's slot bookings.
+  propaneBookings PropaneBooking[] @relation("ClientPropaneBookings")
 
   // Referrals (M5): a short unique code, and who referred this user.
   referralCode  String?   @unique
@@ -498,4 +503,52 @@ model Notification {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// --- M4 Propane (points + slot bookings) ------------------------------------
+// Gas trucks stand at fixed points; clients drive up at a booked 15-minute
+// slot. Capacity per slot = the point's postsCount (parallel filling posts).
+
+enum PropanePointStatus {
+  ACTIVE
+  PAUSED
+}
+
+enum PropaneBookingStatus {
+  BOOKED
+  SERVED
+  CANCELLED
+}
+
+model PropanePoint {
+  id         String             @id @default(cuid())
+  name       String
+  lat        Float
+  lng        Float
+  status     PropanePointStatus @default(ACTIVE)
+  priceUzs   Int // per liter of LPG
+  postsCount Int                @default(1) // filling posts = bookings per slot
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  bookings PropaneBooking[]
+}
+
+model PropaneBooking {
+  id        String               @id @default(cuid())
+  pointId   String
+  clientId  String
+  slotStart DateTime
+  status    PropaneBookingStatus @default(BOOKED)
+  code      String               @unique // shown to the operator (number/QR payload)
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  point  PropanePoint @relation(fields: [pointId], references: [id])
+  client User         @relation("ClientPropaneBookings", fields: [clientId], references: [id])
+
+  // A client can hold at most one booking per point+slot (double-tap guard).
+  @@unique([pointId, clientId, slotStart])
+  @@index([pointId, slotStart, status])
+  @@index([clientId, slotStart])
 }

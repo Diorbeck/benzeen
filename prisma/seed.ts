@@ -41,6 +41,32 @@ async function main() {
     },
   });
 
+  // M4 Propane: two demo points in Tashkent (idempotent by fixed ids).
+  await prisma.propanePoint.upsert({
+    where: { id: 'seed-propane-chilanzar' },
+    update: {},
+    create: {
+      id: 'seed-propane-chilanzar',
+      name: 'Чиланзар, 7-й квартал',
+      lat: 41.2757,
+      lng: 69.2034,
+      priceUzs: 8500,
+      postsCount: 2,
+    },
+  });
+  await prisma.propanePoint.upsert({
+    where: { id: 'seed-propane-yunusabad' },
+    update: {},
+    create: {
+      id: 'seed-propane-yunusabad',
+      name: 'Юнусабад, 19-й квартал',
+      lat: 41.3665,
+      lng: 69.2946,
+      priceUzs: 8500,
+      postsCount: 1,
+    },
+  });
+
   console.log('Seed completed:');
   console.log(`  Admin: ${email}`);
 }
