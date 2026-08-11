@@ -163,3 +163,64 @@ body {
 .maplibregl-map {
   border-radius: inherit;
 }
+
+/* --- Motion (Wave 2) -------------------------------------------------------- */
+/* Skeleton shimmer — loading status, killed by the global reduced-motion block. */
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+  animation: skeleton-sweep 1.6s ease-in-out infinite;
+}
+.dark .skeleton-shimmer::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+}
+@keyframes skeleton-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Live courier marker pulse — communicates "live position", not decor. */
+.courier-marker {
+  position: relative;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #2e5bff;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px rgba(46, 91, 255, 0.35);
+}
+.courier-marker::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 9999px;
+  background: rgba(46, 91, 255, 0.25);
+  animation: courier-pulse 2s ease-out infinite;
+}
+@keyframes courier-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  70%,
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+/* SVG checkmark draw for success states. */
+.check-draw {
+  stroke-dasharray: 48;
+  stroke-dashoffset: 48;
+  animation: check-draw 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s forwards;
+}
+@keyframes check-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

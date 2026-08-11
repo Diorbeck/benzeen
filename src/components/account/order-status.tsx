@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Check, Loader2, Navigation, CalendarClock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TrackingMap } from '@/components/map/tracking-map';
 import { etaProvider, MAX_ETA_MINUTES } from '@/lib/eta';
+import { spring } from '@/lib/motion';
 
 export type ClientOrder = {
   id: string;
@@ -115,12 +117,44 @@ export function OrderStatus({
               <Navigation className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
               {t('courierComing')}
             </p>
-            <span className="text-sm font-semibold tabular-nums text-primary-600 dark:text-primary-400">
-              {showEta ? t('eta', { minutes: etaMinutes! }) : t('etaCalculating')}
-            </span>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={showEta ? 'eta' : 'calc'}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={spring.snappy}
+                className="text-sm font-semibold tabular-nums text-primary-600 dark:text-primary-400"
+              >
+                {showEta ? t('eta', { minutes: etaMinutes! }) : t('etaCalculating')}
+              </motion.span>
+            </AnimatePresence>
           </div>
           <TrackingMap destination={destination} courier={courier} />
         </div>
+      )}
+
+      {order.status === 'DELIVERED' && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={spring.default}
+          className="mt-6 flex items-center gap-4 rounded-card border border-success-500/20 bg-success-500/10 p-5"
+        >
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-success-500 text-white">
+            <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
+              <path
+                d="M5 12.5l4.5 4.5L19 7.5"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="check-draw"
+              />
+            </svg>
+          </span>
+          <p className="text-sm font-medium text-navy dark:text-white">{t('steps.DELIVERED')}</p>
+        </motion.div>
       )}
 
       {cancelled ? (
@@ -151,13 +185,17 @@ export function OrderStatus({
             const current = i === activeIndex && order.status !== 'DELIVERED';
             return (
               <li key={step} className="flex items-center gap-3">
-                <span
+                <motion.span
+                  key={`${step}-${done ? 'done' : current ? 'cur' : 'idle'}`}
+                  initial={{ scale: 0.7, opacity: 0.6 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={spring.snappy}
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
                     done ? 'bg-success-500 text-white' : current ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500'
                   }`}
                 >
                   {done ? <Check className="h-4 w-4" /> : current ? <Loader2 className="h-4 w-4 animate-spin" /> : i + 1}
-                </span>
+                </motion.span>
                 <span className={`text-sm ${done || current ? 'font-medium text-navy dark:text-white' : 'text-gray-400 dark:text-gray-500'}`}>
                   {t(`steps.${step}`)}
                 </span>

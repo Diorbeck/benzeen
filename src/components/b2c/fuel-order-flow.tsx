@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { signIn, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { CalendarClock, Car, Check, Fuel, Gift, MapPin, Plus, RotateCcw, Star, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AnimatedNumber } from '@/components/ui/animated-number';
+import { spring } from '@/lib/motion';
 import { MapPicker, type LatLng } from '@/components/map/map-picker';
 import { calcOrderPrice, type FuelType } from '@/lib/pricing';
 import { computeBonusUsed, computeTotal } from '@/lib/bonus';
@@ -409,25 +412,33 @@ export function FuelOrderFlow({
   if (showFork && lastOrder) {
     const repeatLiters = lastOrder.isFullTank ? null : lastOrder.volume;
     return (
-      <RepeatFork
-        t={t}
-        fuelLabel={FUEL_LABEL[lastOrder.fuelType]}
-        liters={repeatLiters}
-        carLabel={
-          [lastOrder.carPlate, lastOrder.carModel].filter(Boolean).join(' · ') || null
-        }
-        address={lastOrder.address}
-        onRepeat={repeatLastOrder}
-        onNew={() => {
-          setShowFork(false);
-          track('order_new_after_fork');
-        }}
-      />
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={spring.default}>
+        <RepeatFork
+          t={t}
+          fuelLabel={FUEL_LABEL[lastOrder.fuelType]}
+          liters={repeatLiters}
+          carLabel={
+            [lastOrder.carPlate, lastOrder.carModel].filter(Boolean).join(' · ') || null
+          }
+          address={lastOrder.address}
+          onRepeat={repeatLastOrder}
+          onNew={() => {
+            setShowFork(false);
+            track('order_new_after_fork');
+          }}
+        />
+      </motion.div>
     );
   }
 
   return (
-    <div className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8">
+    <motion.div
+      // Deeper into the flow → enter from the right (spatial consistency with the fork).
+      initial={canFork ? { opacity: 0, x: 24 } : false}
+      animate={{ opacity: 1, x: 0 }}
+      transition={spring.default}
+      className="lg:grid lg:grid-cols-[1fr_360px] lg:gap-8"
+    >
       {/* Steps */}
       <div className="space-y-5 pb-40 lg:pb-8">
         {draftRestored && (
@@ -456,7 +467,7 @@ export function FuelOrderFlow({
                   key={c.id}
                   type="button"
                   onClick={() => selectCar(c)}
-                  className={`flex w-full items-center justify-between rounded-control border px-4 py-3 text-left transition ${
+                  className={`flex w-full items-center justify-between rounded-control border px-4 py-3 text-left transition active:scale-[0.99] motion-reduce:active:scale-100 ${
                     !usingNewCar && carId === c.id
                       ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15'
                       : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
@@ -547,7 +558,7 @@ export function FuelOrderFlow({
                     setFuelType(f);
                     track('fuel_selected', { fuel: f });
                   }}
-                  className={`rounded-control border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                  className={`rounded-control border p-3 text-left transition active:scale-[0.98] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${
                     active ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
@@ -572,7 +583,7 @@ export function FuelOrderFlow({
                     setVolume(v);
                     track('volume_selected', { liters: v });
                   }}
-                  className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition ${
+                  className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition active:scale-[0.97] motion-reduce:active:scale-100 ${
                     active ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
@@ -587,7 +598,7 @@ export function FuelOrderFlow({
                   setIsFullTank(true);
                   track('volume_selected', { fullTank: true });
                 }}
-                className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition ${
+                className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition active:scale-[0.97] motion-reduce:active:scale-100 ${
                   isFullTank ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
                 }`}
               >
@@ -774,7 +785,7 @@ export function FuelOrderFlow({
         <div className="mb-2 flex items-center justify-between px-1 text-sm">
           <span className="text-gray-500 dark:text-gray-400">{t('total')}</span>
           <span className="text-lg font-bold tabular-nums text-navy dark:text-white">
-            {formatMoney(total, locale)} {t('sum')}
+            <AnimatedNumber value={total} format={(n) => formatMoney(n, locale)} /> {t('sum')}
           </span>
         </div>
         <Button
@@ -787,28 +798,30 @@ export function FuelOrderFlow({
         </Button>
       </div>
 
-      {loginOpen && (
-        <InlineLogin
-          t={t}
-          step={loginStep}
-          phone={loginPhone}
-          code={loginCode}
-          busy={loginBusy}
-          info={loginInfo}
-          error={loginError}
-          setPhone={setLoginPhone}
-          setCode={setLoginCode}
-          onClose={() => setLoginOpen(false)}
-          onSend={sendCode}
-          onVerify={verifyAndOrder}
-          onBack={() => {
-            setLoginStep('phone');
-            setLoginCode('');
-            setLoginError('');
-          }}
-        />
-      )}
-    </div>
+      <AnimatePresence>
+        {loginOpen && (
+          <InlineLogin
+            t={t}
+            step={loginStep}
+            phone={loginPhone}
+            code={loginCode}
+            busy={loginBusy}
+            info={loginInfo}
+            error={loginError}
+            setPhone={setLoginPhone}
+            setCode={setLoginCode}
+            onClose={() => setLoginOpen(false)}
+            onSend={sendCode}
+            onVerify={verifyAndOrder}
+            onBack={() => {
+              setLoginStep('phone');
+              setLoginCode('');
+              setLoginError('');
+            }}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
 
@@ -1021,7 +1034,7 @@ function Summary({
               {formatMoney(grossTotal, locale)}
             </span>
           )}
-          {formatMoney(total, locale)} {t('sum')}
+          <AnimatedNumber value={total} format={(n) => formatMoney(n, locale)} /> {t('sum')}
         </span>
       </div>
 
@@ -1095,9 +1108,20 @@ function InlineLogin({
   onBack: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-modal flex items-end justify-center bg-black/40 sm:items-center" onClick={onClose}>
-      <div
-        className="w-full max-w-md rounded-t-sheet bg-white dark:bg-navy-900 p-6 shadow-soft-lg sm:rounded-card"
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-modal flex items-end justify-center bg-black/40 sm:items-center"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: '100%', opacity: 0.5 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0.5 }}
+        transition={spring.sheet}
+        className="w-full max-w-md rounded-t-sheet bg-white/95 p-6 shadow-soft-lg backdrop-blur-md dark:bg-navy-900/95 sm:rounded-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -1144,8 +1168,8 @@ function InlineLogin({
             </button>
           </form>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
