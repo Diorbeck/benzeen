@@ -418,7 +418,9 @@
       "servedBadge": "Xizmat ko'rsatildi",
       "cancelledBadge": "Bekor qilingan",
       "empty": "Nuqtalar hali yo'q — birinchisini qo'shing",
-      "loadError": "Nuqtalarni yuklab bo'lmadi"
+      "loadError": "Nuqtalarni yuklab bo'lmadi",
+      "noShow": "Kelmadi",
+      "noShowBadge": "Kelmadi"
     }
   },
   "limits": {

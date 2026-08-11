@@ -418,7 +418,9 @@
       "servedBadge": "Served",
       "cancelledBadge": "Cancelled",
       "empty": "No points yet — add the first one",
-      "loadError": "Couldn't load points"
+      "loadError": "Couldn't load points",
+      "noShow": "No-show",
+      "noShowBadge": "No-show"
     }
   },
   "limits": {

@@ -521,6 +521,7 @@ enum PropaneBookingStatus {
   BOOKED
   SERVED
   CANCELLED
+  NO_SHOW
 }
 
 model PropanePoint {
