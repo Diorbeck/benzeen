@@ -79,6 +79,9 @@ export const authOptions: NextAuthOptions = {
             if (!verified.ok) return null;
 
             let user = await prisma.user.findFirst({ where: { phone } });
+            // Account deletion: an anonymized client can never sign back in.
+            // Scoped to the client path only — staff flows are untouched.
+            if (user?.deletedAt) return null;
             if (user && user.role !== 'CLIENT') {
               // Phone belongs to a staff account (driver/courier/etc.) — they
               // must use their own login, not the client OTP flow.

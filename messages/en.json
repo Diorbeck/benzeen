@@ -421,6 +421,21 @@
       "loadError": "Couldn't load points",
       "noShow": "No-show",
       "noShowBadge": "No-show"
+    },
+    "clients": {
+      "deleteClient": "Delete client",
+      "deleteReason": "Reason (for the audit log)",
+      "deleteAnonymizeHint": "Data will be anonymized: orders and bonus records stay without a name or number.",
+      "deleteHard": "Hard delete",
+      "deleteHardHint": "Only for accounts with zero orders and zero bonus records (spam).",
+      "deleteConfirm": "Confirm deletion",
+      "deleting": "Deleting…",
+      "deletedBadge": "Account deleted",
+      "deleteBlockedOrder": "The client has an active order — finish or cancel it first",
+      "deleteBlockedBooking": "The client has an active propane booking — finish or cancel it first",
+      "deleteNotEligible": "Orders or bonus records exist — only anonymization is available",
+      "deleteError": "Deletion failed. Try again.",
+      "cancel": "Cancel"
     }
   },
   "limits": {
@@ -905,6 +920,25 @@
       "AI_92": "AI-92",
       "AI_95": "AI-95",
       "AI_100": "AI-100"
+    },
+    "deletion": {
+      "title": "Delete account",
+      "cta": "Delete account",
+      "whatGoesTitle": "Deleted permanently",
+      "whatGoes": "Name, phone number, Telegram link, cars and their photos, saved addresses.",
+      "whatStaysTitle": "Kept, anonymized",
+      "whatStays": "Order history and bonus records remain as financial documents — without your name or number.",
+      "blockedOrder": "Finish or cancel your active order first",
+      "blockedBooking": "Finish or cancel your active propane booking first",
+      "sendCode": "Send confirmation code",
+      "sending": "Sending…",
+      "codeSentTo": "Code sent by SMS to your number",
+      "codePlaceholder": "Code from SMS",
+      "confirm": "Delete forever",
+      "deleting": "Deleting…",
+      "invalidCode": "Wrong code. Check it and try again.",
+      "genericError": "Something went wrong. Try again.",
+      "cancel": "Cancel"
     }
   },
   "benzin": {

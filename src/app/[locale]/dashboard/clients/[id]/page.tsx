@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { bonusBalanceFrom } from '@/lib/bonus';
 import { evaluateReferrerFlags, type FirstOrderSignal } from '@/lib/fraud';
 import { BonusAdminActions } from '@/components/dashboard/bonus-admin-actions';
+import { ClientDelete } from '@/components/dashboard/client-delete';
 import { ArrowLeft, AlertTriangle, Car, MapPin, Package, Gift } from 'lucide-react';
 
 const dtf = new Intl.DateTimeFormat('ru-RU', { dateStyle: 'short', timeStyle: 'short' });
@@ -33,6 +34,7 @@ export default async function ClientCardPage({
       lastName: true,
       phone: true,
       bonusFrozen: true,
+      deletedAt: true,
       clientCars: {
         select: {
           id: true,
@@ -307,6 +309,9 @@ export default async function ClientCardPage({
           )}
         </div>
       </div>
+
+      {/* Danger zone: anonymize / hard-delete this client */}
+      <ClientDelete clientId={client.id} deleted={Boolean(client.deletedAt)} />
     </div>
   );
 }
