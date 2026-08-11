@@ -43,7 +43,7 @@ export function PropaneNearby() {
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" aria-hidden />
         <input
-          className="w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 py-3 pl-10 pr-4 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+          className="h-12 w-full rounded-control border border-gray-300 dark:border-white/15 bg-white dark:bg-navy-800 py-3 pl-10 pr-4 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600"
           placeholder={t('searchPlaceholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -51,17 +51,9 @@ export function PropaneNearby() {
       </div>
 
       {/* Map placeholder — real tiles/markers land with the points API (M4). */}
-      <div className="relative h-56 overflow-hidden rounded-card border border-gray-200 dark:border-white/10 bg-[#eef2f7] dark:bg-navy-900 sm:h-72">
-        <div
-          className="absolute inset-0 opacity-70"
-          style={{
-            backgroundImage: 'linear-gradient(#dbe3ee 1px, transparent 1px), linear-gradient(90deg, #dbe3ee 1px, transparent 1px)',
-            backgroundSize: '32px 32px',
-          }}
-          aria-hidden
-        />
+      <div className="relative h-56 overflow-hidden rounded-card border border-gray-200/60 dark:border-white/10 bg-gray-100 dark:bg-navy-900 sm:h-72">
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/90 dark:bg-navy-900/90 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 shadow-soft">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white dark:bg-navy-800 px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 shadow-soft dark:shadow-none">
             <MapPin className="h-3.5 w-3.5" aria-hidden />
             {t('mapSoon')}
           </span>
@@ -77,20 +69,20 @@ export function PropaneNearby() {
       )}
 
       {state === 'error' && (
-        <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-8 text-center">
+        <div className="rounded-card border border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900 p-8 text-center shadow-soft dark:shadow-none">
           <p className="text-sm text-gray-600 dark:text-gray-300">{t('error')}</p>
-          <Button variant="secondary" className="mt-4 rounded-control" onClick={load}>
+          <Button variant="secondary" className="mt-4" onClick={load}>
             <RefreshCw className="h-4 w-4" /> {t('retry')}
           </Button>
         </div>
       )}
 
       {state === 'ready' && filtered.length === 0 && (
-        <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-10 text-center">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-control bg-primary-50 dark:bg-primary-500/15 text-primary-600 dark:text-primary-400">
+        <div className="rounded-card border border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900 p-10 text-center shadow-soft dark:shadow-none">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-500">
             <Flame className="h-6 w-6" aria-hidden />
           </span>
-          <h2 className="mt-4 text-base font-semibold text-navy dark:text-white">{t('emptyTitle')}</h2>
+          <h2 className="mt-4 text-subheading text-navy dark:text-white">{t('emptyTitle')}</h2>
           <p className="mx-auto mt-1.5 max-w-sm text-sm text-gray-600 dark:text-gray-300">{t('emptyDesc')}</p>
         </div>
       )}
@@ -98,7 +90,7 @@ export function PropaneNearby() {
       {state === 'ready' && filtered.length > 0 && (
         <ul className="space-y-3">
           {filtered.map((p) => (
-            <li key={p.id} className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-4">
+            <li key={p.id} className="rounded-card border border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft dark:shadow-none">
               <p className="text-sm font-semibold text-navy dark:text-white">{p.name}</p>
             </li>
           ))}

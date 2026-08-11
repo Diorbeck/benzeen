@@ -48,7 +48,7 @@ function plateKey(raw: string): string {
 }
 
 const inputCls =
-  'w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-3 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20';
+  'w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-3 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20';
 
 export function FuelOrderFlow({
   locale,
@@ -458,7 +458,7 @@ export function FuelOrderFlow({
                   onClick={() => selectCar(c)}
                   className={`flex w-full items-center justify-between rounded-control border px-4 py-3 text-left transition ${
                     !usingNewCar && carId === c.id
-                      ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 ring-2 ring-primary-500/20'
+                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15'
                       : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
@@ -476,7 +476,7 @@ export function FuelOrderFlow({
                   setCarId(null);
                 }}
                 className={`flex w-full items-center gap-2 rounded-control border px-4 py-3 text-left text-sm font-medium transition ${
-                  usingNewCar ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-dashed border-gray-300 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-500/40'
+                  usingNewCar ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-dashed border-gray-300 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-500/40'
                 }`}
               >
                 <Plus className="h-4 w-4" /> {t('addCar')}
@@ -548,7 +548,7 @@ export function FuelOrderFlow({
                     track('fuel_selected', { fuel: f });
                   }}
                   className={`rounded-control border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-50 ${
-                    active ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 ring-2 ring-primary-500/20' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
+                    active ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
                   <span className="block text-sm font-semibold text-navy dark:text-white">{FUEL_LABEL[f]}</span>
@@ -572,8 +572,8 @@ export function FuelOrderFlow({
                     setVolume(v);
                     track('volume_selected', { liters: v });
                   }}
-                  className={`min-h-[44px] rounded-control border px-4 text-sm font-medium transition ${
-                    active ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
+                  className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition ${
+                    active ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
                   }`}
                 >
                   {v} {t('liters')}
@@ -587,8 +587,8 @@ export function FuelOrderFlow({
                   setIsFullTank(true);
                   track('volume_selected', { fullTank: true });
                 }}
-                className={`min-h-[44px] rounded-control border px-4 text-sm font-medium transition ${
-                  isFullTank ? 'border-primary-500 bg-primary-50/50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
+                className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition ${
+                  isFullTank ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
                 }`}
               >
                 {t('fullTank')}
@@ -597,7 +597,7 @@ export function FuelOrderFlow({
           </div>
 
           {isFullTank ? (
-            <p className="mt-3 rounded-control bg-amber-50 dark:bg-warning-500/10 px-3 py-2 text-xs text-amber-700 dark:text-warning-500">
+            <p className="mt-3 rounded-control bg-warning-500/10 px-3 py-2 text-xs text-warning-600 dark:text-warning-500">
               {t('fullTankNote', { max: knownTankCapacity ?? 0 })}
             </p>
           ) : (
@@ -613,7 +613,7 @@ export function FuelOrderFlow({
               <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">{t('minOrderHint', { min: 30 })}</p>
               {/* Clear message when the entered amount is below the minimum. */}
               {volume > 0 && volume < 30 && (
-                <p className="mt-1.5 rounded-control bg-amber-50 dark:bg-warning-500/10 px-3 py-2 text-xs font-medium text-amber-700 dark:text-warning-500">
+                <p className="mt-1.5 rounded-control bg-warning-500/10 px-3 py-2 text-xs font-medium text-warning-600 dark:text-warning-500">
                   {t('belowMin', { min: 30 })}
                 </p>
               )}
@@ -634,7 +634,7 @@ export function FuelOrderFlow({
                     setAddress(l.name);
                     track('address_selected', { source: 'saved' });
                   }}
-                  className="inline-flex max-w-full items-center gap-1.5 rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-3 py-2 text-sm text-navy dark:text-white hover:border-primary-200 dark:hover:border-primary-500/40"
+                  className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-2 text-sm text-navy dark:text-white hover:border-primary-200 dark:hover:border-primary-500/40"
                 >
                   <Star className="h-3.5 w-3.5 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
                   <span className="min-w-0 truncate">{l.name}</span>
@@ -668,10 +668,10 @@ export function FuelOrderFlow({
                   maxLength={40}
                   autoFocus
                 />
-                <Button type="button" size="sm" className="rounded-control" onClick={saveLocation} disabled={!addrName.trim()}>
+                <Button type="button" size="sm" onClick={saveLocation} disabled={!addrName.trim()}>
                   {t('saveAddressConfirm')}
                 </Button>
-                <Button type="button" size="sm" variant="ghost" className="rounded-control text-gray-600 dark:text-gray-300" onClick={() => { setSavingAddr(false); setAddrName(''); }}>
+                <Button type="button" size="sm" variant="ghost" onClick={() => { setSavingAddr(false); setAddrName(''); }}>
                   {t('saveAddressCancel')}
                 </Button>
               </div>
@@ -768,19 +768,20 @@ export function FuelOrderFlow({
       </div>
 
       {/* Mobile fixed bottom bar */}
-      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-100 dark:border-white/10 bg-white/95 dark:bg-navy-900/95 p-3 backdrop-blur lg:hidden">
-        {block && <p className="mb-2 text-center text-xs text-amber-700 dark:text-warning-500">{t(`disabled.${block}`)}</p>}
+      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-200/60 bg-white/85 p-3 backdrop-blur-md dark:border-white/10 dark:bg-navy-900/85 lg:hidden">
+        {block && <p className="mb-2 text-center text-xs text-warning-600 dark:text-warning-500">{t(`disabled.${block}`)}</p>}
         {error && <p className="mb-2 text-center text-xs text-red-600 dark:text-red-400">{error}</p>}
         <div className="mb-2 flex items-center justify-between px-1 text-sm">
           <span className="text-gray-500 dark:text-gray-400">{t('total')}</span>
-          <span className="text-lg font-bold text-navy dark:text-white">
+          <span className="text-lg font-bold tabular-nums text-navy dark:text-white">
             {formatMoney(total, locale)} {t('sum')}
           </span>
         </div>
         <Button
           onClick={onSubmit}
           disabled={!!block || submitting}
-          className="h-12 w-full rounded-control bg-primary-600 text-base font-semibold text-white hover:bg-primary-500"
+          className="w-full"
+          size="lg"
         >
           {submitting ? t('submitting') : t('order')}
         </Button>
@@ -863,7 +864,7 @@ function RepeatFork({
             </div>
           )}
         </dl>
-        <span className="mt-1 inline-flex items-center justify-center rounded-control bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-500">
+        <span className="mt-1 inline-flex items-center justify-center rounded-full bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-700">
           {t('repeat.repeatCta')}
         </span>
       </button>
@@ -894,12 +895,10 @@ function StepCard({
 }) {
   return (
     <section className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft sm:p-6">
-      <div className="mb-4 flex items-center gap-3">
-        <span className="flex h-8 w-8 items-center justify-center rounded-control bg-primary-50 dark:bg-primary-500/15 text-primary-600 dark:text-primary-400">
-          <Icon className="h-4 w-4" aria-hidden />
-        </span>
-        <h2 className="text-base font-semibold text-navy dark:text-white">
-          <span className="mr-1.5 text-gray-400 dark:text-gray-500">{step}.</span>
+      <div className="mb-5 flex items-center gap-2.5">
+        <Icon className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
+        <h2 className="text-subheading text-navy dark:text-white">
+          <span className="mr-1.5 tabular-nums text-gray-400 dark:text-gray-500">{step}.</span>
           {title}
         </h2>
       </div>
@@ -1016,7 +1015,7 @@ function Summary({
 
       <div className="mt-4 flex items-baseline justify-between border-t border-gray-100 dark:border-white/10 pt-4">
         <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('total')}</span>
-        <span className="text-2xl font-bold text-navy dark:text-white">
+        <span className="text-2xl font-bold tabular-nums text-navy dark:text-white">
           {useBonus && bonusUsable > 0 && (
             <span className="mr-2 text-base font-normal text-gray-400 line-through dark:text-gray-500">
               {formatMoney(grossTotal, locale)}
@@ -1043,13 +1042,13 @@ function Summary({
         )}
       </div>
 
-      {block && <p className="mt-3 text-sm text-amber-700 dark:text-warning-500">{t(`disabled.${block}`)}</p>}
+      {block && <p className="mt-3 text-sm text-warning-600 dark:text-warning-500">{t(`disabled.${block}`)}</p>}
       {error && <p className="mt-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       <Button
         onClick={onSubmit}
         disabled={!!block || submitting}
-        className="mt-4 h-12 w-full rounded-control bg-primary-600 text-base font-semibold text-white hover:bg-primary-500"
+        className="mt-5 w-full" size="lg"
       >
         {submitting ? t('submitting') : t('order')}
       </Button>
@@ -1110,7 +1109,7 @@ function InlineLogin({
               {step === 'phone' ? t('login.subtitle') : t('login.subtitleCode', { phone })}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-control p-1.5 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10" aria-label={t('login.cancel')}>
+          <button type="button" onClick={onClose} className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10" aria-label={t('login.cancel')}>
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -1121,7 +1120,7 @@ function InlineLogin({
         {step === 'phone' ? (
           <form onSubmit={(e) => { e.preventDefault(); onSend(); }} className="space-y-3">
             <input className={inputCls} type="tel" inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+998 90 000 00 00" autoFocus />
-            <Button type="submit" disabled={busy} className="h-12 w-full rounded-control text-base font-semibold">
+            <Button type="submit" disabled={busy} size="lg" className="w-full">
               {busy ? t('login.sending') : t('login.send')}
             </Button>
           </form>
@@ -1137,7 +1136,7 @@ function InlineLogin({
               autoComplete="one-time-code"
               autoFocus
             />
-            <Button type="submit" disabled={busy} className="h-12 w-full rounded-control text-base font-semibold">
+            <Button type="submit" disabled={busy} size="lg" className="w-full">
               {busy ? t('login.verifying') : t('login.verifyAndOrder')}
             </Button>
             <button type="button" onClick={onBack} disabled={busy} className="w-full text-center text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600">

@@ -33,9 +33,9 @@ export function LocationsSection({ locations }: { locations: AccountLocation[] }
 
   return (
     <section className={cardCls}>
-      <div className="mb-4 flex items-center gap-2.5">
-        <MapPin className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
-        <h2 className="text-base font-semibold text-navy dark:text-white">{t('locations.title')}</h2>
+      <div className="mb-6 flex items-center gap-2.5">
+        <MapPin className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
+        <h2 className="text-heading text-navy dark:text-white">{t('locations.title')}</h2>
       </div>
       {locations.length === 0 ? (
         <p className="text-sm text-gray-500 dark:text-gray-400">{t('locations.empty')}</p>
@@ -51,14 +51,13 @@ export function LocationsSection({ locations }: { locations: AccountLocation[] }
                   onChange={(e) => setEditName(e.target.value)}
                   autoFocus
                 />
-                <Button type="button" size="sm" className="rounded-control" onClick={() => rename(l.id)} disabled={!editName.trim()}>
+                <Button type="button" size="sm" onClick={() => rename(l.id)} disabled={!editName.trim()}>
                   {t('locations.save')}
                 </Button>
                 <Button
                   type="button"
                   size="sm"
                   variant="ghost"
-                  className="rounded-control text-gray-600 dark:text-gray-300"
                   onClick={() => setEditingId(null)}
                 >
                   {t('locations.cancel')}
@@ -77,7 +76,7 @@ export function LocationsSection({ locations }: { locations: AccountLocation[] }
                       setEditingId(l.id);
                       setEditName(l.name);
                     }}
-                    className="rounded-control p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary-600"
+                    className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                     aria-label={t('locations.edit')}
                   >
                     <Pencil className="h-4 w-4" />
@@ -85,7 +84,7 @@ export function LocationsSection({ locations }: { locations: AccountLocation[] }
                   <button
                     type="button"
                     onClick={() => del(l.id)}
-                    className="rounded-control p-2 text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600"
+                    className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                     aria-label={t('locations.delete')}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -96,7 +95,7 @@ export function LocationsSection({ locations }: { locations: AccountLocation[] }
           )}
         </ul>
       )}
-      <p className="mt-3 text-xs text-gray-400 dark:text-gray-500">{t('locations.hint')}</p>
+      <p className="mt-4 text-xs text-gray-500 dark:text-gray-400">{t('locations.hint')}</p>
     </section>
   );
 }

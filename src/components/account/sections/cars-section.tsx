@@ -44,13 +44,13 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
 
   return (
     <section className={cardCls}>
-      <div className="mb-4 flex items-center gap-2.5">
-        <Car className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
-        <h2 className="text-base font-semibold text-navy dark:text-white">{t('cars.title')}</h2>
+      <div className="mb-6 flex items-center gap-2.5">
+        <Car className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
+        <h2 className="text-heading text-navy dark:text-white">{t('cars.title')}</h2>
       </div>
 
       {error && (
-        <p className="mb-3 rounded-control bg-amber-50 dark:bg-warning-500/10 px-3 py-2 text-sm text-amber-700 dark:text-warning-500">
+        <p className="mb-4 rounded-control bg-warning-500/10 px-4 py-3 text-sm text-warning-600 dark:text-warning-500">
           {error}
         </p>
       )}
@@ -87,7 +87,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-semibold text-navy dark:text-white">{c.plate}</span>
                   {defaultCarId === c.id && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 dark:bg-primary-500/15 px-2 py-0.5 text-[11px] font-medium text-primary-700 dark:text-primary-300">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 dark:bg-primary-500/15 px-2 py-0.5 text-xs font-medium text-primary-700 dark:text-primary-300">
                       <Star className="h-3 w-3 fill-current" aria-hidden /> {t('cars.defaultBadge')}
                     </span>
                   )}
@@ -102,7 +102,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                     type="button"
                     onClick={() => makeDefault(c.id)}
                     disabled={busyDefault === c.id}
-                    className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 disabled:opacity-50"
+                    className="mt-1.5 inline-flex min-h-11 items-center gap-1 rounded-full text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 disabled:opacity-50"
                   >
                     <Star className="h-3.5 w-3.5" /> {t('cars.makeDefault')}
                   </button>
@@ -117,7 +117,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                     setEditingId(c.id);
                     setAdding(false);
                   }}
-                  className="rounded-control p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-primary-600"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                   aria-label={t('cars.edit')}
                 >
                   <Pencil className="h-4 w-4" />
@@ -125,7 +125,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                 <button
                   type="button"
                   onClick={() => del(c.id)}
-                  className="rounded-control p-2 text-gray-500 dark:text-gray-400 hover:bg-red-50 hover:text-red-600"
+                  className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                   aria-label={t('cars.delete')}
                 >
                   <Trash2 className="h-4 w-4" />
@@ -154,7 +154,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
             setEditingId(null);
             setError('');
           }}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-control border border-dashed border-gray-300 dark:border-white/15 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 transition hover:border-primary-300 dark:hover:border-primary-500/40 hover:text-primary-600"
+          className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-dashed border-gray-300 dark:border-white/15 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 transition hover:border-primary-300 dark:hover:border-primary-500/40 hover:text-primary-600 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
         >
           <Plus className="h-4 w-4" /> {t('cars.add')}
         </button>
@@ -270,7 +270,7 @@ function CarForm({ car, onDone, onCancel }: { car?: AccountCar; onDone: () => vo
   return (
     <form
       onSubmit={submit}
-      className="space-y-2 rounded-control border border-primary-100 dark:border-primary-500/30 bg-primary-50/40 dark:bg-primary-500/10 p-3"
+      className="space-y-3 rounded-card border border-gray-200/60 dark:border-white/10 bg-gray-50 dark:bg-white/5 p-4"
     >
       <input
         className={inputCls}
@@ -321,16 +321,16 @@ function CarForm({ car, onDone, onCancel }: { car?: AccountCar; onDone: () => vo
         </div>
         <div className="flex flex-col gap-1">
           <div className="flex gap-2">
-            <Button type="button" size="sm" variant="secondary" className="rounded-control" onClick={() => fileRef.current?.click()}>
+            <Button type="button" size="sm" variant="secondary" onClick={() => fileRef.current?.click()}>
               {shownPhoto ? t('cars.photoChange') : t('cars.photoAdd')}
             </Button>
             {shownPhoto && (
-              <Button type="button" size="sm" variant="ghost" className="rounded-control text-gray-600 dark:text-gray-300" onClick={clearPhoto}>
+              <Button type="button" size="sm" variant="ghost" onClick={clearPhoto}>
                 <X className="h-4 w-4" /> {t('cars.photoRemove')}
               </Button>
             )}
           </div>
-          <span className="text-[11px] text-gray-400 dark:text-gray-500">{t('cars.photoHint')}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">{t('cars.photoHint')}</span>
         </div>
         <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={pickPhoto} />
       </div>
@@ -338,10 +338,10 @@ function CarForm({ car, onDone, onCancel }: { car?: AccountCar; onDone: () => vo
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       <div className="flex gap-2 pt-1">
-        <Button type="submit" size="sm" disabled={busy} className="rounded-control">
+        <Button type="submit" size="sm" disabled={busy}>
           {busy ? t('saving') : t('cars.save')}
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onCancel} className="rounded-control text-gray-600 dark:text-gray-300">
+        <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
           {t('cars.cancel')}
         </Button>
       </div>

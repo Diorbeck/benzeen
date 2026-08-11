@@ -67,42 +67,6 @@
   }
 }
 
-/* Animated flow lines - premium subtle */
-.flow-line-premium {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(37, 99, 235, 0.08) 35%,
-    rgba(37, 99, 235, 0.12) 50%,
-    rgba(37, 99, 235, 0.08) 65%,
-    transparent 100%
-  );
-  animation: flow 25s linear infinite;
-}
-.flow-line-amber {
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(245, 158, 11, 0.06) 40%,
-    rgba(245, 158, 11, 0.1) 50%,
-    rgba(245, 158, 11, 0.06) 60%,
-    transparent 100%
-  );
-  animation: flow 30s linear infinite;
-}
-.flow-line {
-  animation: flow 25s linear infinite;
-}
-
-@keyframes flow {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
 /* Subtle grid */
 .bg-grid {
   background-image: 

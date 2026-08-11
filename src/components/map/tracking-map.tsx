@@ -142,7 +142,7 @@ export function TrackingMap({
 
   return (
     <div className={className}>
-      <div className="relative h-[320px] w-full overflow-hidden rounded-2xl border border-gray-200 dark:border-white/10 md:h-[400px]">
+      <div className="relative h-[320px] w-full overflow-hidden rounded-card border border-gray-200/60 dark:border-white/10 md:h-[400px]">
         {/* h-full (not absolute inset-0): MapLibre forces position:relative on its
             container, which cancels `absolute` and collapses inset-0 to 0 height. */}
         <div ref={containerRef} className="h-full w-full" />

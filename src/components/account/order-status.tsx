@@ -105,7 +105,7 @@ export function OrderStatus({
         {t('back')}
       </Link>
 
-      <h1 className="text-2xl font-semibold tracking-tight text-navy dark:text-white">{t('title')}</h1>
+      <h1 className="text-3xl font-bold tracking-tight text-navy dark:text-white">{t('title')}</h1>
 
       {/* Live tracking during active delivery */}
       {!cancelled && isActive && destination && (
@@ -115,7 +115,7 @@ export function OrderStatus({
               <Navigation className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
               {t('courierComing')}
             </p>
-            <span className="text-sm font-semibold text-primary-600 dark:text-primary-400">
+            <span className="text-sm font-semibold tabular-nums text-primary-600 dark:text-primary-400">
               {showEta ? t('eta', { minutes: etaMinutes! }) : t('etaCalculating')}
             </span>
           </div>
@@ -140,12 +140,7 @@ export function OrderStatus({
                 : '',
             })}
           </p>
-          <Button
-            variant="secondary"
-            className="rounded-control"
-            onClick={cancelScheduled}
-            disabled={cancelling}
-          >
+          <Button variant="secondary" onClick={cancelScheduled} disabled={cancelling}>
             {cancelling ? t('cancelling') : t('cancelOrder')}
           </Button>
         </div>
@@ -158,7 +153,7 @@ export function OrderStatus({
               <li key={step} className="flex items-center gap-3">
                 <span
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                    done ? 'bg-emerald-500 text-white' : current ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500'
+                    done ? 'bg-success-500 text-white' : current ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500'
                   }`}
                 >
                   {done ? <Check className="h-4 w-4" /> : current ? <Loader2 className="h-4 w-4 animate-spin" /> : i + 1}
@@ -173,7 +168,7 @@ export function OrderStatus({
       )}
 
       {/* Order details */}
-      <dl className="mt-8 space-y-2 rounded-card border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-navy-950 p-5 text-sm">
+      <dl className="mt-8 space-y-2.5 rounded-card border border-gray-200/60 bg-white p-5 text-sm shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-6">
         <Row label={t('car')} value={order.plate ?? '—'} />
         <Row label={t('fuel')} value={FUEL_LABEL[order.fuelType] ?? order.fuelType} />
         <Row label={t('volume')} value={`${order.dispensedVolume ?? order.volume} ${t('liters')}`} />
@@ -191,7 +186,7 @@ function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-4">
       <dt className="text-gray-500 dark:text-gray-400">{label}</dt>
-      <dd className="text-right font-medium text-navy dark:text-white">{value}</dd>
+      <dd className="text-right font-medium tabular-nums text-navy dark:text-white">{value}</dd>
     </div>
   );
 }

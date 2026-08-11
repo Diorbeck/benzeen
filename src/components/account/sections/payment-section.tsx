@@ -36,19 +36,19 @@ export function PaymentSection({ locale, referral }: { locale: string; referral?
     <div className="space-y-6">
       {referral && (
         <section className={cardCls}>
-          <div className="mb-4 flex items-center gap-2.5">
-            <Gift className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
-            <h2 className="text-base font-semibold text-navy dark:text-white">{t('payment.bonusTitle')}</h2>
+          <div className="mb-6 flex items-center gap-2.5">
+            <Gift className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
+            <h2 className="text-heading text-navy dark:text-white">{t('payment.bonusTitle')}</h2>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-control bg-primary-50/60 dark:bg-primary-500/15 p-4">
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('payment.bonusBalance')}</p>
-              <p className="mt-1 text-xl font-bold text-navy dark:text-white">{formatLiters(referral.balance, locale)}</p>
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('payment.bonusBalance')}</p>
+              <p className="mt-1 text-2xl font-bold tabular-nums tracking-tight text-navy dark:text-white">{formatLiters(referral.balance, locale)}</p>
             </div>
             <div className="rounded-control bg-gray-50 dark:bg-white/5 p-4">
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('payment.referralFriends')}</p>
-              <p className="mt-1 text-xl font-bold text-navy dark:text-white">
+              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('payment.referralFriends')}</p>
+              <p className="mt-1 text-2xl font-bold tabular-nums tracking-tight text-navy dark:text-white">
                 {progress} / {referral.milestoneAt}
               </p>
             </div>
@@ -57,12 +57,12 @@ export function PaymentSection({ locale, referral }: { locale: string; referral?
           <div className="mt-5">
             <h3 className="text-sm font-semibold text-navy dark:text-white">{t('payment.referralTitle')}</h3>
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{t('payment.referralDesc')}</p>
-            <label className="mt-3 block text-xs font-medium text-gray-500 dark:text-gray-400">{t('payment.referralLink')}</label>
-            <div className="mt-1 flex items-center gap-2">
-              <code className="min-w-0 flex-1 truncate rounded-control border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-3 py-2.5 text-sm text-navy dark:text-white">
+            <label className="mt-4 block text-sm font-medium text-gray-500 dark:text-gray-400">{t('payment.referralLink')}</label>
+            <div className="mt-1.5 flex items-center gap-2">
+              <code className="flex h-12 min-w-0 flex-1 items-center truncate rounded-control border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-navy-800 px-4 text-sm text-navy dark:text-white">
                 {link || (referral ? `/${locale}?ref=${referral.code}` : '')}
               </code>
-              <Button type="button" className="rounded-control shrink-0" onClick={copy}>
+              <Button type="button" className="shrink-0" onClick={copy}>
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                 {copied ? t('payment.copied') : t('payment.copy')}
               </Button>
@@ -79,7 +79,7 @@ export function PaymentSection({ locale, referral }: { locale: string; referral?
                   <li key={row.id} className="flex items-center justify-between gap-3 py-2.5 text-sm">
                     <span className="min-w-0 truncate text-gray-600 dark:text-gray-300">{reasonLabel(row.reason)}</span>
                     <span
-                      className={`shrink-0 font-medium ${
+                      className={`shrink-0 font-medium tabular-nums ${
                         row.reason === 'SPENT' ? 'text-gray-500 dark:text-gray-400' : 'text-success-600 dark:text-success-500'
                       }`}
                     >
@@ -96,9 +96,9 @@ export function PaymentSection({ locale, referral }: { locale: string; referral?
 
       {/* Bank cards — stub, groundwork for future Payme tokens. */}
       <section className={cardCls}>
-        <div className="mb-3 flex items-center gap-2.5">
-          <CreditCard className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
-          <h2 className="text-base font-semibold text-navy dark:text-white">{t('payment.cardsTitle')}</h2>
+        <div className="mb-4 flex items-center gap-2.5">
+          <CreditCard className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
+          <h2 className="text-heading text-navy dark:text-white">{t('payment.cardsTitle')}</h2>
         </div>
         <p className="rounded-control border border-dashed border-gray-300 dark:border-white/15 px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
           {t('payment.cardsStub')}
