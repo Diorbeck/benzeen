@@ -3,6 +3,7 @@ import {
   PROPANE_SLOT_MINUTES,
   bookSlotTx,
   bookableSlots,
+  canOperateBooking,
   firstBookableSlot,
   isSlotAligned,
   makeBookingCode,
@@ -54,6 +55,33 @@ describe('booking code', () => {
   it('is human-safe: P- prefix, 6 chars, no ambiguous glyphs', () => {
     const code = makeBookingCode();
     expect(code).toMatch(/^P-[ABCDEFGHJKMNPQRSTUVWXYZ23456789]{6}$/);
+  });
+});
+
+describe('canOperateBooking (review fix: operator bound to their point)', () => {
+  it('operator of a FOREIGN point is denied — route answers 404', () => {
+    expect(
+      canOperateBooking({ role: 'PROPANE_OPERATOR', userId: 'op-1', pointOperatorId: 'op-2' }),
+    ).toBe(false);
+  });
+
+  it('operator of their own point is allowed', () => {
+    expect(
+      canOperateBooking({ role: 'PROPANE_OPERATOR', userId: 'op-1', pointOperatorId: 'op-1' }),
+    ).toBe(true);
+  });
+
+  it('unassigned point (operatorId null) is admin-only', () => {
+    expect(
+      canOperateBooking({ role: 'PROPANE_OPERATOR', userId: 'op-1', pointOperatorId: null }),
+    ).toBe(false);
+    expect(canOperateBooking({ role: 'SUPER_ADMIN', userId: 'a1', pointOperatorId: null })).toBe(true);
+  });
+
+  it('SUPER_ADMIN serves any point; other roles never do', () => {
+    expect(canOperateBooking({ role: 'SUPER_ADMIN', userId: 'a1', pointOperatorId: 'op-2' })).toBe(true);
+    expect(canOperateBooking({ role: 'CLIENT', userId: 'op-1', pointOperatorId: 'op-1' })).toBe(false);
+    expect(canOperateBooking({ role: undefined, userId: 'op-1', pointOperatorId: 'op-1' })).toBe(false);
   });
 });
 

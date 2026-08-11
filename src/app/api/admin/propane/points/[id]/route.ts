@@ -10,6 +10,7 @@ const patchSchema = z.object({
   priceUzs: z.number().int().positive().max(1_000_000).optional(),
   postsCount: z.number().int().min(1).max(20).optional(),
   status: z.enum(['ACTIVE', 'PAUSED']).optional(),
+  operatorId: z.string().cuid().nullable().optional(),
 });
 
 // Edit / move / pause a point.

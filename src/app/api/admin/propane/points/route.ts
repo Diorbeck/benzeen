@@ -15,7 +15,10 @@ export async function GET() {
 
   const dayStart = new Date();
   dayStart.setHours(0, 0, 0, 0);
+  // Operators only see the points bound to them; admins see everything.
+  const scope = user.role === 'PROPANE_OPERATOR' ? { operatorId: user.id } : {};
   const points = await prisma.propanePoint.findMany({
+    where: scope,
     orderBy: { createdAt: 'asc' },
     include: {
       bookings: {
@@ -40,6 +43,7 @@ const createSchema = z.object({
   lng: z.number().min(-180).max(180),
   priceUzs: z.number().int().positive().max(1_000_000),
   postsCount: z.number().int().min(1).max(20),
+  operatorId: z.string().cuid().nullable().optional(),
 });
 
 export async function POST(req: Request) {

@@ -57,6 +57,24 @@ export function makeBookingCode(rand: () => number = Math.random): string {
   return `P-${s}`;
 }
 
+// --- operator access (review fix: no cross-point serving) -------------------
+
+/**
+ * May this user act on a booking of a point? SUPER_ADMIN — always; an operator
+ * only when the point is bound to them (NULL binding ⇒ admin-only). Routes
+ * answer 404 on failure so foreign bookings are indistinguishable from
+ * nonexistent ones.
+ */
+export function canOperateBooking(args: {
+  role: string | undefined;
+  userId: string;
+  pointOperatorId: string | null;
+}): boolean {
+  if (args.role === 'SUPER_ADMIN') return true;
+  if (args.role !== 'PROPANE_OPERATOR') return false;
+  return args.pointOperatorId !== null && args.pointOperatorId === args.userId;
+}
+
 // --- capacity-checked booking (the 409 race rule) ---------------------------
 
 export class SlotFullError extends Error {

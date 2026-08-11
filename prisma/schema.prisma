@@ -124,6 +124,9 @@ model User {
   // M4 Propane: this client's slot bookings.
   propaneBookings PropaneBooking[] @relation("ClientPropaneBookings")
 
+  // M4 Propane: points this operator is assigned to.
+  operatedPropanePoints PropanePoint[] @relation("PropanePointOperator")
+
   // Referrals (M5): a short unique code, and who referred this user.
   referralCode  String?   @unique
   referredById  String?
@@ -528,10 +531,16 @@ model PropanePoint {
   status     PropanePointStatus @default(ACTIVE)
   priceUzs   Int // per liter of LPG
   postsCount Int                @default(1) // filling posts = bookings per slot
+  // The operator bound to this point. Operators only see and serve their own
+  // point's queue; NULL = not assigned yet (only SUPER_ADMIN can serve).
+  operatorId String?
   createdAt  DateTime           @default(now())
   updatedAt  DateTime           @updatedAt
 
+  operator User?            @relation("PropanePointOperator", fields: [operatorId], references: [id])
   bookings PropaneBooking[]
+
+  @@index([operatorId])
 }
 
 model PropaneBooking {
