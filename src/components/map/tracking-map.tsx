@@ -68,15 +68,14 @@ export function TrackingMap({
         }
       });
 
-      // Destination (client) — blue pin.
-      destMarkerRef.current = new maplibregl.Marker({ color: '#2563eb' })
+      // Destination (client) — cobalt pin.
+      destMarkerRef.current = new maplibregl.Marker({ color: '#2E5BFF' })
         .setLngLat([destination.lng, destination.lat])
         .addTo(map);
 
-      // Courier — amber dot element.
+      // Courier — cobalt dot with a live pulse ring (see .courier-marker in globals).
       const el = document.createElement('div');
-      el.style.cssText =
-        'width:18px;height:18px;border-radius:9999px;background:#f59e0b;border:3px solid #fff;box-shadow:0 0 0 2px rgba(245,158,11,.4);';
+      el.className = 'courier-marker';
       courierMarkerRef.current = new maplibregl.Marker({ element: el });
 
       map.on('load', () => {

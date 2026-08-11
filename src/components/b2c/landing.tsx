@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -20,6 +21,7 @@ import { B2CHeader } from './header';
 import { track } from '@/lib/analytics';
 import { siteConfig } from '@/lib/site-config';
 import { captureRefFromUrl } from '@/lib/referral-client';
+import { spring, stagger } from '@/lib/motion';
 
 export function B2CLanding() {
   const t = useTranslations('b2c');
@@ -61,14 +63,28 @@ export function B2CLanding() {
 function Hero({ locale }: { locale: string }) {
   const t = useTranslations('b2c');
   return (
-    <section className="mx-auto max-w-[1200px] px-4 pb-16 pt-14 text-center sm:px-6 lg:px-8 lg:pb-24 lg:pt-24">
-      <h1 className="mx-auto max-w-3xl text-balance text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-navy dark:text-white sm:text-5xl lg:text-display">
+    <motion.section
+      initial="hidden"
+      animate="show"
+      variants={{ show: { transition: { staggerChildren: stagger } } }}
+      className="mx-auto max-w-[1200px] px-4 pb-16 pt-14 text-center sm:px-6 lg:px-8 lg:pb-24 lg:pt-24"
+    >
+      <motion.h1
+        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: spring.default } }}
+        className="mx-auto max-w-3xl text-balance text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-navy dark:text-white sm:text-5xl lg:text-display"
+      >
         {t('hero.title')}
-      </h1>
-      <p className="mx-auto mt-6 max-w-xl text-balance text-lg leading-relaxed text-gray-600 dark:text-gray-300 lg:text-xl">
+      </motion.h1>
+      <motion.p
+        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: spring.default } }}
+        className="mx-auto mt-6 max-w-xl text-balance text-lg leading-relaxed text-gray-600 dark:text-gray-300 lg:text-xl"
+      >
         {t('hero.subtitle')}
-      </p>
-      <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+      </motion.p>
+      <motion.div
+        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: spring.default } }}
+        className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
+      >
         <Button size="lg" className="w-full sm:w-auto" asChild>
           <Link href={`/${locale}/benzin`} onClick={() => track('gasoline_order_clicked', { where: 'hero' })}>
             {t('hero.ctaBenzin')}
@@ -79,16 +95,21 @@ function Hero({ locale }: { locale: string }) {
             {t('hero.ctaPropan')}
           </Link>
         </Button>
-      </div>
-      <a
+      </motion.div>
+      <motion.a
+        variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.3 } } }}
         href="#how"
         className="mt-8 inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-primary-600 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:text-primary-400 dark:hover:text-primary-300"
       >
         {t('hero.how')}
         <ArrowRight className="h-4 w-4" aria-hidden />
-      </a>
-      <HeroVisual />
-    </section>
+      </motion.a>
+      <motion.div
+        variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: spring.default } }}
+      >
+        <HeroVisual />
+      </motion.div>
+    </motion.section>
   );
 }
 
@@ -158,13 +179,28 @@ function HeroVisual() {
   );
 }
 
+/** Fade+rise when the block enters the viewport (once). */
+function Reveal({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      transition={{ ...spring.default, delay }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 function Services({ locale }: { locale: string }) {
   const t = useTranslations('b2c');
   return (
     <section className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
       <div className="grid gap-4 sm:grid-cols-2 lg:gap-6">
         {/* Benzin — primary */}
-        <div className="flex flex-col justify-between gap-8 rounded-card border border-gray-200/60 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-8">
+        <Reveal className="flex flex-col justify-between gap-8 rounded-card border border-gray-200/60 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-8">
           <div>
             <Fuel className="h-7 w-7 text-navy dark:text-white" aria-hidden />
             <h3 className="mt-5 text-2xl font-semibold tracking-tight text-navy dark:text-white">
@@ -179,9 +215,9 @@ function Services({ locale }: { locale: string }) {
               {t('services.benzin.cta')}
             </Link>
           </Button>
-        </div>
+        </Reveal>
         {/* Propan — secondary */}
-        <div className="flex flex-col justify-between gap-8 rounded-card border border-gray-200/60 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-8">
+        <Reveal delay={0.06} className="flex flex-col justify-between gap-8 rounded-card border border-gray-200/60 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-8">
           <div>
             <Flame className="h-7 w-7 text-navy dark:text-white" aria-hidden />
             <h3 className="mt-5 text-2xl font-semibold tracking-tight text-navy dark:text-white">
@@ -196,7 +232,7 @@ function Services({ locale }: { locale: string }) {
               {t('services.propan.cta')}
             </Link>
           </Button>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -212,14 +248,23 @@ function HowItWorks() {
   return (
     <section id="how" className="scroll-mt-20 bg-white py-16 dark:bg-navy-900 lg:py-24">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-title">
-          {t('how.title')}
-        </h2>
+        <Reveal>
+          <h2 className="text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-title">
+            {t('how.title')}
+          </h2>
+        </Reveal>
         <ol className="mt-10 grid gap-4 sm:grid-cols-3 lg:gap-6">
           {steps.map((s, i) => {
             const Icon = s.icon;
             return (
-              <li key={s.key} className="rounded-card bg-gray-50 p-6 dark:bg-navy-950 sm:p-8">
+              <motion.li
+                key={s.key}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-60px' }}
+                transition={{ ...spring.default, delay: i * stagger }}
+                className="rounded-card bg-gray-50 p-6 dark:bg-navy-950 sm:p-8"
+              >
                 <div className="flex items-center justify-between">
                   <Icon className="h-6 w-6 text-gray-500 dark:text-gray-400" aria-hidden />
                   <span className="text-sm font-medium tabular-nums text-gray-400 dark:text-gray-500">
@@ -230,7 +275,7 @@ function HowItWorks() {
                 <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
                   {t(`how.${s.key}.desc`)}
                 </p>
-              </li>
+              </motion.li>
             );
           })}
         </ol>
@@ -245,9 +290,11 @@ function Faq() {
   return (
     <section className="bg-white pb-16 dark:bg-navy-900 lg:pb-24">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-title">
-          {t('faq.title')}
-        </h2>
+        <Reveal>
+          <h2 className="text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-title">
+            {t('faq.title')}
+          </h2>
+        </Reveal>
         <div className="mt-10 divide-y divide-gray-100 rounded-card border border-gray-200/60 dark:divide-white/10 dark:border-white/10">
           {qs.map((q) => (
             <details key={q} className="group px-5 py-5 sm:px-6">
