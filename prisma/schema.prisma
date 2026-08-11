@@ -67,8 +67,11 @@ enum SupportTicketType {
 }
 
 enum SupportTicketStatus {
-  NEW
-  RESOLVED
+  NEW // legacy (миграция: NEW → OPEN)
+  RESOLVED // legacy (миграция: RESOLVED → CLOSED)
+  OPEN
+  ANSWERED
+  CLOSED
 }
 
 enum AuditAction {
@@ -84,6 +87,9 @@ enum AuditAction {
   BONUS_APPROVE
   BONUS_REJECT
   SUPPORT_RESOLVE
+  // Поддержка 2.0: ответ админа в тред и закрытие диалога.
+  SUPPORT_REPLY
+  SUPPORT_CLOSE
   // Курьер 2.0 admin: deactivation toggle + privacy-critical CSV export.
   COURIER_DEACTIVATE
   COURIER_ACTIVATE
@@ -225,14 +231,38 @@ model SupportTicket {
   id        String              @id @default(cuid())
   userId    String
   type      SupportTicketType
-  text      String
-  status    SupportTicketStatus @default(NEW)
+  text      String // legacy: первое сообщение треда (продублировано в SupportMessage)
+  status    SupportTicketStatus @default(OPEN)
+  // Поддержка 2.0: эскалация — клиент позвал оператора, ИИ замолкает.
+  needsHuman Boolean            @default(false)
   createdAt DateTime            @default(now())
+  updatedAt DateTime            @default(now()) @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages SupportMessage[]
 
   @@index([userId])
   @@index([createdAt])
+  @@index([status])
+}
+
+// Поддержка 2.0: тред переписки внутри обращения.
+enum SupportMessageAuthor {
+  CLIENT
+  ADMIN
+  AI
+}
+
+model SupportMessage {
+  id         String               @id @default(cuid())
+  ticketId   String
+  authorType SupportMessageAuthor
+  text       String
+  createdAt  DateTime             @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId, createdAt])
 }
 
 // B2C client vehicle (M2). Created on the client's first fuel order; reused

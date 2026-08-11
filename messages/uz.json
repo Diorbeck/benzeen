@@ -436,6 +436,31 @@
       "deleteNotEligible": "Buyurtmalar yoki bonus yozuvlari mavjud — faqat shaxssizlantirish mumkin",
       "deleteError": "O'chirib bo'lmadi. Qayta urinib ko'ring.",
       "cancel": "Bekor qilish"
+    },
+    "support2": {
+      "badgeAi": "AI javob berdi",
+      "badgeNeedsHuman": "Odam kerak",
+      "badgeUnanswered": "Javobsiz",
+      "openCount": "Ochiq: {n}",
+      "statusOPEN": "Ochiq",
+      "statusANSWERED": "Javob berildi",
+      "statusCLOSED": "Yopilgan",
+      "reply": "Javob berish",
+      "replyPlaceholder": "Mijozga javob…",
+      "send": "Yuborish",
+      "sending": "Yuborilmoqda…",
+      "close": "Suhbatni yopish",
+      "closeConfirm": "Murojaat yopilsinmi? Mijoz bu suhbatga boshqa yoza olmaydi.",
+      "closeYes": "Ha, yopish",
+      "cancel": "Bekor qilish",
+      "closedNotice": "Murojaat yopildi",
+      "aiName": "Benzeen yordamchisi",
+      "clientName": "Mijoz",
+      "adminName": "Operator",
+      "openThread": "Suhbatni ochish",
+      "backToList": "Ro'yxatga",
+      "loadError": "Yuklab bo'lmadi",
+      "actionError": "Xatolik. Qayta urinib ko'ring."
     }
   },
   "limits": {
@@ -939,6 +964,30 @@
       "invalidCode": "Kod noto'g'ri. Tekshirib, qayta urinib ko'ring.",
       "genericError": "Xatolik yuz berdi. Qayta urinib ko'ring.",
       "cancel": "Bekor qilish"
+    },
+    "support2": {
+      "title": "Mening murojaatlarim",
+      "newTicket": "Yangi murojaat",
+      "empty": "Hozircha murojaatlar yo'q",
+      "statusOPEN": "Javob kutilmoqda",
+      "statusANSWERED": "Javob berildi",
+      "statusCLOSED": "Yopilgan",
+      "needsHuman": "Operator kerak",
+      "aiName": "Benzeen yordamchisi",
+      "operatorName": "Operator",
+      "youName": "Siz",
+      "closedNotice": "Murojaat yopildi",
+      "closedReadOnly": "Suhbat yopilgan — quyida yangi murojaat oching",
+      "callOperator": "Operatorni chaqirish",
+      "operatorCalled": "Operator suhbatga qo'shiladi",
+      "composerPlaceholder": "Xabar yozing…",
+      "send": "Yuborish",
+      "sending": "Yuborilmoqda…",
+      "rateLimited": "Xabarlar juda ko'p — bir soatdan keyin urinib ko'ring",
+      "sendError": "Yuborilmadi. Qayta urinib ko'ring.",
+      "back": "Murojaatlar ro'yxatiga",
+      "loadError": "Yuklab bo'lmadi. Qayta urinib ko'ring.",
+      "retry": "Yangilash"
     }
   },
   "benzin": {
