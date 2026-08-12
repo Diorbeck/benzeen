@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { Flame, Search, RefreshCw, X, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { mapProvider } from '@/components/map/provider';
+import { mapProvider, localizeMapLabels } from '@/components/map/provider';
 import { formatMoney } from '@/lib/format';
 import { spring } from '@/lib/motion';
 import { track } from '@/lib/analytics';
@@ -260,6 +260,7 @@ function PointsMap({ points, onSelect }: { points: PropanePoint[]; onSelect: (p:
         attributionControl: { compact: true },
       });
       mapRef.current = map;
+      map.on('load', () => localizeMapLabels(map!, document.documentElement.lang || 'ru'));
       ro = new ResizeObserver(() => map?.resize());
       ro.observe(containerRef.current);
     })();

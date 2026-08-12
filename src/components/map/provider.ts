@@ -79,3 +79,30 @@ export const mapProvider: MapProvider = MAPTILER_KEY ? maptilerProvider : osmPro
 
 // Tashkent center — sensible default when the user hasn't shared a location yet.
 export const TASHKENT_CENTER = { lat: 41.3111, lng: 69.2797 };
+
+/**
+ * Бонус-пул: локализация подписей карты (TODO из #29). MapTiler-стили несут
+ * OSM-атрибуты name:ru / name:uz — переключаем text-field всех symbol-слоёв
+ * на язык интерфейса с фолбэком на name. На OSM-растре (нет векторных слоёв)
+ * тихо не делает ничего. Вызывать на событии map 'load'.
+ */
+export function localizeMapLabels(
+  map: { getStyle: () => { layers?: { id: string; type: string }[] } | undefined; getLayoutProperty: (id: string, prop: string) => unknown; setLayoutProperty: (id: string, prop: string, value: unknown) => void },
+  locale: string,
+): void {
+  const lang = locale === 'uz' ? 'uz' : locale === 'en' ? 'en' : 'ru';
+  try {
+    const layers = map.getStyle()?.layers ?? [];
+    for (const layer of layers) {
+      if (layer.type !== 'symbol') continue;
+      if (!map.getLayoutProperty(layer.id, 'text-field')) continue;
+      map.setLayoutProperty(layer.id, 'text-field', [
+        'coalesce',
+        ['get', `name:${lang}`],
+        ['get', 'name'],
+      ]);
+    }
+  } catch {
+    /* растровый фолбэк или чужой стиль — подписи остаются дефолтными */
+  }
+}
