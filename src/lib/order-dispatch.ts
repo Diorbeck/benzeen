@@ -146,6 +146,27 @@ export async function notifyCouriersNewOrder(orderId: string): Promise<void> {
   );
 }
 
+/**
+ * Клиентская отмена: если заказ уже рассылался курьерам (статус RECEIVED),
+ * сообщаем той же аудитории (on-duty + свежая геолокация), что заказ снят.
+ */
+export async function notifyCouriersOrderCancelled(orderId: string): Promise<void> {
+  const eligible = await eligibleCourierLocations();
+  if (eligible.length === 0) return;
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    select: { id: true, volume: true, fuelType: true, address: true },
+  });
+  if (!order) return;
+  const text =
+    `❌ <b>Заказ отменён клиентом</b>\n\n` +
+    `${order.fuelType.replace('_', '-')} · ${order.volume} л` +
+    (order.address ? `\n📍 ${order.address}` : '');
+  await Promise.all(
+    eligible.map((c) => sendTelegramMessage(c.chatId, text).catch(() => null)),
+  );
+}
+
 /** Sends the "new order" offer (with a Взять button) to specific courier chats. */
 async function notifyCouriers(orderId: string, chatIds: string[]): Promise<void> {
   if (chatIds.length === 0) return;

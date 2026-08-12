@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Check, Loader2, Navigation, CalendarClock } from 'lucide-react';
+import { ArrowLeft, Check, Loader2, Navigation, CalendarClock, Phone, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TrackingMap } from '@/components/map/tracking-map';
 import { etaProvider, MAX_ETA_MINUTES } from '@/lib/eta';
+import { CANCEL_REASONS, clientCancelVerdict, type CancelReason } from '@/lib/order-cancel';
+import { siteConfig } from '@/lib/site-config';
 import { spring } from '@/lib/motion';
 
 export type ClientOrder = {
@@ -44,19 +46,11 @@ export function OrderStatus({
   const t = useTranslations('orderStatus');
   const [order, setOrder] = useState<ClientOrder>(initial);
   const [courier, setCourier] = useState<Courier>(null);
-  const [cancelling, setCancelling] = useState(false);
+  const [cancelSheetOpen, setCancelSheetOpen] = useState(false);
   const fmt = useMemo(() => new Intl.NumberFormat('ru-RU'), []);
   const dtTag = locale === 'en' ? 'en-US' : locale === 'uz' ? 'uz-UZ' : 'ru-RU';
 
-  const cancelScheduled = async () => {
-    setCancelling(true);
-    try {
-      const res = await fetch(`/api/orders/client/${initial.id}/cancel`, { method: 'POST' });
-      if (res.ok) setOrder((o) => ({ ...o, status: 'CANCELLED' }));
-    } finally {
-      setCancelling(false);
-    }
-  };
+  const cancelVerdict = clientCancelVerdict(order.status);
 
   // Poll status (+ courier tracking while the delivery is active) every 10s,
   // until the order reaches a terminal state.
@@ -174,8 +168,8 @@ export function OrderStatus({
                 : '',
             })}
           </p>
-          <Button variant="secondary" onClick={cancelScheduled} disabled={cancelling}>
-            {cancelling ? t('cancelling') : t('cancelOrder')}
+          <Button variant="secondary" onClick={() => setCancelSheetOpen(true)}>
+            {t('cancel.cancelOrder')}
           </Button>
         </div>
       ) : (
@@ -216,7 +210,166 @@ export function OrderStatus({
         )}
         <Row label={t('payment')} value={t('payCourier')} />
       </dl>
+
+      {/* Отмена: RECEIVED — кнопка; курьер в пути — телефон поддержки */}
+      {cancelVerdict === 'ok' && order.status === 'RECEIVED' && (
+        <div className="mt-6">
+          <Button
+            variant="ghost"
+            className="text-red-600 hover:bg-red-500/10 hover:text-red-600 dark:text-red-400"
+            onClick={() => setCancelSheetOpen(true)}
+          >
+            {t('cancel.cancelOrder')}
+          </Button>
+        </div>
+      )}
+      {cancelVerdict === 'courier_on_way' && (
+        <div className="mt-6 flex flex-col gap-3 rounded-card bg-gray-100 p-5 dark:bg-white/5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-gray-600 dark:text-gray-300">{t('cancel.courierOnWay')}</p>
+          <Button variant="secondary" size="sm" className="shrink-0" asChild>
+            <a href={`tel:${siteConfig.supportPhone}`}>
+              <Phone className="h-4 w-4" aria-hidden /> {t('cancel.callSupport')}
+            </a>
+          </Button>
+        </div>
+      )}
+
+      <AnimatePresence>
+        {cancelSheetOpen && (
+          <CancelSheet
+            orderId={order.id}
+            onClose={() => setCancelSheetOpen(false)}
+            onCancelled={() => {
+              setCancelSheetOpen(false);
+              setOrder((prev) => ({ ...prev, status: 'CANCELLED' }));
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+/** Нижний шит отмены: причина (radio-пилюли) + комментарий для «другое». */
+function CancelSheet({
+  orderId,
+  onClose,
+  onCancelled,
+}: {
+  orderId: string;
+  onClose: () => void;
+  onCancelled: () => void;
+}) {
+  const t = useTranslations('orderStatus');
+  const [reason, setReason] = useState<CancelReason | null>(null);
+  const [comment, setComment] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+
+  const canSubmit = reason !== null && (reason !== 'OTHER' || comment.trim().length > 0);
+
+  const submit = async () => {
+    if (!reason) return;
+    setBusy(true);
+    setError(false);
+    try {
+      const res = await fetch(`/api/orders/client/${orderId}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason, comment: comment.trim() || undefined }),
+      });
+      if (res.ok) {
+        onCancelled();
+        return;
+      }
+      setError(true);
+    } catch {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-modal flex items-end justify-center bg-black/40 sm:items-center"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ y: '100%', opacity: 0.5 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '100%', opacity: 0.5 }}
+        transition={spring.sheet}
+        className="w-full max-w-md rounded-t-sheet bg-white/95 p-6 backdrop-blur-md dark:bg-navy-900/95 sm:rounded-card"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <h3 className="text-subheading text-navy dark:text-white">{t('cancel.title')}</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
+            aria-label={t('cancel.keepOrder')}
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="space-y-2">
+          {CANCEL_REASONS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setReason(r)}
+              className={`flex min-h-[44px] w-full items-center rounded-control border px-4 text-left text-sm font-medium transition active:scale-[0.99] motion-reduce:active:scale-100 ${
+                reason === r
+                  ? 'border-primary-600 bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300'
+                  : 'border-gray-200 bg-white text-gray-700 hover:border-primary-300 dark:border-white/10 dark:bg-navy-900 dark:text-gray-200 dark:hover:border-primary-500/40'
+              }`}
+            >
+              {t(`cancel.reason${r}`)}
+            </button>
+          ))}
+        </div>
+
+        {reason === 'OTHER' && (
+          <textarea
+            className="mt-3 min-h-[72px] w-full rounded-control border border-gray-300 bg-white p-3 text-sm text-navy placeholder-gray-400 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20 dark:border-white/15 dark:bg-navy-800 dark:text-white dark:placeholder-gray-500"
+            placeholder={t('cancel.commentPlaceholder')}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            maxLength={200}
+            autoFocus
+          />
+        )}
+
+        {error && (
+          <p className="mt-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">
+            {t('cancel.error')}
+          </p>
+        )}
+
+        <div className="mt-5 flex flex-col gap-2">
+          <Button
+            size="lg"
+            className="w-full bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-600/60"
+            disabled={!canSubmit || busy}
+            onClick={submit}
+          >
+            {busy ? t('cancel.cancelling') : t('cancel.confirm')}
+          </Button>
+          <Button variant="ghost" className="w-full" onClick={onClose}>
+            {t('cancel.keepOrder')}
+          </Button>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 

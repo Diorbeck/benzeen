@@ -25,6 +25,7 @@ export default async function ClientCardPage({
   if (role !== 'SUPER_ADMIN') redirect(`/${locale}/dashboard`);
 
   const t = await getTranslations('adminBonus');
+  const tCancel = await getTranslations('dashboard.orderCancel');
 
   const client = await prisma.user.findUnique({
     where: { id },
@@ -52,7 +53,7 @@ export default async function ClientCardPage({
       clientOrders: {
         orderBy: { createdAt: 'desc' },
         take: 20,
-        select: { id: true, fuelType: true, volume: true, status: true, totalAmount: true, createdAt: true },
+        select: { id: true, fuelType: true, volume: true, status: true, totalAmount: true, createdAt: true, cancelReason: true, cancelComment: true },
       },
       bonusLedger: {
         orderBy: { createdAt: 'desc' },
@@ -85,6 +86,7 @@ export default async function ClientCardPage({
   if (!client) notFound();
 
   const balance = bonusBalanceFrom(client.bonusLedger);
+  const cancelCount = client.clientOrders.filter((o) => o.status === 'CANCELLED').length;
 
   // Anti-fraud signals over this referrer's referred-friend FIRST orders. TAKE
   // timestamps are not persisted, so createdAt→deliveredAt is used as the
@@ -252,21 +254,34 @@ export default async function ClientCardPage({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Orders */}
         <div className="card-premium space-y-3 p-5">
-          <p className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-            <Package className="h-4 w-4" /> {t('orders')}
+          <p className="flex items-center justify-between gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+            <span className="flex items-center gap-2"><Package className="h-4 w-4" /> {t('orders')}</span>
+            {cancelCount > 0 && (
+              <span className="rounded-full bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:text-red-400">
+                {tCancel('cancelCount', { n: cancelCount })}
+              </span>
+            )}
           </p>
           {client.clientOrders.length === 0 ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">{t('noOrders')}</p>
           ) : (
             <ul className="space-y-1.5 text-sm">
               {client.clientOrders.map((o) => (
-                <li key={o.id} className="flex items-center justify-between gap-2">
-                  <span className="text-gray-700 dark:text-gray-200">
-                    {o.fuelType} · {o.volume} {t('liters')}
-                  </span>
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    {o.status} · {dtf.format(o.createdAt)}
-                  </span>
+                <li key={o.id} className="space-y-0.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-gray-700 dark:text-gray-200">
+                      {o.fuelType} · {o.volume} {t('liters')}
+                    </span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {o.status} · {dtf.format(o.createdAt)}
+                    </span>
+                  </div>
+                  {o.cancelReason && (
+                    <p className="text-xs text-red-600/80 dark:text-red-400/80">
+                      {tCancel('cancelReasonLabel')}: {tCancel(`reason${o.cancelReason}`)}
+                      {o.cancelComment ? ` — ${o.cancelComment}` : ''}
+                    </p>
+                  )}
                 </li>
               ))}
             </ul>

@@ -461,6 +461,15 @@
       "backToList": "Back to list",
       "loadError": "Couldn't load",
       "actionError": "Something went wrong. Try again."
+    },
+    "orderCancel": {
+      "cancelReasonLabel": "Cancel reason",
+      "cancelCount": "Cancellations: {n}",
+      "reasonCHANGED_MIND": "Changed mind",
+      "reasonORDERED_BY_MISTAKE": "By mistake",
+      "reasonPRICE": "Price",
+      "reasonWAIT_TOO_LONG": "Long wait",
+      "reasonOTHER": "Other"
     }
   },
   "limits": {
@@ -1108,7 +1117,24 @@
     "etaCalculating": "Estimating time…",
     "scheduledFor": "Scheduled for {when}",
     "cancelOrder": "Cancel order",
-    "cancelling": "Cancelling…"
+    "cancelling": "Cancelling…",
+    "cancel": {
+      "cancelOrder": "Cancel order",
+      "title": "Why are you cancelling?",
+      "reasonCHANGED_MIND": "Changed my mind",
+      "reasonORDERED_BY_MISTAKE": "Ordered by mistake",
+      "reasonPRICE": "Price didn't suit me",
+      "reasonWAIT_TOO_LONG": "Waiting too long",
+      "reasonOTHER": "Other reason",
+      "commentPlaceholder": "Tell us what happened",
+      "confirm": "Cancel order",
+      "cancelling": "Cancelling…",
+      "keepOrder": "Keep the order",
+      "courierOnWay": "The courier is already on the way — call support and we'll help",
+      "callSupport": "Call support",
+      "error": "Couldn't cancel. Try again.",
+      "cancelledDone": "Order cancelled"
+    }
   },
   "propan": {
     "title": "Propane nearby",

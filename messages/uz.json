@@ -461,6 +461,15 @@
       "backToList": "Ro'yxatga",
       "loadError": "Yuklab bo'lmadi",
       "actionError": "Xatolik. Qayta urinib ko'ring."
+    },
+    "orderCancel": {
+      "cancelReasonLabel": "Bekor qilish sababi",
+      "cancelCount": "Bekor qilishlar: {n}",
+      "reasonCHANGED_MIND": "Fikridan qaytdi",
+      "reasonORDERED_BY_MISTAKE": "Xato",
+      "reasonPRICE": "Narx",
+      "reasonWAIT_TOO_LONG": "Uzoq kutish",
+      "reasonOTHER": "Boshqa"
     }
   },
   "limits": {
@@ -1108,7 +1117,24 @@
     "etaCalculating": "Vaqt hisoblanmoqda…",
     "scheduledFor": "{when} ga rejalashtirilgan",
     "cancelOrder": "Buyurtmani bekor qilish",
-    "cancelling": "Bekor qilinmoqda…"
+    "cancelling": "Bekor qilinmoqda…",
+    "cancel": {
+      "cancelOrder": "Buyurtmani bekor qilish",
+      "title": "Nega bekor qilyapsiz?",
+      "reasonCHANGED_MIND": "Fikrimdan qaytdim",
+      "reasonORDERED_BY_MISTAKE": "Xato buyurtma qildim",
+      "reasonPRICE": "Narx to'g'ri kelmadi",
+      "reasonWAIT_TOO_LONG": "Kutish juda uzoq",
+      "reasonOTHER": "Boshqa sabab",
+      "commentPlaceholder": "Nima bo'lganini ayting",
+      "confirm": "Buyurtmani bekor qilish",
+      "cancelling": "Bekor qilinmoqda…",
+      "keepOrder": "Bekor qilmaslik",
+      "courierOnWay": "Kuryer allaqachon yo'lda — qo'llab-quvvatlashga qo'ng'iroq qiling, yordam beramiz",
+      "callSupport": "Qo'llab-quvvatlashga qo'ng'iroq",
+      "error": "Bekor qilib bo'lmadi. Qayta urinib ko'ring.",
+      "cancelledDone": "Buyurtma bekor qilindi"
+    }
   },
   "propan": {
     "title": "Yaqin-atrofda propan",
