@@ -218,6 +218,9 @@ model BonusLedger {
   order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
 
   @@index([userId])
+  // PR-C: баланс = агрегация POSTED-строк пользователя — считается на каждом
+  // открытии /benzin и кабинета.
+  @@index([userId, status])
   @@index([orderId])
   @@index([status])
   @@index([reason, status])
@@ -315,6 +318,9 @@ model CourierLocation {
   updatedAt DateTime @updatedAt
 
   courier User @relation(fields: [courierId], references: [id], onDelete: Cascade)
+  // PR-C: выборка курьеров со свежей геолокацией (updatedAt >= now-15м)
+  // на каждом диспатче.
+  @@index([updatedAt])
 }
 
 model Account {
@@ -464,6 +470,9 @@ model Order {
   @@index([carId])
   @@index([carId, status])
   @@index([clientId])
+  // PR-C: история клиента (кабинет, карточка клиента, lastOrder) — фильтр по
+  // clientId с сортировкой createdAt desc.
+  @@index([clientId, createdAt])
   @@index([status, assignedToId])
 }
 
