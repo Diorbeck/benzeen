@@ -81,6 +81,7 @@ export default async function BenzinPage({
         clientCarId: lastOrderRow.clientCarId,
         carPlate: lastOrderRow.clientCar?.plate ?? null,
         carModel: lastOrderRow.clientCar?.model ?? null,
+        pricePerLiter: lastOrderRow.pricePerLiter,
       }
     : null;
 
@@ -88,6 +89,16 @@ export default async function BenzinPage({
   // session + default car). Falls back to most-recently-used → most-recent car.
   const resolvedInitialCarId =
     initialCarId ?? (isLoggedIn ? (await getDefaultCarId(user!.id!)) ?? undefined : undefined);
+
+  // Этап 2: адрес по умолчанию — предвыбор на шаге адреса.
+  const defaultLocationId = isLoggedIn
+    ? (
+        await prisma.user.findUnique({
+          where: { id: user!.id! },
+          select: { defaultLocationId: true },
+        })
+      )?.defaultLocationId ?? null
+    : null;
 
   const t = await getTranslations('benzin');
 
@@ -108,6 +119,7 @@ export default async function BenzinPage({
           initialScheduleOpen={initialScheduleOpen}
           bonusBalance={bonusBalance}
           savedLocations={savedLocations}
+          defaultLocationId={defaultLocationId}
           lastOrder={lastOrder}
           hasPrefill={Boolean(initialFuel || initialVolume || initialCarId || initialScheduleOpen)}
         />

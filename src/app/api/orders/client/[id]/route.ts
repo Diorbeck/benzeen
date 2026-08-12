@@ -39,5 +39,6 @@ export async function GET(
     model: order.clientCar?.model ?? null,
     createdAt: order.createdAt,
     deliveredAt: order.deliveredAt,
+    rating: order.rating,
   });
 }

@@ -7,6 +7,7 @@ import { prisma } from './prisma';
 import { sendTelegramMessage, getMiniAppUrl, type InlineKeyboardMarkup } from './telegram';
 import { redispatchStale } from './order-dispatch';
 import { awardReferralOnDelivery } from './referral';
+import { sendPushToUser } from './push';
 
 export type CourierAction = 'TAKE' | 'ON_ROUTE' | 'DELIVERED';
 
@@ -100,6 +101,12 @@ export async function applyCourierAction(
       } catch (e) {
         console.error('[referral] award error:', e);
       }
+      // Этап 2: web-push «Доставлено» (no-op без VAPID/подписки).
+      await sendPushToUser(order.clientId, {
+        title: 'Заказ доставлен ⛽',
+        body: `${volume} л залито. Оцените доставку в кабинете.`,
+        url: `/ru/account/orders/${order.id}`,
+      }).catch(() => null);
       return { ok: true, status: 200, order: { id: order.id, status: 'DELIVERED' } };
     }
 
@@ -176,6 +183,15 @@ export async function applyCourierAction(
       tgText = `🛣️ Курьер выехал к вам. Машина <b>${plate}</b>.`;
     }
     if (tgText) void sendTelegramMessage(tgId, tgText);
+  }
+
+  // Этап 2: web-push «Курьер назначен» B2C-клиенту (no-op без VAPID/подписки).
+  if (newStatus === 'COURIER_ASSIGNED' && order.clientId) {
+    await sendPushToUser(order.clientId, {
+      title: 'Курьер назначен 🚚',
+      body: 'Курьер принял ваш заказ и скоро выедет.',
+      url: `/ru/account/orders/${order.id}`,
+    }).catch(() => null);
   }
 
   // A courier taking a job is system activity — sweep any other stale B2C orders

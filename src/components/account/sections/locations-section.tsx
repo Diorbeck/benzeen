@@ -3,16 +3,36 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { MapPin, Pencil, Trash2 } from 'lucide-react';
+import { MapPin, Pencil, Star, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { type AccountLocation, cardCls, inputCls } from '@/components/account/shared';
 
 // Локации: saved delivery addresses (max 3, enforced server-side).
-export function LocationsSection({ locations }: { locations: AccountLocation[] }) {
+export function LocationsSection({
+  locations,
+  defaultLocationId: initialDefaultId = null,
+}: {
+  locations: AccountLocation[];
+  defaultLocationId?: string | null;
+}) {
   const t = useTranslations('account');
   const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [defaultId, setDefaultId] = useState<string | null>(initialDefaultId);
+
+  // Toggle default address; the server answers with the new defaultLocationId.
+  const makeDefault = async (id: string) => {
+    try {
+      const res = await fetch(`/api/account/locations/${id}/default`, { method: 'POST' });
+      if (res.ok) {
+        const data = (await res.json()) as { defaultLocationId: string | null };
+        setDefaultId(data.defaultLocationId);
+      }
+    } catch {
+      /* ignore — non-critical */
+    }
+  };
 
   const rename = async (id: string) => {
     if (!editName.trim()) return;
@@ -68,8 +88,28 @@ export function LocationsSection({ locations }: { locations: AccountLocation[] }
                 key={l.id}
                 className="flex items-center justify-between gap-3 rounded-control border border-gray-200 dark:border-white/10 px-4 py-3"
               >
-                <span className="min-w-0 truncate text-sm font-medium text-navy dark:text-white">{l.name}</span>
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="min-w-0 truncate text-sm font-medium text-navy dark:text-white">{l.name}</span>
+                  {defaultId === l.id && (
+                    <span className="shrink-0 rounded-full bg-primary-50 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">
+                      {t('locationsDefault.defaultBadge')}
+                    </span>
+                  )}
+                </span>
                 <span className="flex shrink-0 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => makeDefault(l.id)}
+                    aria-pressed={defaultId === l.id}
+                    className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 ${
+                      defaultId === l.id
+                        ? 'text-warning-500 hover:bg-gray-100 dark:hover:bg-white/10'
+                        : 'text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white'
+                    }`}
+                    aria-label={t('locationsDefault.makeDefault')}
+                  >
+                    <Star className={`h-4 w-4 ${defaultId === l.id ? 'fill-current' : ''}`} />
+                  </button>
                   <button
                     type="button"
                     onClick={() => {

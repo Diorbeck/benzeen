@@ -1,6 +1,7 @@
 // Server-side helpers for the SUPER_ADMIN "Курьеры" section (Курьер 2.0 PR-2).
 // DB-aware wrappers around the pure computeBucket helper from courier-stats.ts.
 import { prisma } from '@/lib/prisma';
+import { averageRating } from '@/lib/order-rating';
 import { COURIER_LOCATION_MAX_AGE_MS } from '@/lib/constants';
 import { computeBucket, startOfTashkentDay, type StatBucket } from '@/lib/courier-stats';
 
@@ -118,6 +119,8 @@ export interface CourierExportAggregate {
   name: string | null;
   phone: string | null;
   bucket: StatBucket;
+  // Этап 2: средняя оценка доставок клиентами (1–5, шаг 0.1), null — нет оценок.
+  avgRating: number | null;
 }
 
 /**
@@ -142,19 +145,20 @@ export async function courierExportAggregates(
       deliveredAt: true,
       takenAt: true,
       dispensedVolume: true,
+      rating: true,
       assignedTo: { select: { name: true, phone: true } },
     },
   });
 
   const byCourier = new Map<
     string,
-    { name: string | null; phone: string | null; rows: { deliveredAt: Date | null; takenAt: Date | null; dispensedVolume: number | null }[] }
+    { name: string | null; phone: string | null; rows: { deliveredAt: Date | null; takenAt: Date | null; dispensedVolume: number | null }[]; ratings: (number | null)[] }
   >();
   for (const r of rows) {
     if (!r.assignedToId) continue;
     let entry = byCourier.get(r.assignedToId);
     if (!entry) {
-      entry = { name: r.assignedTo?.name ?? null, phone: r.assignedTo?.phone ?? null, rows: [] };
+      entry = { name: r.assignedTo?.name ?? null, phone: r.assignedTo?.phone ?? null, rows: [], ratings: [] };
       byCourier.set(r.assignedToId, entry);
     }
     entry.rows.push({
@@ -162,10 +166,16 @@ export async function courierExportAggregates(
       takenAt: r.takenAt,
       dispensedVolume: r.dispensedVolume,
     });
+    entry.ratings.push(r.rating);
   }
 
   return [...byCourier.values()]
-    .map((e) => ({ name: e.name, phone: e.phone, bucket: computeBucket(e.rows) }))
+    .map((e) => ({
+      name: e.name,
+      phone: e.phone,
+      bucket: computeBucket(e.rows),
+      avgRating: averageRating(e.ratings),
+    }))
     .sort((a, b) => b.bucket.count - a.bucket.count);
 }
 
@@ -183,7 +193,7 @@ export function csvCell(value: string | number): string {
  */
 export function buildCourierCsv(
   aggregates: CourierExportAggregate[],
-  headers: [string, string, string, string, string],
+  headers: [string, string, string, string, string, string],
   avgLabel: (ms: number | null) => string,
 ): string {
   const body = aggregates.map((a) => [
@@ -192,6 +202,7 @@ export function buildCourierCsv(
     a.bucket.count,
     a.bucket.liters,
     avgLabel(a.bucket.avgTakeToDeliverMs),
+    a.avgRating ?? '',
   ]);
   // Prepend a UTF-8 BOM so Excel reads Cyrillic correctly.
   return (

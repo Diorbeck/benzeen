@@ -41,7 +41,7 @@ export async function GET(req: Request) {
 
   const csv = buildCourierCsv(
     aggregates,
-    [t('colName'), t('colPhone'), t('colOrders'), t('colLiters'), t('colAvgTime')],
+    [t('colName'), t('colPhone'), t('colOrders'), t('colLiters'), t('colAvgTime'), t('colAvgRating')],
     formatAvgDuration,
   );
 

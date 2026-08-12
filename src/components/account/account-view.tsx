@@ -41,6 +41,7 @@ export function AccountView({
   referral,
   locations = [],
   defaultCarId = null,
+  defaultLocationId = null,
 }: {
   locale: string;
   phone: string;
@@ -51,6 +52,7 @@ export function AccountView({
   referral?: ReferralStats;
   locations?: AccountLocation[];
   defaultCarId?: string | null;
+  defaultLocationId?: string | null;
 }) {
   const t = useTranslations('account');
   const [tab, setTab] = useState<AccountTab>('profile');
@@ -104,7 +106,9 @@ export function AccountView({
             {tab === 'profile' && <ProfileSection locale={locale} phone={phone} name={name} lastName={lastName} />}
             {tab === 'cars' && <CarsSection cars={cars} defaultCarId={defaultCarId} />}
             {tab === 'payment' && <PaymentSection locale={locale} referral={referral} />}
-            {tab === 'locations' && <LocationsSection locations={locations} />}
+            {tab === 'locations' && (
+              <LocationsSection locations={locations} defaultLocationId={defaultLocationId} />
+            )}
             {tab === 'history' && <HistorySection locale={locale} orders={orders} />}
             {tab === 'support' && <SupportSection />}
           </div>

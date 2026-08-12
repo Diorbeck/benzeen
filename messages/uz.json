@@ -470,6 +470,10 @@
       "reasonPRICE": "Narx",
       "reasonWAIT_TOO_LONG": "Uzoq kutish",
       "reasonOTHER": "Boshqa"
+    },
+    "courierRating": {
+      "avgLabel": "O'rtacha baho",
+      "noRatings": "Baholar yo'q"
     }
   },
   "limits": {
@@ -997,6 +1001,21 @@
       "back": "Murojaatlar ro'yxatiga",
       "loadError": "Yuklab bo'lmadi. Qayta urinib ko'ring.",
       "retry": "Yangilash"
+    },
+    "push": {
+      "promptTitle": "Buyurtma holati bildirishnomalari",
+      "promptBody": "Kuryer tayinlanganda va yoqilg'i yetkazilganda xabar beramiz.",
+      "enable": "Bildirishnomalarni yoqish",
+      "later": "Hozir emas",
+      "profileLabel": "Buyurtma push-bildirishnomalari",
+      "profileHintOn": "Shu qurilmaga keladi",
+      "profileHintOff": "O'chirilgan",
+      "enabledToast": "Bildirishnomalar yoqildi",
+      "error": "Yoqib bo'lmadi. Brauzer ruxsatlarini tekshiring."
+    },
+    "locationsDefault": {
+      "makeDefault": "Asosiy manzil qilish",
+      "defaultBadge": "Asosiy"
     }
   },
   "benzin": {
@@ -1091,7 +1110,8 @@
       "repeatTitle": "Oxirgi buyurtmani takrorlash",
       "repeatCta": "Shu buyurtmani takrorlash",
       "newCta": "Yangi buyurtma"
-    }
+    },
+    "priceChanged": "Narx o'zgardi: {old} edi → endi {new} so'm/L"
   },
   "orderStatus": {
     "title": "Buyurtma",
@@ -1134,6 +1154,14 @@
       "callSupport": "Qo'llab-quvvatlashga qo'ng'iroq",
       "error": "Bekor qilib bo'lmadi. Qayta urinib ko'ring.",
       "cancelledDone": "Buyurtma bekor qilindi"
+    },
+    "rating": {
+      "title": "Yetkazib berishni baholang",
+      "commentPlaceholder": "Izoh (ixtiyoriy)",
+      "submit": "Bahoni yuborish",
+      "submitting": "Yuborilmoqda…",
+      "thanks": "Baho uchun rahmat!",
+      "error": "Yuborib bo'lmadi. Qayta urinib ko'ring."
     }
   },
   "propan": {
@@ -1321,7 +1349,8 @@
       "colPhone": "Kuryer telefoni",
       "colOrders": "Yetkazilgan buyurtmalar",
       "colLiters": "Jami litr",
-      "colAvgTime": "Oʻrtacha yetkazish vaqti"
+      "colAvgTime": "Oʻrtacha yetkazish vaqti",
+      "colAvgRating": "O'rtacha baho"
     }
   }
 }
