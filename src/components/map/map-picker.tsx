@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { LocateFixed } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { mapProvider, TASHKENT_CENTER } from './provider';
+import { mapProvider, TASHKENT_CENTER, localizeMapLabels } from './provider';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 export type LatLng = { lat: number; lng: number };
@@ -37,12 +37,33 @@ export function MapPicker({
   darkRef.current = resolvedTheme === 'dark';
 
   // Initialize the map once (dynamic import keeps maplibre out of the SSR bundle).
+  // Lighthouse (final-polish): init отложен до попадания контейнера во
+  // viewport — MapLibre не блокирует главный тред при загрузке /benzin
+  // (карта ниже первого экрана на мобиле; TBT −~1с).
   useEffect(() => {
     let cancelled = false;
     let map: MlMap | null = null;
     let ro: ResizeObserver | null = null;
 
     (async () => {
+      const el = containerRef.current;
+      if (!el) return;
+      if ('IntersectionObserver' in window) {
+        await new Promise<void>((resolve) => {
+          const io = new IntersectionObserver(
+            (entries) => {
+              if (entries.some((e) => e.isIntersecting)) {
+                io.disconnect();
+                resolve();
+              }
+            },
+            { rootMargin: '200px' },
+          );
+          io.observe(el);
+        });
+      }
+      if (cancelled) return;
+
       const maplibregl = (await import('maplibre-gl')).default;
       if (cancelled || !containerRef.current) return;
 
@@ -55,6 +76,7 @@ export function MapPicker({
         attributionControl: { compact: true },
       });
       mapRef.current = map;
+      map.on('load', () => localizeMapLabels(map!, document.documentElement.lang || 'ru'));
 
       // The picker mounts inside a stepped flow and can init while its container
       // is still 0-height; resize whenever it gains a real size so MapLibre

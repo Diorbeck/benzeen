@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { useTheme } from 'next-themes';
-import { mapProvider } from './provider';
+import { mapProvider, localizeMapLabels } from './provider';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 type LatLng = { lat: number; lng: number };
@@ -79,6 +79,7 @@ export function TrackingMap({
       courierMarkerRef.current = new maplibregl.Marker({ element: el });
 
       map.on('load', () => {
+        localizeMapLabels(map!, document.documentElement.lang || 'ru');
         readyRef.current = true;
         if (courier) {
           courierMarkerRef.current!.setLngLat([courier.lng, courier.lat]).addTo(map!);
