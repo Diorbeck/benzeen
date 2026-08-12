@@ -436,6 +436,31 @@
       "deleteNotEligible": "Orders or bonus records exist — only anonymization is available",
       "deleteError": "Deletion failed. Try again.",
       "cancel": "Cancel"
+    },
+    "support2": {
+      "badgeAi": "AI replied",
+      "badgeNeedsHuman": "Needs human",
+      "badgeUnanswered": "Unanswered",
+      "openCount": "Open: {n}",
+      "statusOPEN": "Open",
+      "statusANSWERED": "Answered",
+      "statusCLOSED": "Closed",
+      "reply": "Reply",
+      "replyPlaceholder": "Reply to the client…",
+      "send": "Send",
+      "sending": "Sending…",
+      "close": "Close thread",
+      "closeConfirm": "Close this request? The client won't be able to write in this thread anymore.",
+      "closeYes": "Yes, close",
+      "cancel": "Cancel",
+      "closedNotice": "Request closed",
+      "aiName": "Benzeen Assistant",
+      "clientName": "Client",
+      "adminName": "Operator",
+      "openThread": "Open thread",
+      "backToList": "Back to list",
+      "loadError": "Couldn't load",
+      "actionError": "Something went wrong. Try again."
     }
   },
   "limits": {
@@ -939,6 +964,30 @@
       "invalidCode": "Wrong code. Check it and try again.",
       "genericError": "Something went wrong. Try again.",
       "cancel": "Cancel"
+    },
+    "support2": {
+      "title": "My requests",
+      "newTicket": "New request",
+      "empty": "No requests yet",
+      "statusOPEN": "Awaiting reply",
+      "statusANSWERED": "Answered",
+      "statusCLOSED": "Closed",
+      "needsHuman": "Operator needed",
+      "aiName": "Benzeen Assistant",
+      "operatorName": "Operator",
+      "youName": "You",
+      "closedNotice": "Request closed",
+      "closedReadOnly": "This thread is closed — open a new request below",
+      "callOperator": "Call an operator",
+      "operatorCalled": "An operator will join the thread",
+      "composerPlaceholder": "Write a message…",
+      "send": "Send",
+      "sending": "Sending…",
+      "rateLimited": "Too many messages — try again in an hour",
+      "sendError": "Failed to send. Try again.",
+      "back": "Back to requests",
+      "loadError": "Couldn't load. Try again.",
+      "retry": "Retry"
     }
   },
   "benzin": {

@@ -40,6 +40,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.116.0",
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^6.1.0",
     "@radix-ui/react-dialog": "^1.1.4",

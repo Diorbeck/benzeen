@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentClient } from '@/lib/session';
 import { prisma } from '@/lib/prisma';
+import { runAiTurn } from '@/lib/support-thread';
 
 // Max tickets a single client may open per rolling hour.
 const RATE_LIMIT_PER_HOUR = 3;
@@ -28,9 +29,19 @@ export async function POST(req: Request) {
     }
 
     const ticket = await prisma.supportTicket.create({
-      data: { userId: client.id, type, text },
+      data: {
+        userId: client.id,
+        type,
+        text,
+        // Поддержка 2.0: текст тикета — первое сообщение треда.
+        messages: { create: { authorType: 'CLIENT', text } },
+      },
       select: { id: true, status: true, createdAt: true },
     });
+
+    // ИИ отвечает сразу (жалобы и выключенный провайдер гейтятся внутри).
+    await runAiTurn(ticket.id);
+
     return NextResponse.json({ ok: true, id: ticket.id });
   } catch (err) {
     if (err instanceof z.ZodError) return NextResponse.json({ error: 'invalid_input' }, { status: 400 });

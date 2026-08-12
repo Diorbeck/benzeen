@@ -18,29 +18,43 @@ export default async function SupportPage({
 
   const t = await getTranslations('adminBonus');
 
-  // NEW first, then most recent.
+  // Most recent first; the list itself surfaces open/needs-human badges.
   const tickets = await prisma.supportTicket.findMany({
-    orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
+    orderBy: { createdAt: 'desc' },
     take: 200,
     select: {
       id: true,
       type: true,
       text: true,
       status: true,
+      needsHuman: true,
       createdAt: true,
       user: { select: { name: true, phone: true } },
+      // Author sequence only — enough to derive reply/last-author flags.
+      messages: {
+        orderBy: { createdAt: 'asc' },
+        select: { authorType: true },
+      },
     },
   });
 
-  const rows: Ticket[] = tickets.map((tk) => ({
-    id: tk.id,
-    type: tk.type,
-    text: tk.text,
-    status: tk.status,
-    createdAt: tk.createdAt.toISOString(),
-    userName: tk.user?.name ?? '',
-    userPhone: tk.user?.phone ?? '',
-  }));
+  const rows: Ticket[] = tickets.map((tk) => {
+    const authors = tk.messages.map((m) => m.authorType);
+    return {
+      id: tk.id,
+      type: tk.type,
+      text: tk.text,
+      status: tk.status,
+      needsHuman: tk.needsHuman,
+      hasAiReply: authors.includes('AI'),
+      hasSupportReply: authors.includes('ADMIN'),
+      messagesCount: authors.length,
+      lastAuthorType: authors[authors.length - 1] ?? '',
+      createdAt: tk.createdAt.toISOString(),
+      userName: tk.user?.name ?? '',
+      userPhone: tk.user?.phone ?? '',
+    };
+  });
 
   return (
     <div className="space-y-6">
