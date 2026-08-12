@@ -12,12 +12,21 @@ test.describe('Главная', () => {
 
   test('переключение тёмной темы', async ({ page }) => {
     await page.goto('/ru');
+    await page.waitForLoadState('networkidle');
     const html = page.locator('html');
     const wasDark = (await html.getAttribute('class'))?.includes('dark') ?? false;
-    // Тумблер темы в шапке (aria-label/title «Тема» в ru-локали)
-    await page.getByRole('button', { name: 'Тема' }).first().click();
+    const toggle = page.getByRole('button', { name: 'Тема' }).first();
+    // Клик внутри poll: первый клик может прийтись до гидрации React и
+    // пройти в никуда — повторяем, пока класс не переключится.
     await expect
-      .poll(async () => ((await html.getAttribute('class')) ?? '').includes('dark'))
+      .poll(
+        async () => {
+          await toggle.click();
+          await page.waitForTimeout(300);
+          return ((await html.getAttribute('class')) ?? '').includes('dark');
+        },
+        { timeout: 10_000 },
+      )
       .toBe(!wasDark);
   });
 });
@@ -34,9 +43,10 @@ test.describe('/benzin — гость собирает заказ до подт�
     await page.getByRole('button', { name: 'АИ-95' }).click();
     await page.getByRole('button', { name: /^50/ }).click();
 
-    // Итог посчитан (15 800 × 50); .last() — десктопное саммари (мобильный
-    // дубль скрыт на lg и не проходит toBeVisible).
-    await expect(page.getByText(/790\s?000/).last()).toBeVisible();
+    // Итог посчитан (15 800 × 50). Сумма есть в трёх местах (мобильное
+    // саммари, десктопное, нижний бар) — два из них скрыты медиа-запросом,
+    // поэтому фильтруем по видимости.
+    await expect(page.getByText(/790\s?000/).filter({ visible: true }).first()).toBeVisible();
 
     // Подтверждение недоступно, пока нет адреса — кнопка «Заказать» задизейблена
     const submit = page.getByRole('button', { name: /заказать/i }).last();
