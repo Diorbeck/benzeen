@@ -40,3 +40,54 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  e2e-smoke:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: e2e
+          POSTGRES_PASSWORD: e2e
+          POSTGRES_DB: e2e
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U e2e"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://e2e:e2e@localhost:5432/e2e?schema=public
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: e2e-secret-not-for-prod
+      SUPER_ADMIN_EMAIL: admin@e2e.local
+      SUPER_ADMIN_PASSWORD: e2e-admin-password
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Prisma migrate + seed (тестовая БД)
+        run: |
+          pnpm db:generate
+          pnpm exec prisma migrate deploy
+          pnpm db:seed
+      - name: Build
+        run: pnpm build
+      - name: Install Playwright (chromium)
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Smoke e2e
+        run: pnpm exec playwright test
+      - name: Upload failure artifacts (скриншоты/трейсы)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
