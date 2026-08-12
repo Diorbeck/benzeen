@@ -8,6 +8,7 @@ import type { Adapter } from 'next-auth/adapters';
 import { ensureSuperAdminFromEnv } from '@/lib/bootstrap';
 import { verifyCode } from '@/lib/verification';
 import { resolveReferrer } from '@/lib/referral';
+import { logFailedStaffLogin } from '@/lib/auth-audit';
 import {
   CLIENT_SESSION_MAX_AGE,
   SESSION_UPDATE_AGE,
@@ -151,10 +152,16 @@ export const authOptions: NextAuthOptions = {
             user = await prisma.user.findUnique({ where: { email } });
           }
 
-          if (!user?.passwordHash) return null;
+          if (!user?.passwordHash) {
+            void logFailedStaffLogin(mode, credentials.identifier);
+            return null;
+          }
 
           const valid = await bcrypt.compare(credentials.password, user.passwordHash);
-          if (!valid) return null;
+          if (!valid) {
+            void logFailedStaffLogin(mode, credentials.identifier);
+            return null;
+          }
 
           return {
             id: user.id,
