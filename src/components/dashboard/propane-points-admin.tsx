@@ -6,7 +6,7 @@ import { ChevronDown, Flame, MapPin, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-type BookingStatus = 'BOOKED' | 'SERVED' | 'CANCELLED';
+type BookingStatus = 'BOOKED' | 'SERVED' | 'CANCELLED' | 'NO_SHOW';
 
 type Booking = {
   id: string;
@@ -167,8 +167,13 @@ export function PropanePointsAdmin({ isAdmin }: { isAdmin: boolean }) {
     }
   };
 
-  const serveBooking = async (pointId: string, bookingId: string) => {
-    // Optimistic: mark served immediately, roll back on failure.
+  // Optimistic operator mutation (serve / no-show): apply, roll back on failure.
+  const transitionBooking = async (
+    pointId: string,
+    bookingId: string,
+    to: 'SERVED' | 'NO_SHOW',
+    endpoint: 'serve' | 'no-show',
+  ) => {
     const setStatus = (status: BookingStatus) =>
       setPoints((prev) =>
         prev
@@ -182,8 +187,8 @@ export function PropanePointsAdmin({ isAdmin }: { isAdmin: boolean }) {
             )
           : prev,
       );
-    setStatus('SERVED');
-    const res = await fetch(`/api/propane/bookings/${bookingId}/serve`, { method: 'POST' });
+    setStatus(to);
+    const res = await fetch(`/api/propane/bookings/${bookingId}/${endpoint}`, { method: 'POST' });
     if (!res.ok) {
       setStatus('BOOKED');
       await load();
@@ -409,7 +414,17 @@ export function PropanePointsAdmin({ isAdmin }: { isAdmin: boolean }) {
                           {[b.client.name, b.client.phone].filter(Boolean).join(' · ') || '—'}
                         </span>
                         {b.status === 'BOOKED' ? (
-                          <Button onClick={() => serveBooking(p.id, b.id)}>{t('serve')}</Button>
+                          <div className="flex items-center gap-2">
+                            <Button onClick={() => transitionBooking(p.id, b.id, 'SERVED', 'serve')}>
+                              {t('serve')}
+                            </Button>
+                            <Button
+                              variant="secondary"
+                              onClick={() => transitionBooking(p.id, b.id, 'NO_SHOW', 'no-show')}
+                            >
+                              {t('noShow')}
+                            </Button>
+                          </div>
                         ) : (
                           <span
                             className={cn(
@@ -419,7 +434,7 @@ export function PropanePointsAdmin({ isAdmin }: { isAdmin: boolean }) {
                                 : 'bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-gray-400',
                             )}
                           >
-                            {b.status === 'SERVED' ? t('servedBadge') : t('cancelledBadge')}
+                            {b.status === 'SERVED' ? t('servedBadge') : b.status === 'NO_SHOW' ? t('noShowBadge') : t('cancelledBadge')}
                           </span>
                         )}
                       </li>

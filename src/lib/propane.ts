@@ -75,6 +75,29 @@ export function canOperateBooking(args: {
   return args.pointOperatorId !== null && args.pointOperatorId === args.userId;
 }
 
+export type OperatorActionResult = 'ok' | 'not_found' | 'not_transitionable';
+
+/**
+ * Shared rule for operator mutations (serve, no-show): access failure reads
+ * as 404 (foreign booking is indistinguishable from a missing one), a booking
+ * that already left BOOKED answers 409.
+ */
+export function resolveOperatorAction(args: {
+  role: string | undefined;
+  userId: string;
+  booking: { status: string; pointOperatorId: string | null } | null;
+}): OperatorActionResult {
+  if (!args.booking) return 'not_found';
+  const allowed = canOperateBooking({
+    role: args.role,
+    userId: args.userId,
+    pointOperatorId: args.booking.pointOperatorId,
+  });
+  if (!allowed) return 'not_found';
+  if (args.booking.status !== 'BOOKED') return 'not_transitionable';
+  return 'ok';
+}
+
 // --- capacity-checked booking (the 409 race rule) ---------------------------
 
 export class SlotFullError extends Error {

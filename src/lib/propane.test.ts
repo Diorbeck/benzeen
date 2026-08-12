@@ -4,6 +4,7 @@ import {
   bookSlotTx,
   bookableSlots,
   canOperateBooking,
+  resolveOperatorAction,
   firstBookableSlot,
   isSlotAligned,
   makeBookingCode,
@@ -82,6 +83,39 @@ describe('canOperateBooking (review fix: operator bound to their point)', () => 
     expect(canOperateBooking({ role: 'SUPER_ADMIN', userId: 'a1', pointOperatorId: 'op-2' })).toBe(true);
     expect(canOperateBooking({ role: 'CLIENT', userId: 'op-1', pointOperatorId: 'op-1' })).toBe(false);
     expect(canOperateBooking({ role: undefined, userId: 'op-1', pointOperatorId: 'op-1' })).toBe(false);
+  });
+});
+
+describe('resolveOperatorAction (serve / no-show transitions)', () => {
+  it('no-show: оператор чужой точки → 404 (not_found)', () => {
+    expect(
+      resolveOperatorAction({
+        role: 'PROPANE_OPERATOR',
+        userId: 'op-1',
+        booking: { status: 'BOOKED', pointOperatorId: 'op-2' },
+      }),
+    ).toBe('not_found');
+  });
+
+  it('missing booking → not_found; own point BOOKED → ok', () => {
+    expect(resolveOperatorAction({ role: 'PROPANE_OPERATOR', userId: 'op-1', booking: null })).toBe(
+      'not_found',
+    );
+    expect(
+      resolveOperatorAction({
+        role: 'PROPANE_OPERATOR',
+        userId: 'op-1',
+        booking: { status: 'BOOKED', pointOperatorId: 'op-1' },
+      }),
+    ).toBe('ok');
+  });
+
+  it('non-BOOKED states are not transitionable (409), даже для админа', () => {
+    for (const status of ['SERVED', 'CANCELLED', 'NO_SHOW']) {
+      expect(
+        resolveOperatorAction({ role: 'SUPER_ADMIN', userId: 'a1', booking: { status, pointOperatorId: null } }),
+      ).toBe('not_transitionable');
+    }
   });
 });
 
