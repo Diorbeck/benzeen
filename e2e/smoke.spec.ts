@@ -14,8 +14,8 @@ test.describe('Главная', () => {
     await page.goto('/ru');
     const html = page.locator('html');
     const wasDark = (await html.getAttribute('class'))?.includes('dark') ?? false;
-    // Тумблер темы в шапке (aria-label из common.theme)
-    await page.locator('header button[title]').first().click();
+    // Тумблер темы в шапке (aria-label/title «Тема» в ru-локали)
+    await page.getByRole('button', { name: 'Тема' }).first().click();
     await expect
       .poll(async () => ((await html.getAttribute('class')) ?? '').includes('dark'))
       .toBe(!wasDark);
@@ -34,8 +34,9 @@ test.describe('/benzin — гость собирает заказ до подт�
     await page.getByRole('button', { name: 'АИ-95' }).click();
     await page.getByRole('button', { name: /^50/ }).click();
 
-    // Итог в саммари посчитан (цена из тестовой БД: 15 800 × 50)
-    await expect(page.getByText(/790\s?000/).first()).toBeVisible();
+    // Итог посчитан (15 800 × 50); .last() — десктопное саммари (мобильный
+    // дубль скрыт на lg и не проходит toBeVisible).
+    await expect(page.getByText(/790\s?000/).last()).toBeVisible();
 
     // Подтверждение недоступно, пока нет адреса — кнопка «Заказать» задизейблена
     const submit = page.getByRole('button', { name: /заказать/i }).last();
