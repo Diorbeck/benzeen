@@ -170,6 +170,9 @@ model User {
   // B2C: the client's default vehicle, used to prefill the order flow. Nullable
   // FK to one of their own ClientCars; SET NULL if that car is deleted.
   defaultCarId  String?
+  // Этап 2: сохранённый адрес по умолчанию — предвыбор на шаге адреса.
+  defaultLocationId String?
+  defaultLocation   SavedLocation? @relation("UserDefaultLocation", fields: [defaultLocationId], references: [id], onDelete: SetNull)
 
   company       Company?  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   driverCars    DriverCar[]
@@ -230,6 +233,8 @@ model SavedLocation {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Пользователи, выбравшие этот адрес по умолчанию (на практике — владелец).
+  defaultOf User[] @relation("UserDefaultLocation")
 
   @@index([userId])
 }
@@ -435,6 +440,9 @@ model Order {
   // Клиентская отмена (финальный марафон, этап 1): причина + комментарий (OTHER).
   cancelReason  OrderCancelReason?
   cancelComment String?
+  // Оценка доставки после DELIVERED (этап 2): 1–5 звёзд, один раз.
+  rating        Int?
+  ratingComment String?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   // Set when a courier TAKEs the order; paired with deliveredAt to measure the

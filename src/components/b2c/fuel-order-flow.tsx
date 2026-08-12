@@ -43,6 +43,8 @@ export type LastOrderT = {
   clientCarId: string | null;
   carPlate: string | null;
   carModel: string | null;
+  // Цена литра на момент прошлого заказа — для плашки «цена изменилась».
+  pricePerLiter: number | null;
 };
 
 /** Compare two plates ignoring case/spacing so "01A123BC" == "01 A 123 BC". */
@@ -65,6 +67,7 @@ export function FuelOrderFlow({
   initialScheduleOpen = false,
   bonusBalance = 0,
   savedLocations = [],
+  defaultLocationId = null,
   lastOrder = null,
   hasPrefill = false,
 }: {
@@ -81,6 +84,8 @@ export function FuelOrderFlow({
   initialScheduleOpen?: boolean;
   bonusBalance?: number;
   savedLocations?: SavedLocationT[];
+  // Этап 2: адрес по умолчанию — предвыбирается на шаге адреса в чистом флоу.
+  defaultLocationId?: string | null;
   // Most recent order (logged-in clients only) — the "Repeat last order" fork.
   lastOrder?: LastOrderT | null;
   // True when the URL already pins a specific order (fuel/volume/carId/schedule),
@@ -99,6 +104,18 @@ export function FuelOrderFlow({
   // has a past order AND the URL didn't already pin a specific order.
   const canFork = Boolean(lastOrder) && !hasPrefill;
   const [showFork, setShowFork] = useState(canFork);
+
+  // «Цена изменилась»: литр в прошлом заказе vs актуальная цена того же топлива.
+  const priceChanged =
+    lastOrder != null &&
+    lastOrder.pricePerLiter != null &&
+    prices[lastOrder.fuelType] != null &&
+    prices[lastOrder.fuelType] !== lastOrder.pricePerLiter
+      ? { old: lastOrder.pricePerLiter, new: prices[lastOrder.fuelType] }
+      : null;
+  // Префилл «Повторить» из кабинета: то же предупреждение над шагами.
+  const prefillPriceChanged =
+    hasPrefill && initialFuel && lastOrder?.fuelType === initialFuel ? priceChanged : null;
 
   // --- order state ---
   const [carId, setCarId] = useState<string | null>(initialCarValid ?? cars[0]?.id ?? null);
@@ -148,6 +165,14 @@ export function FuelOrderFlow({
         if (d.car.tankCapacity) setTankCapacity(String(d.car.tankCapacity));
       }
       setDraftRestored(true);
+    } else if (defaultLocationId) {
+      // Чистый флоу без драфта: предвыбираем адрес по умолчанию.
+      const loc = savedLocations.find((l) => l.id === defaultLocationId);
+      if (loc) {
+        setPoint({ lat: loc.lat, lng: loc.lng });
+        setAddress(loc.name);
+        track('address_selected', { source: 'saved' });
+      }
     }
     hydrated.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -415,6 +440,8 @@ export function FuelOrderFlow({
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={spring.default}>
         <RepeatFork
           t={t}
+          locale={locale}
+          priceChanged={priceChanged}
           fuelLabel={FUEL_LABEL[lastOrder.fuelType]}
           liters={repeatLiters}
           carLabel={
@@ -441,6 +468,14 @@ export function FuelOrderFlow({
     >
       {/* Steps */}
       <div className="space-y-5 pb-40 lg:pb-8">
+        {prefillPriceChanged && (
+          <p className="rounded-control bg-warning-500/10 px-4 py-3 text-xs font-medium text-warning-600 dark:text-warning-500">
+            {t('priceChanged', {
+              old: formatMoney(prefillPriceChanged.old, locale),
+              new: formatMoney(prefillPriceChanged.new, locale),
+            })}
+          </p>
+        )}
         {draftRestored && (
           <div className="flex items-center justify-between gap-3 rounded-control border border-primary-100 dark:border-primary-500/30 bg-primary-50/60 dark:bg-primary-500/15 px-4 py-3 text-sm text-primary-800 dark:text-primary-300">
             <span>{t('draftRestored')}</span>
@@ -647,7 +682,12 @@ export function FuelOrderFlow({
                   }}
                   className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-2 text-sm text-navy dark:text-white hover:border-primary-200 dark:hover:border-primary-500/40"
                 >
-                  <Star className="h-3.5 w-3.5 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
+                  <Star
+                    className={`h-3.5 w-3.5 shrink-0 text-primary-600 dark:text-primary-400 ${
+                      l.id === defaultLocationId ? 'fill-current' : ''
+                    }`}
+                    aria-hidden
+                  />
                   <span className="min-w-0 truncate">{l.name}</span>
                 </button>
               ))}
@@ -827,6 +867,8 @@ export function FuelOrderFlow({
 
 function RepeatFork({
   t,
+  locale,
+  priceChanged,
   fuelLabel,
   liters,
   carLabel,
@@ -835,6 +877,9 @@ function RepeatFork({
   onNew,
 }: {
   t: TFn;
+  locale: string;
+  // Цена литра изменилась с прошлого заказа — предупреждаем до повтора.
+  priceChanged: { old: number; new: number } | null;
   fuelLabel: string;
   liters: number | null;
   carLabel: string | null;
@@ -877,6 +922,14 @@ function RepeatFork({
             </div>
           )}
         </dl>
+        {priceChanged && (
+          <span className="rounded-control bg-warning-500/10 px-3 py-2 text-xs font-medium text-warning-600 dark:text-warning-500">
+            {t('priceChanged', {
+              old: formatMoney(priceChanged.old, locale),
+              new: formatMoney(priceChanged.new, locale),
+            })}
+          </span>
+        )}
         <span className="mt-1 inline-flex items-center justify-center rounded-full bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-700">
           {t('repeat.repeatCta')}
         </span>

@@ -470,6 +470,10 @@
       "reasonPRICE": "Price",
       "reasonWAIT_TOO_LONG": "Long wait",
       "reasonOTHER": "Other"
+    },
+    "courierRating": {
+      "avgLabel": "Average rating",
+      "noRatings": "No ratings yet"
     }
   },
   "limits": {
@@ -997,6 +1001,21 @@
       "back": "Back to requests",
       "loadError": "Couldn't load. Try again.",
       "retry": "Retry"
+    },
+    "push": {
+      "promptTitle": "Order status notifications",
+      "promptBody": "We'll tell you when a courier is assigned and when fuel is delivered.",
+      "enable": "Enable notifications",
+      "later": "Not now",
+      "profileLabel": "Order push notifications",
+      "profileHintOn": "Delivered to this device",
+      "profileHintOff": "Disabled",
+      "enabledToast": "Notifications enabled",
+      "error": "Couldn't enable. Check browser permissions."
+    },
+    "locationsDefault": {
+      "makeDefault": "Make default address",
+      "defaultBadge": "Default"
     }
   },
   "benzin": {
@@ -1091,7 +1110,8 @@
       "repeatTitle": "Repeat last order",
       "repeatCta": "Repeat this order",
       "newCta": "New order"
-    }
+    },
+    "priceChanged": "Price changed: was {old} → now {new} UZS/L"
   },
   "orderStatus": {
     "title": "Order",
@@ -1134,6 +1154,14 @@
       "callSupport": "Call support",
       "error": "Couldn't cancel. Try again.",
       "cancelledDone": "Order cancelled"
+    },
+    "rating": {
+      "title": "Rate the delivery",
+      "commentPlaceholder": "Comment (optional)",
+      "submit": "Submit rating",
+      "submitting": "Sending…",
+      "thanks": "Thanks for the rating!",
+      "error": "Couldn't send. Try again."
     }
   },
   "propan": {
@@ -1321,7 +1349,8 @@
       "colPhone": "Courier phone",
       "colOrders": "Orders delivered",
       "colLiters": "Total liters",
-      "colAvgTime": "Average delivery time"
+      "colAvgTime": "Average delivery time",
+      "colAvgRating": "Avg rating"
     }
   }
 }

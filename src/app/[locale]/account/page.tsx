@@ -22,7 +22,7 @@ export default async function AccountPage({
   const [user, orders, cars] = await Promise.all([
     prisma.user.findUnique({
       where: { id: sUser.id },
-      select: { phone: true, name: true, lastName: true },
+      select: { phone: true, name: true, lastName: true, defaultLocationId: true },
     }),
     prisma.order.findMany({
       where: { clientId: sUser.id },
@@ -78,6 +78,7 @@ export default async function AccountPage({
       referral={referral}
       locations={locations}
       defaultCarId={defaultCarId}
+      defaultLocationId={user.defaultLocationId}
       orders={orders.map((o) => ({
         id: o.id,
         status: o.status,

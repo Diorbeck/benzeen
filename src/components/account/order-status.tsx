@@ -4,13 +4,14 @@ import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, Check, Loader2, Navigation, CalendarClock, Phone, X } from 'lucide-react';
+import { ArrowLeft, Bell, Check, Loader2, Navigation, CalendarClock, Phone, Star, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { TrackingMap } from '@/components/map/tracking-map';
 import { etaProvider, MAX_ETA_MINUTES } from '@/lib/eta';
 import { CANCEL_REASONS, clientCancelVerdict, type CancelReason } from '@/lib/order-cancel';
 import { siteConfig } from '@/lib/site-config';
 import { spring } from '@/lib/motion';
+import { subscribeToPush } from '@/lib/push-client';
 
 export type ClientOrder = {
   id: string;
@@ -27,6 +28,7 @@ export type ClientOrder = {
   lng: number | null;
   plate: string | null;
   createdAt: string;
+  rating: number | null;
 };
 
 type Courier = { lat: number; lng: number; updatedAt: string } | null;
@@ -151,6 +153,8 @@ export function OrderStatus({
         </motion.div>
       )}
 
+      {order.status === 'DELIVERED' && <RatingCard orderId={order.id} initialRating={order.rating} />}
+
       {cancelled ? (
         <p className="mt-6 rounded-card bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400">{t('cancelled')}</p>
       ) : scheduled ? (
@@ -210,6 +214,9 @@ export function OrderStatus({
         )}
         <Row label={t('payment')} value={t('payCourier')} />
       </dl>
+
+      {/* Web-push opt-in — the order page is the first thing a client sees after ordering. */}
+      {!cancelled && <PushPrompt />}
 
       {/* Отмена: RECEIVED — кнопка; курьер в пути — телефон поддержки */}
       {cancelVerdict === 'ok' && order.status === 'RECEIVED' && (
@@ -369,6 +376,181 @@ function CancelSheet({
           </Button>
         </div>
       </motion.div>
+    </motion.div>
+  );
+}
+
+/** Оценка доставки: 5 звёзд + необязательный комментарий, один раз. */
+function RatingCard({ orderId, initialRating }: { orderId: string; initialRating: number | null }) {
+  const t = useTranslations('orderStatus');
+  const [rating, setRating] = useState(initialRating ?? 0);
+  const [comment, setComment] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(initialRating != null);
+  const [error, setError] = useState(false);
+
+  const submit = async () => {
+    if (rating < 1) return;
+    setBusy(true);
+    setError(false);
+    try {
+      const res = await fetch(`/api/orders/client/${orderId}/rating`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rating, comment: comment.trim() || undefined }),
+      });
+      if (res.ok || res.status === 409) {
+        // 409 already_rated — заказ уже оценён, показываем «спасибо».
+        setDone(true);
+        return;
+      }
+      setError(true);
+    } catch {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={spring.default}
+      className="mt-4 rounded-card border border-gray-200/60 bg-white p-5 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-6"
+    >
+      {done ? (
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="flex" role="img" aria-label={t('rating.title')}>
+            {[1, 2, 3, 4, 5].map((i) => (
+              <Star
+                key={i}
+                className={`h-5 w-5 ${i <= rating ? 'fill-current text-warning-500' : 'text-gray-300 dark:text-gray-600'}`}
+                aria-hidden
+              />
+            ))}
+          </span>
+          <p className="text-sm font-medium text-success-600 dark:text-success-500">{t('rating.thanks')}</p>
+        </div>
+      ) : (
+        <>
+          <h2 className="text-subheading text-navy dark:text-white">{t('rating.title')}</h2>
+          <div className="mt-2 -ml-2.5 flex">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setRating(i)}
+                aria-pressed={i <= rating}
+                aria-label={`${i}/5`}
+                className="flex h-11 w-11 items-center justify-center rounded-full transition active:scale-[0.92] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+              >
+                <Star
+                  className={`h-7 w-7 transition-colors ${
+                    i <= rating ? 'fill-current text-warning-500' : 'text-gray-300 dark:text-gray-600'
+                  }`}
+                  aria-hidden
+                />
+              </button>
+            ))}
+          </div>
+          {rating > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={spring.default}
+              className="mt-3 space-y-3"
+            >
+              <textarea
+                className="min-h-[72px] w-full rounded-control border border-gray-300 bg-white p-3 text-sm text-navy placeholder-gray-400 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20 dark:border-white/15 dark:bg-navy-800 dark:text-white dark:placeholder-gray-500"
+                placeholder={t('rating.commentPlaceholder')}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                maxLength={500}
+              />
+              {error && (
+                <p className="rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">
+                  {t('rating.error')}
+                </p>
+              )}
+              <Button onClick={submit} disabled={busy}>
+                {busy ? t('rating.submitting') : t('rating.submit')}
+              </Button>
+            </motion.div>
+          )}
+        </>
+      )}
+    </motion.div>
+  );
+}
+
+/**
+ * Web-push opt-in card. Shown once: only when the browser supports push,
+ * permission was never asked, and the client hasn't been prompted before.
+ */
+function PushPrompt() {
+  const t = useTranslations('account');
+  const [visible, setVisible] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    const supported =
+      'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+    if (!supported) return;
+    if (Notification.permission !== 'default') return;
+    if (localStorage.getItem('benzeen-push-prompted')) return;
+    setVisible(true);
+  }, []);
+
+  const dismiss = () => {
+    localStorage.setItem('benzeen-push-prompted', '1');
+    setVisible(false);
+  };
+
+  const enable = async () => {
+    setBusy(true);
+    setError(false);
+    try {
+      const ok = await subscribeToPush();
+      if (ok) dismiss();
+      else setError(true);
+    } catch {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!visible) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={spring.default}
+      className="mt-4 rounded-card border border-gray-200/60 bg-white p-5 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-6"
+    >
+      <div className="flex items-start gap-3">
+        <Bell className="mt-0.5 h-5 w-5 shrink-0 text-gray-500 dark:text-gray-400" aria-hidden />
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold text-navy dark:text-white">{t('push.promptTitle')}</h2>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('push.promptBody')}</p>
+        </div>
+      </div>
+      {error && (
+        <p className="mt-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">
+          {t('push.error')}
+        </p>
+      )}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Button onClick={enable} disabled={busy}>
+          {t('push.enable')}
+        </Button>
+        <Button variant="ghost" onClick={dismiss} disabled={busy}>
+          {t('push.later')}
+        </Button>
+      </div>
     </motion.div>
   );
 }

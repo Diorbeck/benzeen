@@ -43,6 +43,7 @@ export default async function ClientOrderPage({
           lng: order.lng,
           plate: order.clientCar?.plate ?? null,
           createdAt: order.createdAt.toISOString(),
+          rating: order.rating,
         }}
       />
     </div>
