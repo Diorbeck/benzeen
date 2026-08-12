@@ -38,5 +38,26 @@ export function scrubEvent(event: ErrorEvent, _hint: EventHint): ErrorEvent {
     event.message = redact(event.message);
   }
 
+  // PR-A: телефоны/почты в breadcrumbs (message + строковые поля data).
+  if (event.breadcrumbs) {
+    for (const b of event.breadcrumbs) {
+      if (typeof b.message === 'string') b.message = redact(b.message);
+      if (b.data) {
+        for (const key of Object.keys(b.data)) {
+          const v = (b.data as Record<string, unknown>)[key];
+          if (typeof v === 'string') (b.data as Record<string, unknown>)[key] = redact(v);
+        }
+      }
+    }
+  }
+
+  // PR-A: строковые значения в extra.
+  if (event.extra) {
+    for (const key of Object.keys(event.extra)) {
+      const v = event.extra[key];
+      if (typeof v === 'string') event.extra[key] = redact(v);
+    }
+  }
+
   return event;
 }

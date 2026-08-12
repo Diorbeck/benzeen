@@ -15,5 +15,6 @@ Sentry.init({
   sendDefaultPii: false,
   // Strip residual PII (emails, phones) and request identity before send.
   beforeSend: scrubEvent,
+  environment: process.env.VERCEL_ENV || process.env.NODE_ENV || 'development',
   enabled: Boolean(dsn),
 });
