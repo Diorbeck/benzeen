@@ -7,7 +7,7 @@ import { Fuel, ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 const inputClass =
-  'w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 placeholder-gray-400 transition focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-gray-500';
+  'w-full rounded-control border border-transparent bg-gray-100 px-4 py-3 text-gray-900 placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:bg-white/10 dark:text-white dark:placeholder-gray-500 dark:focus:bg-white/15 dark:focus:ring-white/60';
 
 export function AuthLayout({
   children,

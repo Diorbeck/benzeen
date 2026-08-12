@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
 import { ArrowLeft, ChevronRight, LifeBuoy, Phone, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { siteConfig } from '@/lib/site-config';
-import { spring } from '@/lib/motion';
 import { cardCls, inputCls } from '@/components/account/shared';
 
 const TYPES = ['COMPLAINT', 'SUGGESTION', 'QUESTION'] as const;
@@ -209,7 +207,7 @@ export function SupportSection() {
     const isClient = m.authorType === 'CLIENT';
     const isAi = m.authorType === 'AI';
     const bubbleCls = isClient
-      ? 'bg-primary-50 dark:bg-primary-500/15'
+      ? 'bg-gray-100 dark:bg-white/10'
       : isAi
         ? 'border border-primary-200 bg-white dark:border-primary-500/30 dark:bg-navy-800'
         : 'border border-gray-200/60 bg-white dark:border-white/10 dark:bg-navy-800';
@@ -324,11 +322,11 @@ export function SupportSection() {
                             <span className="text-sm font-medium text-navy dark:text-white">
                               {t(`support.type${tk.type}`)}
                             </span>
-                            <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[st]}`}>
+                            <span className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[st]}`}>
                               {t(`support2.status${st}`)}
                             </span>
                             {tk.needsHuman && st !== 'CLOSED' && (
-                              <span className="rounded-full bg-warning-600/10 px-2 py-0.5 text-[11px] font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
+                              <span className="rounded-md bg-warning-600/10 px-2 py-0.5 text-[11px] font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
                                 {t('support2.needsHuman')}
                               </span>
                             )}
@@ -351,14 +349,14 @@ export function SupportSection() {
             )}
           </>
         ) : (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={spring.default}>
+          <div>
             <div className="mb-4 flex flex-wrap items-center gap-2">
               <Button variant="ghost" size="sm" onClick={backToList}>
                 <ArrowLeft className="h-4 w-4" /> {t('support2.back')}
               </Button>
               {thread && (
                 <span
-                  className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[normalizeStatus(thread.status)]}`}
+                  className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[normalizeStatus(thread.status)]}`}
                 >
                   {t(`support2.status${normalizeStatus(thread.status)}`)}
                 </span>
@@ -430,7 +428,7 @@ export function SupportSection() {
                 )}
               </>
             )}
-          </motion.div>
+          </div>
         )}
       </section>
 

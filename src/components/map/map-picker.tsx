@@ -134,7 +134,7 @@ export function MapPicker({
           type="button"
           onClick={locateMe}
           disabled={locating}
-          className="absolute right-3 top-3 z-10 flex min-h-[40px] items-center gap-1.5 rounded-full bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-soft transition hover:text-primary-600 disabled:opacity-60 dark:bg-navy-800 dark:text-gray-200"
+          className="absolute right-3 top-3 z-10 flex min-h-[40px] items-center gap-1.5 rounded-control bg-white px-4 py-2 text-xs font-medium text-gray-700 shadow-soft transition hover:text-primary-600 disabled:opacity-60 dark:bg-navy-800 dark:text-gray-200"
         >
           <LocateFixed className="h-4 w-4" aria-hidden />
           {locating ? '…' : locateLabel}

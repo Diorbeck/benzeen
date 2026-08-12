@@ -101,12 +101,7 @@ export function PropaneNearby() {
     <div className="space-y-6">
       {/* Active booking banner */}
       {myBooking && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={spring.default}
-          className="rounded-card border border-primary-200 bg-primary-50 p-5 dark:border-primary-500/30 dark:bg-primary-500/10"
-        >
+        <div className="rounded-card bg-gray-100 p-5 dark:bg-white/10">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('yourBooking')}</p>
@@ -134,13 +129,13 @@ export function PropaneNearby() {
               {cancelling ? t('cancelling') : t('cancelBooking')}
             </Button>
           </div>
-        </motion.div>
+        </div>
       )}
 
       <div className="relative">
         <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" aria-hidden />
         <input
-          className="h-12 w-full rounded-control border border-gray-300 dark:border-white/15 bg-white dark:bg-navy-800 py-3 pl-10 pr-4 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600"
+          className="h-12 w-full rounded-control border border-transparent bg-gray-100 py-3 pl-10 pr-4 text-navy placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:bg-white/10 dark:text-white dark:placeholder-gray-500 dark:focus:bg-white/15 dark:focus:ring-white/60"
           placeholder={t('searchPlaceholder')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -158,7 +153,7 @@ export function PropaneNearby() {
       )}
 
       {state === 'error' && (
-        <div className="rounded-card border border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900 p-8 text-center shadow-soft dark:shadow-none">
+        <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-8 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-300">{t('error')}</p>
           <Button variant="secondary" className="mt-4" onClick={load}>
             <RefreshCw className="h-4 w-4" /> {t('retry')}
@@ -167,7 +162,7 @@ export function PropaneNearby() {
       )}
 
       {state === 'ready' && filtered.length === 0 && (
-        <div className="rounded-card border border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900 p-10 text-center shadow-soft dark:shadow-none">
+        <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-10 text-center">
           <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-500">
             <Flame className="h-6 w-6" aria-hidden />
           </span>
@@ -178,13 +173,10 @@ export function PropaneNearby() {
 
       {state === 'ready' && filtered.length > 0 && (
         <ul className="space-y-3">
-          {filtered.map((p, i) => (
-            <motion.li
+          {filtered.map((p) => (
+            <li
               key={p.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...spring.default, delay: i * 0.05 }}
-              className="rounded-card border border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft dark:shadow-none"
+              className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5"
             >
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
@@ -193,8 +185,8 @@ export function PropaneNearby() {
                     <span
                       className={
                         p.status === 'ACTIVE'
-                          ? 'shrink-0 rounded-full bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500'
-                          : 'shrink-0 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400'
+                          ? 'shrink-0 rounded-md bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500'
+                          : 'shrink-0 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400'
                       }
                     >
                       {p.status === 'ACTIVE' ? t('active') : t('paused')}
@@ -212,7 +204,7 @@ export function PropaneNearby() {
                     href={`https://maps.google.com/?q=${p.lat},${p.lng}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 transition-colors hover:bg-gray-100 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
+                    className="flex h-11 w-11 items-center justify-center rounded-control text-gray-500 transition-colors hover:bg-gray-100 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
                     aria-label={t('openInMaps')}
                   >
                     <Navigation className="h-5 w-5" aria-hidden />
@@ -222,7 +214,7 @@ export function PropaneNearby() {
                   </Button>
                 </div>
               </div>
-            </motion.li>
+            </li>
           ))}
         </ul>
       )}
@@ -408,7 +400,7 @@ function SlotSheet({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0.5 }}
         transition={spring.sheet}
-        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-sheet bg-white/95 p-6 backdrop-blur-md dark:bg-navy-900/95 sm:rounded-card"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-sheet bg-white p-6 shadow-soft-lg dark:bg-navy-900 sm:rounded-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -421,7 +413,7 @@ function SlotSheet({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
+            className="rounded-control p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
             aria-label={t('close')}
           >
             <X className="h-5 w-5" />
@@ -445,7 +437,7 @@ function SlotSheet({
         ) : slots === null ? (
           <div className="grid grid-cols-4 gap-2" aria-busy>
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="skeleton-shimmer relative h-11 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10" />
+              <div key={i} className="skeleton-shimmer relative h-11 overflow-hidden rounded-control bg-gray-100 dark:bg-white/10" />
             ))}
           </div>
         ) : free.length === 0 ? (
@@ -464,10 +456,10 @@ function SlotSheet({
                     key={s.start}
                     type="button"
                     onClick={() => setChosen(s.start)}
-                    className={`min-h-[44px] rounded-full border px-2 text-sm font-medium tabular-nums transition active:scale-[0.97] motion-reduce:active:scale-100 ${
+                    className={`min-h-[44px] rounded-control border-2 px-2 text-sm font-medium tabular-nums transition active:scale-[0.97] motion-reduce:active:scale-100 ${
                       activeChip
-                        ? 'border-primary-600 bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300'
-                        : 'border-gray-200 bg-white text-gray-700 hover:border-primary-300 dark:border-white/10 dark:bg-navy-900 dark:text-gray-200 dark:hover:border-primary-500/40'
+                        ? 'border-primary-600 bg-white text-navy dark:bg-white/10 dark:text-white'
+                        : 'border-transparent bg-gray-100 text-gray-700 hover:bg-gray-200/70 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10'
                     }`}
                   >
                     {dayTag ? `${dayTag} ` : ''}

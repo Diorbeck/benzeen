@@ -87,7 +87,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="text-sm font-semibold text-navy dark:text-white">{c.plate}</span>
                   {defaultCarId === c.id && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-50 dark:bg-primary-500/15 px-2 py-0.5 text-xs font-medium text-primary-700 dark:text-primary-300">
+                    <span className="inline-flex items-center gap-1 rounded-md bg-gray-100 dark:bg-white/10 px-2 py-0.5 text-xs font-medium text-gray-600 dark:text-gray-300">
                       <Star className="h-3 w-3 fill-current" aria-hidden /> {t('cars.defaultBadge')}
                     </span>
                   )}
@@ -102,7 +102,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                     type="button"
                     onClick={() => makeDefault(c.id)}
                     disabled={busyDefault === c.id}
-                    className="mt-1.5 inline-flex min-h-11 items-center gap-1 rounded-full text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 disabled:opacity-50"
+                    className="mt-1.5 inline-flex min-h-11 items-center gap-1 rounded-control text-xs font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 disabled:opacity-50"
                   >
                     <Star className="h-3.5 w-3.5" /> {t('cars.makeDefault')}
                   </button>
@@ -117,7 +117,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                     setEditingId(c.id);
                     setAdding(false);
                   }}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                  className="flex h-11 w-11 items-center justify-center rounded-control text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                   aria-label={t('cars.edit')}
                 >
                   <Pencil className="h-4 w-4" />
@@ -125,7 +125,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                 <button
                   type="button"
                   onClick={() => del(c.id)}
-                  className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                  className="flex h-11 w-11 items-center justify-center rounded-control text-gray-500 dark:text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                   aria-label={t('cars.delete')}
                 >
                   <Trash2 className="h-4 w-4" />

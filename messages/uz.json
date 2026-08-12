@@ -802,7 +802,11 @@
       "terms": "Foydalanish shartlari",
       "privacy": "Maxfiylik",
       "rights": "Barcha huquqlar himoyalangan."
-    }
+    },
+    "widgetWhere": "Yoqilg'ini qayerga yetkazamiz?",
+    "widgetCta": "Buyurtma",
+    "svcScheduleTitle": "Oldindan rejalashtirish",
+    "svcScheduleDesc": "Sana va vaqtni tanlang — o'z vaqtida yetkazamiz"
   },
   "clientLogin": {
     "title": "Kirish",

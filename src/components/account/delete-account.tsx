@@ -119,7 +119,7 @@ export function DeleteAccount({ locale }: { locale: string }) {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: '100%', opacity: 0.5 }}
               transition={spring.sheet}
-              className="w-full max-w-md rounded-t-sheet bg-white/95 p-6 shadow-soft-lg backdrop-blur-md dark:bg-navy-900/95 sm:rounded-card"
+              className="w-full max-w-md rounded-t-sheet bg-white p-6 shadow-soft-lg dark:bg-navy-900 sm:rounded-card"
               onClick={(e) => e.stopPropagation()}
               role="dialog"
               aria-modal="true"
@@ -130,7 +130,7 @@ export function DeleteAccount({ locale }: { locale: string }) {
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
+                  className="rounded-control p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
                   aria-label={t('deletion.cancel')}
                 >
                   <X className="h-5 w-5" />

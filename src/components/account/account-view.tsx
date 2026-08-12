@@ -89,10 +89,10 @@ export function AccountView({
                   type="button"
                   onClick={() => setTab(key)}
                   aria-current={active ? 'page' : undefined}
-                  className={`flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-950 lg:w-full ${
+                  className={`flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-control px-5 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-950 lg:w-full ${
                     active
                       ? 'bg-primary-600 text-white'
-                      : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-navy-900 dark:text-gray-300 dark:hover:bg-white/10 lg:border-transparent lg:bg-transparent lg:dark:bg-transparent'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200/70 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 lg:bg-transparent lg:dark:bg-transparent'
                   }`}
                 >
                   <Icon className="h-4 w-4 shrink-0" aria-hidden />
