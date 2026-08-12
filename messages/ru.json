@@ -461,6 +461,15 @@
       "backToList": "К списку",
       "loadError": "Не удалось загрузить",
       "actionError": "Не получилось. Попробуйте ещё раз."
+    },
+    "orderCancel": {
+      "cancelReasonLabel": "Причина отмены",
+      "cancelCount": "Отмен: {n}",
+      "reasonCHANGED_MIND": "Передумал",
+      "reasonORDERED_BY_MISTAKE": "По ошибке",
+      "reasonPRICE": "Цена",
+      "reasonWAIT_TOO_LONG": "Долгое ожидание",
+      "reasonOTHER": "Другое"
     }
   },
   "limits": {
@@ -1108,7 +1117,24 @@
     "etaCalculating": "Расчёт времени…",
     "scheduledFor": "Запланирован на {when}",
     "cancelOrder": "Отменить заказ",
-    "cancelling": "Отмена…"
+    "cancelling": "Отмена…",
+    "cancel": {
+      "cancelOrder": "Отменить заказ",
+      "title": "Почему отменяете?",
+      "reasonCHANGED_MIND": "Передумал(а)",
+      "reasonORDERED_BY_MISTAKE": "Заказал(а) по ошибке",
+      "reasonPRICE": "Не устроила цена",
+      "reasonWAIT_TOO_LONG": "Слишком долго ждать",
+      "reasonOTHER": "Другая причина",
+      "commentPlaceholder": "Расскажите, что случилось",
+      "confirm": "Отменить заказ",
+      "cancelling": "Отменяем…",
+      "keepOrder": "Не отменять",
+      "courierOnWay": "Курьер уже в пути — позвоните в поддержку, и мы поможем",
+      "callSupport": "Позвонить в поддержку",
+      "error": "Не получилось отменить. Попробуйте ещё раз.",
+      "cancelledDone": "Заказ отменён"
+    }
   },
   "propan": {
     "title": "Пропан рядом",

@@ -99,6 +99,15 @@ enum AuditAction {
   CLIENT_HARD_DELETE
 }
 
+// Причина клиентской отмены (Этап 1 финального марафона).
+enum OrderCancelReason {
+  CHANGED_MIND
+  ORDERED_BY_MISTAKE
+  PRICE
+  WAIT_TOO_LONG
+  OTHER
+}
+
 enum OrderStatus {
   CREATED
   PENDING_APPROVAL
@@ -423,6 +432,9 @@ model Order {
   paymentStatus PaymentStatus?
   scheduledFor  DateTime?          // B2C: planned delivery time (SCHEDULED orders)
   bonusLitersUsed Int?             // M5: bonus liters applied (reduces totalAmount)
+  // Клиентская отмена (финальный марафон, этап 1): причина + комментарий (OTHER).
+  cancelReason  OrderCancelReason?
+  cancelComment String?
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   // Set when a courier TAKEs the order; paired with deliveredAt to measure the
