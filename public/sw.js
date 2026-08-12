@@ -5,9 +5,9 @@
 //    cached offline page when the network is unavailable).
 //  - Cache-first for static assets (icons, fonts) to speed up repeat visits.
 // Bump CACHE_VERSION whenever this file or the offline page changes.
-const CACHE_VERSION = 'benzeen-v1';
+const CACHE_VERSION = 'benzeen-v2';
 const OFFLINE_URL = '/offline.html';
-const PRECACHE = [OFFLINE_URL, '/icon.svg', '/manifest.webmanifest'];
+const PRECACHE = [OFFLINE_URL, '/icon.svg', '/icon-192.png', '/icon-512.png', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
