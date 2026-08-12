@@ -38,6 +38,10 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      # PR-D: аудит прод-зависимостей; падаем только на critical.
+      - name: Dependency audit (prod, fail on critical)
+        run: pnpm audit --prod --audit-level critical
+
       - name: Build
         run: pnpm build
 

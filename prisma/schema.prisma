@@ -97,6 +97,8 @@ enum AuditAction {
   // Account deletion (Поддержка 2.0 волна): анонимизация и hard-delete клиента.
   CLIENT_ANONYMIZE
   CLIENT_HARD_DELETE
+  // PR-D: неудачная попытка staff-логина (brute-force видимость).
+  LOGIN_FAILED
 }
 
 // Причина клиентской отмены (Этап 1 финального марафона).
