@@ -9,7 +9,7 @@ export default async function PropanPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-navy-950 text-navy dark:text-white">
       <B2CHeader />
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        <h1 className="text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-title">{t('title')}</h1>
+        <h1 className="text-title text-navy dark:text-white">{t('title')}</h1>
         <p className="mt-3 text-base text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
         <div className="mt-6">
           <PropaneNearby />

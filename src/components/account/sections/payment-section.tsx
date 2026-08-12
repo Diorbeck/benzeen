@@ -42,7 +42,7 @@ export function PaymentSection({ locale, referral }: { locale: string; referral?
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-control bg-primary-50/60 dark:bg-primary-500/15 p-4">
+            <div className="rounded-control bg-gray-100 dark:bg-white/10 p-4">
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('payment.bonusBalance')}</p>
               <p className="mt-1 text-2xl font-bold tabular-nums tracking-tight text-navy dark:text-white">{formatLiters(referral.balance, locale)}</p>
             </div>
@@ -59,7 +59,7 @@ export function PaymentSection({ locale, referral }: { locale: string; referral?
             <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{t('payment.referralDesc')}</p>
             <label className="mt-4 block text-sm font-medium text-gray-500 dark:text-gray-400">{t('payment.referralLink')}</label>
             <div className="mt-1.5 flex items-center gap-2">
-              <code className="flex h-12 min-w-0 flex-1 items-center truncate rounded-control border border-gray-300 dark:border-white/15 bg-gray-50 dark:bg-navy-800 px-4 text-sm text-navy dark:text-white">
+              <code className="flex h-12 min-w-0 flex-1 items-center truncate rounded-control bg-gray-100 dark:bg-white/10 px-4 text-sm text-navy dark:text-white">
                 {link || (referral ? `/${locale}?ref=${referral.code}` : '')}
               </code>
               <Button type="button" className="shrink-0" onClick={copy}>

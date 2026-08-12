@@ -91,7 +91,7 @@ export function LocationsSection({
                 <span className="flex min-w-0 items-center gap-2">
                   <span className="min-w-0 truncate text-sm font-medium text-navy dark:text-white">{l.name}</span>
                   {defaultId === l.id && (
-                    <span className="shrink-0 rounded-full bg-primary-50 px-2 py-0.5 text-xs font-medium text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">
+                    <span className="shrink-0 rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
                       {t('locationsDefault.defaultBadge')}
                     </span>
                   )}
@@ -101,7 +101,7 @@ export function LocationsSection({
                     type="button"
                     onClick={() => makeDefault(l.id)}
                     aria-pressed={defaultId === l.id}
-                    className={`flex h-11 w-11 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 ${
+                    className={`flex h-11 w-11 items-center justify-center rounded-control transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 ${
                       defaultId === l.id
                         ? 'text-warning-500 hover:bg-gray-100 dark:hover:bg-white/10'
                         : 'text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white'
@@ -116,7 +116,7 @@ export function LocationsSection({
                       setEditingId(l.id);
                       setEditName(l.name);
                     }}
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                    className="flex h-11 w-11 items-center justify-center rounded-control text-gray-500 dark:text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/10 hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                     aria-label={t('locations.edit')}
                   >
                     <Pencil className="h-4 w-4" />
@@ -124,7 +124,7 @@ export function LocationsSection({
                   <button
                     type="button"
                     onClick={() => del(l.id)}
-                    className="flex h-11 w-11 items-center justify-center rounded-full text-gray-500 dark:text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                    className="flex h-11 w-11 items-center justify-center rounded-control text-gray-500 dark:text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                     aria-label={t('locations.delete')}
                   >
                     <Trash2 className="h-4 w-4" />

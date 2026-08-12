@@ -802,7 +802,11 @@
       "terms": "Terms of use",
       "privacy": "Privacy",
       "rights": "All rights reserved."
-    }
+    },
+    "widgetWhere": "Where to deliver fuel?",
+    "widgetCta": "Order",
+    "svcScheduleTitle": "Schedule ahead",
+    "svcScheduleDesc": "Pick a date and time — we'll arrive on schedule"
   },
   "clientLogin": {
     "title": "Sign in",

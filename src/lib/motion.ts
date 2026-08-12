@@ -1,36 +1,31 @@
 /**
- * Motion tokens — the single source of animation constants (benzeen-design).
- *
- * Rules: animate only transform/opacity; hover/color feedback via CSS with
- * `duration.fast`/`duration.base`; entrances and movement via springs.
- * Bounce is reserved for surfaces that carry gesture momentum (bottom sheets).
- * `prefers-reduced-motion` is honored globally (MotionConfig + globals.css).
+ * Motion tokens (Uber-restraint): «незаметность = качество».
+ * Разрешено: направленные переходы шагов, шиты 200мс, skeleton, pulse курьера.
+ * Запрещено: стаггеры, каскады, fade+rise по скроллу, count-up.
+ * prefers-reduced-motion гасит и разрешённое (MotionConfig + globals.css).
  */
 
-/** Durations in seconds (framer-motion) — ×1000 for CSS. */
+/** Длительности в секундах (framer-motion) — ×1000 для CSS. */
 export const duration = {
   fast: 0.15,
   base: 0.2,
-  slow: 0.3,
 } as const;
 
-/** Ease-out for the rare tween (color, opacity-only fades). */
 export const easeOut = [0.25, 0.46, 0.45, 0.94] as const;
 
 export const spring = {
-  /** Default UI spring: critically damped, no overshoot. */
-  default: { type: 'spring', bounce: 0, duration: 0.35 },
-  /** Bottom sheets and anything released with momentum. */
-  sheet: { type: 'spring', bounce: 0.15, duration: 0.4 },
-  /** Small feedback: chips, toggles, selection. */
-  snappy: { type: 'spring', bounce: 0, duration: 0.25 },
+  /** Направленные переходы шагов и мелкие state-попы. */
+  default: { duration: 0.2, ease: easeOut },
+  /** Нижние шиты: 200мс, без пружин и отскока. */
+  sheet: { duration: 0.2, ease: easeOut },
+  /** Мгновенный отклик выбора. */
+  snappy: { duration: 0.15, ease: easeOut },
 } as const;
 
-/** Standard entrance: fade + rise. Use with `transition={spring.default}`. */
+/** Оставлено для совместимости; новые появления по скроллу не строить. */
 export const fadeRise = {
-  initial: { opacity: 0, y: 12 },
+  initial: { opacity: 0, y: 8 },
   animate: { opacity: 1, y: 0 },
 } as const;
 
-/** Stagger interval between sibling entrances, seconds. */
-export const stagger = 0.06;
+export const stagger = 0;

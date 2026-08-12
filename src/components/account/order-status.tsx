@@ -103,7 +103,7 @@ export function OrderStatus({
         {t('back')}
       </Link>
 
-      <h1 className="text-3xl font-bold tracking-tight text-navy dark:text-white">{t('title')}</h1>
+      <h1 className="text-title text-navy dark:text-white">{t('title')}</h1>
 
       {/* Live tracking during active delivery */}
       {!cancelled && isActive && destination && (
@@ -113,30 +113,16 @@ export function OrderStatus({
               <Navigation className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
               {t('courierComing')}
             </p>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={showEta ? 'eta' : 'calc'}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={spring.snappy}
-                className="text-sm font-semibold tabular-nums text-primary-600 dark:text-primary-400"
-              >
-                {showEta ? t('eta', { minutes: etaMinutes! }) : t('etaCalculating')}
-              </motion.span>
-            </AnimatePresence>
+            <span className="text-sm font-semibold tabular-nums text-primary-600 dark:text-primary-400">
+              {showEta ? t('eta', { minutes: etaMinutes! }) : t('etaCalculating')}
+            </span>
           </div>
           <TrackingMap destination={destination} courier={courier} />
         </div>
       )}
 
       {order.status === 'DELIVERED' && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={spring.default}
-          className="mt-6 flex items-center gap-4 rounded-card border border-success-500/20 bg-success-500/10 p-5"
-        >
+        <div className="mt-6 flex items-center gap-4 rounded-card border border-success-500/20 bg-success-500/10 p-5">
           <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-success-500 text-white">
             <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden>
               <path
@@ -150,7 +136,7 @@ export function OrderStatus({
             </svg>
           </span>
           <p className="text-sm font-medium text-navy dark:text-white">{t('steps.DELIVERED')}</p>
-        </motion.div>
+        </div>
       )}
 
       {order.status === 'DELIVERED' && <RatingCard orderId={order.id} initialRating={order.rating} />}
@@ -158,7 +144,7 @@ export function OrderStatus({
       {cancelled ? (
         <p className="mt-6 rounded-card bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-400">{t('cancelled')}</p>
       ) : scheduled ? (
-        <div className="mt-6 space-y-3 rounded-card border border-primary-100 dark:border-primary-500/30 bg-primary-50/50 dark:bg-primary-500/15 p-5">
+        <div className="mt-6 space-y-3 rounded-card bg-gray-100 dark:bg-white/10 p-5">
           <p className="flex items-center gap-2 text-sm font-medium text-navy dark:text-white">
             <CalendarClock className="h-4 w-4 text-primary-600 dark:text-primary-400" aria-hidden />
             {t('scheduledFor', {
@@ -183,17 +169,13 @@ export function OrderStatus({
             const current = i === activeIndex && order.status !== 'DELIVERED';
             return (
               <li key={step} className="flex items-center gap-3">
-                <motion.span
-                  key={`${step}-${done ? 'done' : current ? 'cur' : 'idle'}`}
-                  initial={{ scale: 0.7, opacity: 0.6 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={spring.snappy}
+                <span
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
                     done ? 'bg-success-500 text-white' : current ? 'bg-primary-600 text-white' : 'bg-gray-100 dark:bg-white/10 text-gray-400 dark:text-gray-500'
                   }`}
                 >
                   {done ? <Check className="h-4 w-4" /> : current ? <Loader2 className="h-4 w-4 animate-spin" /> : i + 1}
-                </motion.span>
+                </span>
                 <span className={`text-sm ${done || current ? 'font-medium text-navy dark:text-white' : 'text-gray-400 dark:text-gray-500'}`}>
                   {t(`steps.${step}`)}
                 </span>
@@ -204,7 +186,7 @@ export function OrderStatus({
       )}
 
       {/* Order details */}
-      <dl className="mt-8 space-y-2.5 rounded-card border border-gray-200/60 bg-white p-5 text-sm shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-6">
+      <dl className="mt-8 space-y-2.5 rounded-card border border-gray-200 bg-white p-5 text-sm dark:border-white/10 dark:bg-navy-900 sm:p-6">
         <Row label={t('car')} value={order.plate ?? '—'} />
         <Row label={t('fuel')} value={FUEL_LABEL[order.fuelType] ?? order.fuelType} />
         <Row label={t('volume')} value={`${order.dispensedVolume ?? order.volume} ${t('liters')}`} />
@@ -311,7 +293,7 @@ function CancelSheet({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0.5 }}
         transition={spring.sheet}
-        className="w-full max-w-md rounded-t-sheet bg-white/95 p-6 backdrop-blur-md dark:bg-navy-900/95 sm:rounded-card"
+        className="w-full max-w-md rounded-t-sheet bg-white p-6 shadow-soft-lg dark:bg-navy-900 sm:rounded-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -321,7 +303,7 @@ function CancelSheet({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
+            className="rounded-control p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
             aria-label={t('cancel.keepOrder')}
           >
             <X className="h-5 w-5" />
@@ -334,10 +316,10 @@ function CancelSheet({
               key={r}
               type="button"
               onClick={() => setReason(r)}
-              className={`flex min-h-[44px] w-full items-center rounded-control border px-4 text-left text-sm font-medium transition active:scale-[0.99] motion-reduce:active:scale-100 ${
+              className={`flex min-h-[44px] w-full items-center rounded-control border-2 px-4 text-left text-sm font-medium transition active:scale-[0.99] motion-reduce:active:scale-100 ${
                 reason === r
-                  ? 'border-primary-600 bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-300'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-primary-300 dark:border-white/10 dark:bg-navy-900 dark:text-gray-200 dark:hover:border-primary-500/40'
+                  ? 'border-primary-600 bg-white text-navy dark:bg-white/10 dark:text-white'
+                  : 'border-transparent bg-gray-100 text-gray-700 hover:bg-gray-200/70 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10'
               }`}
             >
               {t(`cancel.reason${r}`)}
@@ -347,7 +329,7 @@ function CancelSheet({
 
         {reason === 'OTHER' && (
           <textarea
-            className="mt-3 min-h-[72px] w-full rounded-control border border-gray-300 bg-white p-3 text-sm text-navy placeholder-gray-400 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20 dark:border-white/15 dark:bg-navy-800 dark:text-white dark:placeholder-gray-500"
+            className="mt-3 min-h-[72px] w-full rounded-control border border-transparent bg-gray-100 p-3 text-sm text-navy placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:bg-white/10 dark:text-white dark:placeholder-gray-500 dark:focus:bg-white/15 dark:focus:ring-white/60"
             placeholder={t('cancel.commentPlaceholder')}
             value={comment}
             onChange={(e) => setComment(e.target.value)}
@@ -413,12 +395,7 @@ function RatingCard({ orderId, initialRating }: { orderId: string; initialRating
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={spring.default}
-      className="mt-4 rounded-card border border-gray-200/60 bg-white p-5 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-6"
-    >
+    <div className="mt-4 rounded-card border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-navy-900 sm:p-6">
       {done ? (
         <div className="flex flex-wrap items-center gap-3">
           <span className="flex" role="img" aria-label={t('rating.title')}>
@@ -443,7 +420,7 @@ function RatingCard({ orderId, initialRating }: { orderId: string; initialRating
                 onClick={() => setRating(i)}
                 aria-pressed={i <= rating}
                 aria-label={`${i}/5`}
-                className="flex h-11 w-11 items-center justify-center rounded-full transition active:scale-[0.92] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                className="flex h-11 w-11 items-center justify-center rounded-control transition active:scale-[0.92] motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
               >
                 <Star
                   className={`h-7 w-7 transition-colors ${
@@ -455,14 +432,9 @@ function RatingCard({ orderId, initialRating }: { orderId: string; initialRating
             ))}
           </div>
           {rating > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={spring.default}
-              className="mt-3 space-y-3"
-            >
+            <div className="mt-3 space-y-3">
               <textarea
-                className="min-h-[72px] w-full rounded-control border border-gray-300 bg-white p-3 text-sm text-navy placeholder-gray-400 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20 dark:border-white/15 dark:bg-navy-800 dark:text-white dark:placeholder-gray-500"
+                className="min-h-[72px] w-full rounded-control border border-transparent bg-gray-100 p-3 text-sm text-navy placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:bg-white/10 dark:text-white dark:placeholder-gray-500 dark:focus:bg-white/15 dark:focus:ring-white/60"
                 placeholder={t('rating.commentPlaceholder')}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -476,11 +448,11 @@ function RatingCard({ orderId, initialRating }: { orderId: string; initialRating
               <Button onClick={submit} disabled={busy}>
                 {busy ? t('rating.submitting') : t('rating.submit')}
               </Button>
-            </motion.div>
+            </div>
           )}
         </>
       )}
-    </motion.div>
+    </div>
   );
 }
 
@@ -525,12 +497,7 @@ function PushPrompt() {
   if (!visible) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={spring.default}
-      className="mt-4 rounded-card border border-gray-200/60 bg-white p-5 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-6"
-    >
+    <div className="mt-4 rounded-card border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-navy-900 sm:p-6">
       <div className="flex items-start gap-3">
         <Bell className="mt-0.5 h-5 w-5 shrink-0 text-gray-500 dark:text-gray-400" aria-hidden />
         <div className="min-w-0">
@@ -551,7 +518,7 @@ function PushPrompt() {
           {t('push.later')}
         </Button>
       </div>
-    </motion.div>
+    </div>
   );
 }
 

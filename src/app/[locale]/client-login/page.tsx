@@ -114,7 +114,7 @@ function ClientLoginForm() {
         </p>
       )}
       {info && !error && (
-        <p className="mb-4 rounded-control bg-primary-50 dark:bg-primary-500/15 px-4 py-3 text-sm text-primary-700 dark:text-primary-300" role="status">
+        <p className="mb-4 rounded-control bg-gray-100 dark:bg-white/10 px-4 py-3 text-sm text-navy dark:text-white" role="status">
           {info}
         </p>
       )}
@@ -174,7 +174,7 @@ function ClientLoginForm() {
               setError('');
               setInfo('');
             }}
-            className="min-h-11 w-full rounded-full text-center text-sm font-medium text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+            className="min-h-11 w-full rounded-control text-center text-sm font-medium text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
             disabled={loading}
           >
             {t('changePhone')}

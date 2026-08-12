@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import {
   Fuel,
@@ -12,7 +11,7 @@ import {
   ChevronDown,
   MapPin,
   Navigation,
-  Receipt,
+  CalendarClock,
   Phone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -21,7 +20,13 @@ import { B2CHeader } from './header';
 import { track } from '@/lib/analytics';
 import { siteConfig } from '@/lib/site-config';
 import { captureRefFromUrl } from '@/lib/referral-client';
-import { spring, stagger } from '@/lib/motion';
+
+const FUELS = ['AI_92', 'AI_95', 'AI_100'] as const;
+const FUEL_LABEL: Record<(typeof FUELS)[number], string> = {
+  AI_92: 'АИ-92',
+  AI_95: 'АИ-95',
+  AI_100: 'АИ-100',
+};
 
 export function B2CLanding() {
   const t = useTranslations('b2c');
@@ -35,7 +40,7 @@ export function B2CLanding() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 text-navy dark:bg-navy-950 dark:text-white">
+    <div className="min-h-screen bg-white text-navy dark:bg-navy-950 dark:text-white">
       <B2CHeader />
 
       <main>
@@ -46,96 +51,93 @@ export function B2CLanding() {
         <Footer locale={locale} />
       </main>
 
-      {/* Mobile fixed order CTA — bottom bar is one of the two allowed blur surfaces */}
-      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-200/60 bg-white/85 p-3 backdrop-blur-md dark:border-white/10 dark:bg-navy-900/85 sm:hidden">
+      {/* Мобильный нижний CTA — форма-первый и на телефоне */}
+      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-200 bg-white p-3 dark:border-white/10 dark:bg-navy-900 sm:hidden">
         <Button size="lg" className="w-full" asChild>
           <Link href={`/${locale}/benzin`} onClick={() => track('gasoline_order_clicked', { where: 'mobile_bar' })}>
             {t('orderFuel')}
           </Link>
         </Button>
       </div>
-      {/* Spacer so content isn't hidden behind the mobile bar */}
       <div className="h-20 sm:hidden" aria-hidden />
     </div>
   );
 }
 
+/** Форма-первый hero: заголовок → виджет заказа → продуктовый визуал справа. */
 function Hero({ locale }: { locale: string }) {
   const t = useTranslations('b2c');
+  const router = useRouter();
+  const [fuel, setFuel] = useState<(typeof FUELS)[number]>('AI_92');
+
+  const startOrder = (where: string) => {
+    track('gasoline_order_clicked', { where });
+    router.push(`/${locale}/benzin?fuel=${fuel}`);
+  };
+
   return (
-    <motion.section
-      initial="hidden"
-      animate="show"
-      variants={{ show: { transition: { staggerChildren: stagger } } }}
-      className="mx-auto max-w-[1200px] px-4 pb-16 pt-14 text-center sm:px-6 lg:px-8 lg:pb-24 lg:pt-24"
-    >
-      <motion.h1
-        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: spring.default } }}
-        className="mx-auto max-w-3xl text-balance text-4xl font-bold leading-[1.05] tracking-[-0.02em] text-navy dark:text-white sm:text-5xl lg:text-display"
-      >
-        {t('hero.title')}
-      </motion.h1>
-      <motion.p
-        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: spring.default } }}
-        className="mx-auto mt-6 max-w-xl text-balance text-lg leading-relaxed text-gray-600 dark:text-gray-300 lg:text-xl"
-      >
-        {t('hero.subtitle')}
-      </motion.p>
-      <motion.div
-        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: spring.default } }}
-        className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row"
-      >
-        <Button size="lg" className="w-full sm:w-auto" asChild>
-          <Link href={`/${locale}/benzin`} onClick={() => track('gasoline_order_clicked', { where: 'hero' })}>
-            {t('hero.ctaBenzin')}
-          </Link>
-        </Button>
-        <Button size="lg" variant="secondary" className="w-full sm:w-auto" asChild>
-          <Link href={`/${locale}/propan`} onClick={() => track('propane_points_clicked', { where: 'hero' })}>
-            {t('hero.ctaPropan')}
-          </Link>
-        </Button>
-      </motion.div>
-      <motion.a
-        variants={{ hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.3 } } }}
-        href="#how"
-        className="mt-8 inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-primary-600 hover:text-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:text-primary-400 dark:hover:text-primary-300"
-      >
-        {t('hero.how')}
-        <ArrowRight className="h-4 w-4" aria-hidden />
-      </motion.a>
-      <motion.div
-        variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0, transition: spring.default } }}
-      >
-        <HeroVisual />
-      </motion.div>
-    </motion.section>
+    <section className="mx-auto grid max-w-[1200px] items-center gap-10 px-4 pb-12 pt-8 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-16">
+      <div>
+        <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.01em] text-navy dark:text-white sm:text-title lg:text-display">
+          {t('hero.title')}
+        </h1>
+
+        {/* Мини-виджет заказа (uber-стиль) */}
+        <div className="mt-7 max-w-md space-y-3">
+          <button
+            type="button"
+            onClick={() => startOrder('hero_widget_where')}
+            className="flex h-12 w-full items-center gap-3 rounded-control bg-gray-100 px-4 text-left text-body text-gray-500 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:bg-white/10 dark:text-gray-400 dark:hover:bg-white/15 dark:focus-visible:ring-white/60"
+          >
+            <MapPin className="h-5 w-5 shrink-0 text-navy dark:text-white" aria-hidden />
+            {t('widgetWhere')}
+          </button>
+
+          <div className="grid grid-cols-3 gap-2">
+            {FUELS.map((f) => (
+              <button
+                key={f}
+                type="button"
+                onClick={() => setFuel(f)}
+                className={`h-11 rounded-control text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:focus-visible:ring-white/60 ${
+                  fuel === f
+                    ? 'border-2 border-primary-600 bg-white text-navy dark:bg-white/10 dark:text-white'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15'
+                }`}
+              >
+                {FUEL_LABEL[f]}
+              </button>
+            ))}
+          </div>
+
+          <Button size="lg" className="w-full sm:w-auto sm:px-10" onClick={() => startOrder('hero_widget')}>
+            {t('widgetCta')}
+          </Button>
+        </div>
+      </div>
+
+      <HeroVisual />
+    </section>
   );
 }
 
-/** Hero visual built from real UI: a stylized map with a route + a live order card. */
+/** Продуктовый визуал: карта с маршрутом + карточка заказа. Без анимаций. */
 function HeroVisual() {
   const t = useTranslations('b2c');
   return (
-    <div className="relative mx-auto mt-14 w-full max-w-3xl lg:mt-20">
-      <div className="relative overflow-hidden rounded-card border border-gray-200/60 bg-white text-left shadow-soft-lg dark:border-white/10 dark:bg-navy-900">
-        {/* Map panel */}
-        <div className="relative h-64 bg-gray-100 dark:bg-navy-800 sm:h-80">
+    <div className="hidden w-full lg:block">
+      <div className="overflow-hidden rounded-card border border-gray-200 bg-white dark:border-white/10 dark:bg-navy-900">
+        <div className="relative h-72 bg-gray-100 dark:bg-navy-800">
           <div
             className="absolute inset-0"
             style={{
               backgroundImage:
-                'linear-gradient(rgba(19,34,79,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(19,34,79,0.07) 1px, transparent 1px)',
+                'linear-gradient(rgba(20,23,31,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(20,23,31,0.06) 1px, transparent 1px)',
               backgroundSize: '32px 32px',
             }}
             aria-hidden
           />
-          <svg
-            className="absolute inset-0 h-full w-full text-primary-600 dark:text-primary-400"
-            viewBox="0 0 400 288"
-            fill="none"
-            aria-hidden
-          >
+          <svg className="absolute inset-0 h-full w-full text-primary-600" viewBox="0 0 400 288" fill="none" aria-hidden>
             <path
               d="M60 235 C 130 200, 150 120, 250 110 S 340 70, 345 55"
               stroke="currentColor"
@@ -144,33 +146,29 @@ function HeroVisual() {
               strokeDasharray="2 12"
             />
           </svg>
-          {/* courier — static marker; live pulse belongs to the real tracking map */}
           <span className="absolute left-[14%] top-[80%] flex h-4 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <span className="absolute h-6 w-6 rounded-full bg-primary-600/15" />
-            <span className="relative h-3.5 w-3.5 rounded-full border-2 border-white bg-primary-600 shadow" />
+            <span className="relative h-3.5 w-3.5 rounded-full border-2 border-white bg-primary-600" />
           </span>
-          {/* destination */}
           <span className="absolute left-[85%] top-[19%] -translate-x-1/2 -translate-y-full text-navy dark:text-white">
-            <MapPin className="h-7 w-7 fill-navy/10 dark:fill-white/10" aria-hidden />
+            <MapPin className="h-7 w-7" aria-hidden />
           </span>
         </div>
-        {/* Order card — illustrative, facts only (no fabricated price/ETA). */}
-        <div className="space-y-3 p-5 sm:p-6">
+        <div className="space-y-3 p-5">
           <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-medium text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-gray-100 px-2.5 py-1 text-caption font-medium text-navy dark:bg-white/10 dark:text-white">
               <Navigation className="h-3.5 w-3.5" aria-hidden />
               {t('heroCard.status')}
             </span>
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">{t('heroCard.coverage')}</span>
+            <span className="text-caption text-gray-500 dark:text-gray-400">{t('heroCard.coverage')}</span>
           </div>
           <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/10">
             <div>
               <p className="text-sm font-semibold text-navy dark:text-white">АИ-92</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('heroCard.priceLabel')}</p>
+              <p className="text-caption text-gray-500 dark:text-gray-400">{t('heroCard.priceLabel')}</p>
             </div>
             <div className="text-right">
               <p className="text-sm font-semibold text-success-600 dark:text-success-500">{t('heroCard.freeDelivery')}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{t('heroCard.cardPay')}</p>
+              <p className="text-caption text-gray-500 dark:text-gray-400">{t('heroCard.cardPay')}</p>
             </div>
           </div>
         </div>
@@ -179,105 +177,82 @@ function HeroVisual() {
   );
 }
 
-/** Fade+rise when the block enters the viewport (once). */
-function Reveal({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
-      transition={{ ...spring.default, delay }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
+/** Ряд карточек-сервисов как Uber Ride/Reserve: серые заливки, без теней. */
 function Services({ locale }: { locale: string }) {
   const t = useTranslations('b2c');
+  const cards = [
+    {
+      icon: Fuel,
+      title: t('services.benzin.title'),
+      desc: t('services.benzin.desc'),
+      cta: t('services.benzin.cta'),
+      href: `/${locale}/benzin`,
+      event: 'gasoline_order_clicked' as const,
+    },
+    {
+      icon: Flame,
+      title: t('services.propan.title'),
+      desc: t('services.propan.desc'),
+      cta: t('services.propan.cta'),
+      href: `/${locale}/propan`,
+      event: 'propane_points_clicked' as const,
+    },
+    {
+      icon: CalendarClock,
+      title: t('svcScheduleTitle'),
+      desc: t('svcScheduleDesc'),
+      cta: t('widgetCta'),
+      href: `/${locale}/benzin?schedule=1`,
+      event: 'gasoline_order_clicked' as const,
+    },
+  ];
   return (
-    <section className="mx-auto max-w-[1200px] px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24">
-      <div className="grid gap-4 sm:grid-cols-2 lg:gap-6">
-        {/* Benzin — primary */}
-        <Reveal className="flex flex-col justify-between gap-8 rounded-card border border-gray-200/60 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-8">
-          <div>
-            <Fuel className="h-7 w-7 text-navy dark:text-white" aria-hidden />
-            <h3 className="mt-5 text-2xl font-semibold tracking-tight text-navy dark:text-white">
-              {t('services.benzin.title')}
-            </h3>
-            <p className="mt-2 text-base leading-relaxed text-gray-600 dark:text-gray-300">
-              {t('services.benzin.desc')}
-            </p>
-          </div>
-          <Button asChild>
-            <Link href={`/${locale}/benzin`} onClick={() => track('gasoline_order_clicked', { where: 'services' })}>
-              {t('services.benzin.cta')}
+    <section className="mx-auto max-w-[1200px] px-4 pb-12 sm:px-6 lg:px-8 lg:pb-16">
+      <div className="grid gap-3 sm:grid-cols-3">
+        {cards.map((c) => {
+          const Icon = c.icon;
+          return (
+            <Link
+              key={c.title}
+              href={c.href}
+              onClick={() => track(c.event, { where: 'services' })}
+              className="group flex flex-col justify-between rounded-card bg-gray-100 p-5 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:bg-navy-900 dark:hover:bg-navy-800 dark:focus-visible:ring-white/60"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <h3 className="text-subheading text-navy dark:text-white">{c.title}</h3>
+                  <Icon className="h-6 w-6 text-navy dark:text-white" aria-hidden />
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{c.desc}</p>
+              </div>
+              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-navy group-hover:gap-2 dark:text-white">
+                {c.cta}
+                <ArrowRight className="h-4 w-4" aria-hidden />
+              </span>
             </Link>
-          </Button>
-        </Reveal>
-        {/* Propan — secondary */}
-        <Reveal delay={0.06} className="flex flex-col justify-between gap-8 rounded-card border border-gray-200/60 bg-white p-6 shadow-soft dark:border-white/10 dark:bg-navy-900 sm:p-8">
-          <div>
-            <Flame className="h-7 w-7 text-navy dark:text-white" aria-hidden />
-            <h3 className="mt-5 text-2xl font-semibold tracking-tight text-navy dark:text-white">
-              {t('services.propan.title')}
-            </h3>
-            <p className="mt-2 text-base leading-relaxed text-gray-600 dark:text-gray-300">
-              {t('services.propan.desc')}
-            </p>
-          </div>
-          <Button variant="secondary" asChild>
-            <Link href={`/${locale}/propan`} onClick={() => track('propane_points_clicked', { where: 'services' })}>
-              {t('services.propan.cta')}
-            </Link>
-          </Button>
-        </Reveal>
+          );
+        })}
       </div>
     </section>
   );
 }
 
+/** Компактный «как это работает»: три шага текстом, без карточек-декораций. */
 function HowItWorks() {
   const t = useTranslations('b2c');
-  const steps = [
-    { icon: MapPin, key: 'step1' },
-    { icon: Fuel, key: 'step2' },
-    { icon: Receipt, key: 'step3' },
-  ] as const;
+  const steps = ['step1', 'step2', 'step3'] as const;
   return (
-    <section id="how" className="scroll-mt-20 bg-white py-16 dark:bg-navy-900 lg:py-24">
+    <section id="how" className="scroll-mt-20 border-t border-gray-100 py-12 dark:border-white/10 lg:py-16">
       <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
-        <Reveal>
-          <h2 className="text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-title">
-            {t('how.title')}
-          </h2>
-        </Reveal>
-        <ol className="mt-10 grid gap-4 sm:grid-cols-3 lg:gap-6">
-          {steps.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <motion.li
-                key={s.key}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-60px' }}
-                transition={{ ...spring.default, delay: i * stagger }}
-                className="rounded-card bg-gray-50 p-6 dark:bg-navy-950 sm:p-8"
-              >
-                <div className="flex items-center justify-between">
-                  <Icon className="h-6 w-6 text-gray-500 dark:text-gray-400" aria-hidden />
-                  <span className="text-sm font-medium tabular-nums text-gray-400 dark:text-gray-500">
-                    0{i + 1}
-                  </span>
-                </div>
-                <h3 className="mt-5 text-subheading text-navy dark:text-white">{t(`how.${s.key}.title`)}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-                  {t(`how.${s.key}.desc`)}
-                </p>
-              </motion.li>
-            );
-          })}
+        <h2 className="text-heading text-navy dark:text-white">{t('how.title')}</h2>
+        <ol className="mt-6 grid gap-6 sm:grid-cols-3">
+          {steps.map((key, i) => (
+            <li key={key}>
+              <p className="text-sm font-semibold tabular-nums text-gray-400 dark:text-gray-500">0{i + 1}</p>
+              <h3 className="mt-1 text-sm font-semibold text-navy dark:text-white">{t(`how.${key}.title`)}</h3>
+              <p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{t(`how.${key}.desc`)}</p>
+            </li>
+          ))}
         </ol>
       </div>
     </section>
@@ -288,24 +263,20 @@ function Faq() {
   const t = useTranslations('b2c');
   const qs = ['q1', 'q2', 'q3', 'q4'] as const;
   return (
-    <section className="bg-white pb-16 dark:bg-navy-900 lg:pb-24">
+    <section className="border-t border-gray-100 py-12 dark:border-white/10 lg:py-16">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-        <Reveal>
-          <h2 className="text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-title">
-            {t('faq.title')}
-          </h2>
-        </Reveal>
-        <div className="mt-10 divide-y divide-gray-100 rounded-card border border-gray-200/60 dark:divide-white/10 dark:border-white/10">
+        <h2 className="text-heading text-navy dark:text-white">{t('faq.title')}</h2>
+        <div className="mt-6 divide-y divide-gray-100 dark:divide-white/10">
           {qs.map((q) => (
-            <details key={q} className="group px-5 py-5 sm:px-6">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-medium text-navy dark:text-white">
+            <details key={q} className="group py-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-body font-medium text-navy dark:text-white">
                 {t(`faq.${q}.q`)}
                 <ChevronDown
-                  className="h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180 dark:text-gray-500"
+                  className="h-4 w-4 shrink-0 text-gray-400 transition-transform duration-150 group-open:rotate-180 dark:text-gray-500"
                   aria-hidden
                 />
               </summary>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{t(`faq.${q}.a`)}</p>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-400">{t(`faq.${q}.a`)}</p>
             </details>
           ))}
         </div>
@@ -317,12 +288,12 @@ function Faq() {
 function Footer({ locale }: { locale: string }) {
   const t = useTranslations('b2c');
   return (
-    <footer className="border-t border-gray-200/60 bg-gray-50 dark:border-white/10 dark:bg-navy-950">
-      <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-12 sm:px-6 lg:grid-cols-3 lg:px-8">
+    <footer className="border-t border-gray-100 bg-white dark:border-white/10 dark:bg-navy-950">
+      <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
         <div>
-          <span className="flex items-center gap-2.5 text-lg font-semibold tracking-tight text-navy dark:text-white">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
-              <Fuel className="h-4 w-4 text-white" aria-hidden />
+          <span className="flex items-center gap-2.5 text-base font-semibold tracking-tight text-navy dark:text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-control bg-navy dark:bg-white">
+              <Fuel className="h-4 w-4 text-white dark:text-navy" aria-hidden />
             </span>
             {siteConfig.appName}
           </span>
@@ -332,7 +303,7 @@ function Footer({ locale }: { locale: string }) {
           <h4 className="text-sm font-semibold text-navy dark:text-white">{t('footer.contactsTitle')}</h4>
           <a
             href={`tel:${siteConfig.supportPhone}`}
-            className="mt-3 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 dark:text-gray-300"
+            className="mt-3 inline-flex items-center gap-2 text-sm text-gray-600 hover:text-navy dark:text-gray-300 dark:hover:text-white"
           >
             <Phone className="h-4 w-4" aria-hidden />
             {siteConfig.supportPhone}
@@ -341,18 +312,18 @@ function Footer({ locale }: { locale: string }) {
         <div className="space-y-3">
           <h4 className="text-sm font-semibold text-navy dark:text-white">{t('footer.docsTitle')}</h4>
           <div className="flex flex-col gap-2 text-sm text-gray-600 dark:text-gray-300">
-            <Link href={`/${locale}/terms`} className="hover:text-primary-600">
+            <Link href={`/${locale}/terms`} className="hover:text-navy dark:hover:text-white">
               {t('footer.terms')}
             </Link>
-            <Link href={`/${locale}/privacy`} className="hover:text-primary-600">
+            <Link href={`/${locale}/privacy`} className="hover:text-navy dark:hover:text-white">
               {t('footer.privacy')}
             </Link>
           </div>
           <LanguageSwitcher />
         </div>
       </div>
-      <div className="border-t border-gray-200/60 py-4 dark:border-white/10">
-        <p className="mx-auto max-w-[1200px] px-4 text-xs text-gray-400 dark:text-gray-500 sm:px-6 lg:px-8">
+      <div className="border-t border-gray-100 py-4 dark:border-white/10">
+        <p className="mx-auto max-w-[1200px] px-4 text-caption text-gray-400 dark:text-gray-500 sm:px-6 lg:px-8">
           © {siteConfig.appName}. {t('footer.rights')}
         </p>
       </div>

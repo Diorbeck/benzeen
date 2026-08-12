@@ -24,7 +24,7 @@ export function HistorySection({ locale, orders }: { locale: string; orders: Acc
       {nextScheduled && (
         <Link
           href={`/${locale}/account/orders/${nextScheduled.id}`}
-          className="flex min-h-11 items-center gap-2.5 rounded-card border border-primary-100 dark:border-primary-500/30 bg-primary-50/60 dark:bg-primary-500/15 px-4 py-3 text-sm text-primary-800 dark:text-primary-300 transition-colors hover:bg-primary-50 dark:hover:bg-primary-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+          className="flex min-h-11 items-center gap-2.5 rounded-card bg-gray-100 dark:bg-white/10 px-4 py-3 text-sm text-navy dark:text-white transition-colors hover:bg-gray-200/70 dark:hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
         >
           <Clock className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
           {t('history.scheduledBadge', {
@@ -63,7 +63,7 @@ export function HistorySection({ locale, orders }: { locale: string; orders: Acc
           {orders.map((o) => {
             const repeat = `/${locale}/benzin?fuel=${o.fuelType}&volume=${o.volume}${o.clientCarId ? `&carId=${o.clientCarId}` : ''}`;
             return (
-              <li key={o.id} className="rounded-card border border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft dark:shadow-none">
+              <li key={o.id} className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5">
                 <div className="flex items-start justify-between gap-3">
                   <Link href={`/${locale}/account/orders/${o.id}`} className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold tabular-nums text-navy dark:text-white">
@@ -83,13 +83,13 @@ export function HistorySection({ locale, orders }: { locale: string; orders: Acc
                 <div className="mt-3 flex items-center gap-4 border-t border-gray-100 dark:border-white/10 pt-3">
                   <Link
                     href={`/${locale}/account/orders/${o.id}`}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full text-sm font-medium text-primary-600 dark:text-primary-400 transition-colors hover:text-primary-700 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-control text-sm font-medium text-primary-600 dark:text-primary-400 transition-colors hover:text-primary-700 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                   >
                     <Clock className="h-4 w-4" /> {t('history.track')}
                   </Link>
                   <Link
                     href={repeat}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-control text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-navy dark:hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                   >
                     <RotateCcw className="h-4 w-4" /> {t('history.repeat')}
                   </Link>

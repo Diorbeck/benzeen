@@ -45,13 +45,13 @@ const config: Config = {
           400: '#9ca3af',
           500: '#6b7280',
         },
-        // Deep navy — text on light surfaces + the dark-theme surface family.
+        // Near-black text on light + the charcoal dark-theme family (Uber-restraint).
         navy: {
-          DEFAULT: '#13224F', // primary text on light
-          700: '#253464', // subtle elevated / borders on dark
-          800: '#1B2749', // elevated dark surface
-          900: '#141E3D', // dark surface (cards, header)
-          950: '#0B1226', // dark background
+          DEFAULT: '#14171F', // primary text on light (black with a faint navy cast)
+          700: '#232323', // subtle borders on dark
+          800: '#1A1A1A', // elevated dark surface
+          900: '#141414', // dark surface (cards, header, sheets)
+          950: '#0A0A0A', // dark background (charcoal)
         },
         // Semantic — success only for success, warning only for warnings.
         success: { DEFAULT: '#059669', 500: '#10b981', 600: '#059669' },
@@ -67,15 +67,15 @@ const config: Config = {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'monospace'],
       },
-      // Type scale (benzeen-design): large text tight, small text open.
+      // Type scale (Uber-restraint): плотно, без display-полотен.
       fontSize: {
-        'display': ['3.5rem', { lineHeight: '1.05', letterSpacing: '-0.02em', fontWeight: '700' }],
-        'title': ['2.25rem', { lineHeight: '1.15', letterSpacing: '-0.02em', fontWeight: '700' }],
-        'heading': ['1.5rem', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '600' }],
-        'subheading': ['1.125rem', { lineHeight: '1.4', fontWeight: '600' }],
-        'body': ['1rem', { lineHeight: '1.5', fontWeight: '400' }],
-        'caption': ['0.875rem', { lineHeight: '1.4', fontWeight: '500' }],
-        'button': ['0.875rem', { lineHeight: '1.2', fontWeight: '600' }],
+        'display': ['2.5rem', { lineHeight: '1.1', letterSpacing: '-0.01em', fontWeight: '700' }], // 40px max — hero desktop
+        'title': ['2rem', { lineHeight: '1.15', letterSpacing: '-0.01em', fontWeight: '700' }], // 32px — страницы
+        'heading': ['1.5rem', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '600' }], // 24px — секции
+        'subheading': ['1.0625rem', { lineHeight: '1.4', fontWeight: '600' }], // 17px
+        'body': ['0.9375rem', { lineHeight: '1.5', fontWeight: '400' }], // 15px
+        'caption': ['0.8125rem', { lineHeight: '1.4', fontWeight: '500' }], // 13px
+        'button': ['0.9375rem', { lineHeight: '1.2', fontWeight: '600' }],
       },
       animation: {
         'flow-slow': 'flow 20s linear infinite',
@@ -110,11 +110,11 @@ const config: Config = {
         '18': '4.5rem',
         '22': '5.5rem',
       },
-      // Radius scale kept in the 12–16px range (sheets a touch larger).
+      // Uber-restraint: прямоугольники. 8 контролы, 12 карточки, 16 шиты.
       borderRadius: {
-        control: '0.75rem', // 12px — inputs, chips
-        card: '1rem', // 16px — cards, panels
-        sheet: '1.25rem', // 20px — bottom sheets only
+        control: '0.5rem', // 8px — inputs, chips, buttons
+        card: '0.75rem', // 12px — cards, panels
+        sheet: '1rem', // 16px — bottom sheets only
       },
       transitionDuration: { DEFAULT: '200ms' },
       zIndex: {

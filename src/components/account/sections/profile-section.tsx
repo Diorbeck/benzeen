@@ -173,7 +173,7 @@ function PushToggle() {
           aria-label={t('push.profileLabel')}
           disabled={busy}
           onClick={toggle}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
         >
           <span
             className={`relative h-7 w-12 rounded-full transition-colors duration-200 ${

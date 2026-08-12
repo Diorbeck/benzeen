@@ -7,7 +7,6 @@ import { signIn, useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { CalendarClock, Car, Check, Fuel, Gift, MapPin, Plus, RotateCcw, Star, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { AnimatedNumber } from '@/components/ui/animated-number';
 import { spring } from '@/lib/motion';
 import { MapPicker, type LatLng } from '@/components/map/map-picker';
 import { calcOrderPrice, type FuelType } from '@/lib/pricing';
@@ -53,7 +52,7 @@ function plateKey(raw: string): string {
 }
 
 const inputCls =
-  'w-full rounded-control border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-3 text-navy dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-600/20';
+  'w-full rounded-control border border-transparent bg-gray-100 px-4 py-3 text-navy placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:bg-white/10 dark:text-white dark:placeholder-gray-500 dark:focus:bg-white/15 dark:focus:ring-white/60';
 
 export function FuelOrderFlow({
   locale,
@@ -477,7 +476,7 @@ export function FuelOrderFlow({
           </p>
         )}
         {draftRestored && (
-          <div className="flex items-center justify-between gap-3 rounded-control border border-primary-100 dark:border-primary-500/30 bg-primary-50/60 dark:bg-primary-500/15 px-4 py-3 text-sm text-primary-800 dark:text-primary-300">
+          <div className="flex items-center justify-between gap-3 rounded-control bg-gray-100 dark:bg-white/10 px-4 py-3 text-sm text-navy dark:text-white">
             <span>{t('draftRestored')}</span>
             <button
               type="button"
@@ -486,7 +485,7 @@ export function FuelOrderFlow({
                 setDraftRestored(false);
                 window.location.reload();
               }}
-              className="shrink-0 font-medium text-primary-700 dark:text-primary-300 underline-offset-2 hover:underline"
+              className="shrink-0 font-medium text-primary-600 dark:text-primary-400 underline-offset-2 hover:underline"
             >
               {t('draftClear')}
             </button>
@@ -502,10 +501,10 @@ export function FuelOrderFlow({
                   key={c.id}
                   type="button"
                   onClick={() => selectCar(c)}
-                  className={`flex w-full items-center justify-between rounded-control border px-4 py-3 text-left transition active:scale-[0.99] motion-reduce:active:scale-100 ${
+                  className={`flex w-full items-center justify-between rounded-control border-2 px-4 py-3 text-left transition active:scale-[0.99] motion-reduce:active:scale-100 ${
                     !usingNewCar && carId === c.id
-                      ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15'
-                      : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
+                      ? 'border-primary-600 bg-white dark:bg-white/10'
+                      : 'border-transparent bg-gray-100 dark:bg-white/5 hover:bg-gray-200/70 dark:hover:bg-white/10'
                   }`}
                 >
                   <span className="min-w-0 truncate text-sm font-medium text-navy dark:text-white">
@@ -521,8 +520,8 @@ export function FuelOrderFlow({
                   setAddingCar(true);
                   setCarId(null);
                 }}
-                className={`flex w-full items-center gap-2 rounded-control border px-4 py-3 text-left text-sm font-medium transition ${
-                  usingNewCar ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-dashed border-gray-300 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-primary-300 dark:hover:border-primary-500/40'
+                className={`flex w-full items-center gap-2 rounded-control border-2 px-4 py-3 text-left text-sm font-medium transition ${
+                  usingNewCar ? 'border-primary-600 bg-white dark:bg-white/10 text-navy dark:text-white' : 'border-dashed border-gray-300 dark:border-white/15 text-gray-600 dark:text-gray-300 hover:border-gray-400 dark:hover:border-white/30'
                 }`}
               >
                 <Plus className="h-4 w-4" /> {t('addCar')}
@@ -546,7 +545,7 @@ export function FuelOrderFlow({
                   <button
                     type="button"
                     onClick={() => selectCar(plateMatch)}
-                    className="mt-2 flex w-full items-center gap-2 rounded-control border border-primary-200 dark:border-primary-500/40 bg-primary-50/60 dark:bg-primary-500/15 px-3 py-2.5 text-left text-sm text-primary-800 dark:text-primary-200 transition hover:border-primary-400"
+                    className="mt-2 flex w-full items-center gap-2 rounded-control bg-gray-100 dark:bg-white/10 px-3 py-2.5 text-left text-sm text-navy dark:text-white transition hover:bg-gray-200/70 dark:hover:bg-white/15"
                   >
                     <Car className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" aria-hidden />
                     <span>
@@ -593,8 +592,8 @@ export function FuelOrderFlow({
                     setFuelType(f);
                     track('fuel_selected', { fuel: f });
                   }}
-                  className={`rounded-control border p-3 text-left transition active:scale-[0.98] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${
-                    active ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 hover:border-primary-200 dark:hover:border-primary-500/40'
+                  className={`rounded-control border-2 p-3 text-left transition active:scale-[0.98] motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${
+                    active ? 'border-primary-600 bg-white dark:bg-white/10' : 'border-transparent bg-gray-100 dark:bg-white/5 hover:bg-gray-200/70 dark:hover:bg-white/10'
                   }`}
                 >
                   <span className="block text-sm font-semibold text-navy dark:text-white">{FUEL_LABEL[f]}</span>
@@ -618,8 +617,8 @@ export function FuelOrderFlow({
                     setVolume(v);
                     track('volume_selected', { liters: v });
                   }}
-                  className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition active:scale-[0.97] motion-reduce:active:scale-100 ${
-                    active ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
+                  className={`min-h-[44px] rounded-control border-2 px-5 text-sm font-medium transition active:scale-[0.97] motion-reduce:active:scale-100 ${
+                    active ? 'border-primary-600 bg-white dark:bg-white/10 text-navy dark:text-white' : 'border-transparent bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 hover:bg-gray-200/70 dark:hover:bg-white/10'
                   }`}
                 >
                   {v} {t('liters')}
@@ -633,8 +632,8 @@ export function FuelOrderFlow({
                   setIsFullTank(true);
                   track('volume_selected', { fullTank: true });
                 }}
-                className={`min-h-[44px] rounded-full border px-5 text-sm font-medium transition active:scale-[0.97] motion-reduce:active:scale-100 ${
-                  isFullTank ? 'border-primary-600 bg-primary-50 dark:bg-primary-500/15 text-primary-700 dark:text-primary-300' : 'border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 text-gray-700 dark:text-gray-200 hover:border-primary-200 dark:hover:border-primary-500/40'
+                className={`min-h-[44px] rounded-control border-2 px-5 text-sm font-medium transition active:scale-[0.97] motion-reduce:active:scale-100 ${
+                  isFullTank ? 'border-primary-600 bg-white dark:bg-white/10 text-navy dark:text-white' : 'border-transparent bg-gray-100 dark:bg-white/5 text-gray-700 dark:text-gray-200 hover:bg-gray-200/70 dark:hover:bg-white/10'
                 }`}
               >
                 {t('fullTank')}
@@ -680,7 +679,7 @@ export function FuelOrderFlow({
                     setAddress(l.name);
                     track('address_selected', { source: 'saved' });
                   }}
-                  className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 px-4 py-2 text-sm text-navy dark:text-white hover:border-primary-200 dark:hover:border-primary-500/40"
+                  className="inline-flex max-w-full items-center gap-1.5 rounded-control bg-gray-100 dark:bg-white/10 px-4 py-2 text-sm text-navy dark:text-white transition hover:bg-gray-200/70 dark:hover:bg-white/15"
                 >
                   <Star
                     className={`h-3.5 w-3.5 shrink-0 text-primary-600 dark:text-primary-400 ${
@@ -819,13 +818,13 @@ export function FuelOrderFlow({
       </div>
 
       {/* Mobile fixed bottom bar */}
-      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-200/60 bg-white/85 p-3 backdrop-blur-md dark:border-white/10 dark:bg-navy-900/85 lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-header border-t border-gray-200/60 bg-white p-3 dark:border-white/10 dark:bg-navy-900 lg:hidden">
         {block && <p className="mb-2 text-center text-xs text-warning-600 dark:text-warning-500">{t(`disabled.${block}`)}</p>}
         {error && <p className="mb-2 text-center text-xs text-red-600 dark:text-red-400">{error}</p>}
         <div className="mb-2 flex items-center justify-between px-1 text-sm">
           <span className="text-gray-500 dark:text-gray-400">{t('total')}</span>
           <span className="text-lg font-bold tabular-nums text-navy dark:text-white">
-            <AnimatedNumber value={total} format={(n) => formatMoney(n, locale)} /> {t('sum')}
+            {formatMoney(total, locale)} {t('sum')}
           </span>
         </div>
         <Button
@@ -895,9 +894,9 @@ function RepeatFork({
       <button
         type="button"
         onClick={onRepeat}
-        className="group flex w-full flex-col gap-3 rounded-card border border-primary-200 dark:border-primary-500/40 bg-primary-50/50 dark:bg-primary-500/10 p-5 text-left shadow-soft transition hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-primary-500/15"
+        className="group flex w-full flex-col gap-3 rounded-card border-2 border-primary-600 bg-white dark:bg-white/10 p-5 text-left transition hover:bg-gray-50 dark:hover:bg-white/15"
       >
-        <span className="flex items-center gap-2 text-base font-semibold text-primary-800 dark:text-primary-200">
+        <span className="flex items-center gap-2 text-base font-semibold text-navy dark:text-white">
           <RotateCcw className="h-5 w-5 text-primary-600 dark:text-primary-400" aria-hidden />
           {t('repeat.repeatTitle')}
         </span>
@@ -930,7 +929,7 @@ function RepeatFork({
             })}
           </span>
         )}
-        <span className="mt-1 inline-flex items-center justify-center rounded-full bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-700">
+        <span className="mt-1 inline-flex items-center justify-center rounded-control bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-700">
           {t('repeat.repeatCta')}
         </span>
       </button>
@@ -939,7 +938,7 @@ function RepeatFork({
       <button
         type="button"
         onClick={onNew}
-        className="flex w-full items-center justify-center gap-2 rounded-card border border-dashed border-gray-300 dark:border-white/15 bg-white dark:bg-navy-900 px-4 py-4 text-sm font-medium text-gray-600 dark:text-gray-300 transition hover:border-primary-300 dark:hover:border-primary-500/40 hover:text-primary-600"
+        className="flex w-full items-center justify-center gap-2 rounded-card border border-dashed border-gray-300 dark:border-white/15 bg-white dark:bg-navy-900 px-4 py-4 text-sm font-medium text-gray-600 dark:text-gray-300 transition hover:border-gray-400 dark:hover:border-white/30 hover:text-navy dark:hover:text-white"
       >
         <Plus className="h-4 w-4" aria-hidden />
         {t('repeat.newCta')}
@@ -960,7 +959,7 @@ function StepCard({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft sm:p-6">
+    <section className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5 sm:p-6">
       <div className="mb-5 flex items-center gap-2.5">
         <Icon className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
         <h2 className="text-subheading text-navy dark:text-white">
@@ -1039,7 +1038,7 @@ function Summary({
   onSubmit: () => void;
 }) {
   return (
-    <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5 shadow-soft">
+    <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5">
       <h2 className="text-base font-semibold text-navy dark:text-white">{t('summaryTitle')}</h2>
       <dl className="mt-4 space-y-2 text-sm">
         {plate && <SummaryRow label={t('steps.car')} value={plate} />}
@@ -1063,7 +1062,7 @@ function Summary({
 
       {/* Bonus toggle */}
       {bonusUsable > 0 && (
-        <label className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-control bg-primary-50/60 dark:bg-primary-500/15 px-3 py-2.5 text-sm">
+        <label className="mt-4 flex cursor-pointer items-start gap-2.5 rounded-control bg-gray-100 dark:bg-white/10 px-3 py-2.5 text-sm">
           <input
             type="checkbox"
             checked={useBonus}
@@ -1087,7 +1086,7 @@ function Summary({
               {formatMoney(grossTotal, locale)}
             </span>
           )}
-          <AnimatedNumber value={total} format={(n) => formatMoney(n, locale)} /> {t('sum')}
+          {formatMoney(total, locale)} {t('sum')}
         </span>
       </div>
 
@@ -1174,7 +1173,7 @@ function InlineLogin({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0.5 }}
         transition={spring.sheet}
-        className="w-full max-w-md rounded-t-sheet bg-white/95 p-6 shadow-soft-lg backdrop-blur-md dark:bg-navy-900/95 sm:rounded-card"
+        className="w-full max-w-md rounded-t-sheet bg-white p-6 shadow-soft-lg dark:bg-navy-900 sm:rounded-card"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -1186,13 +1185,13 @@ function InlineLogin({
               {step === 'phone' ? t('login.subtitle') : t('login.subtitleCode', { phone })}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-full p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10" aria-label={t('login.cancel')}>
+          <button type="button" onClick={onClose} className="rounded-control p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10" aria-label={t('login.cancel')}>
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {error && <p className="mb-3 rounded-control bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-400" role="alert">{error}</p>}
-        {info && !error && <p className="mb-3 rounded-control bg-primary-50 dark:bg-primary-500/15 px-3 py-2 text-sm text-primary-700 dark:text-primary-300">{info}</p>}
+        {info && !error && <p className="mb-3 rounded-control bg-gray-100 dark:bg-white/10 px-3 py-2 text-sm text-navy dark:text-white">{info}</p>}
 
         {step === 'phone' ? (
           <form onSubmit={(e) => { e.preventDefault(); onSend(); }} className="space-y-3">
