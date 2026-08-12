@@ -40,3 +40,7 @@ next-env.d.ts
 # Prisma
 prisma/migrations/**/migration_lock.toml
 .gstack/
+
+# Playwright
+test-results/
+playwright-report/
