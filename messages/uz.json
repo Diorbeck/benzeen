@@ -421,6 +421,21 @@
       "loadError": "Nuqtalarni yuklab bo'lmadi",
       "noShow": "Kelmadi",
       "noShowBadge": "Kelmadi"
+    },
+    "clients": {
+      "deleteClient": "Mijozni o'chirish",
+      "deleteReason": "Sabab (audit jurnaliga)",
+      "deleteAnonymizeHint": "Ma'lumotlar shaxssizlantiriladi: buyurtmalar va bonus yozuvlari ism-raqamsiz qoladi.",
+      "deleteHard": "Butunlay o'chirish",
+      "deleteHardHint": "Faqat buyurtmasi va bonus yozuvi yo'q hisoblar uchun (spam).",
+      "deleteConfirm": "O'chirishni tasdiqlash",
+      "deleting": "O'chirilmoqda…",
+      "deletedBadge": "Hisob o'chirilgan",
+      "deleteBlockedOrder": "Mijozning faol buyurtmasi bor — avval uni yakunlang yoki bekor qiling",
+      "deleteBlockedBooking": "Mijozning faol propan broni bor — avval uni yakunlang yoki bekor qiling",
+      "deleteNotEligible": "Buyurtmalar yoki bonus yozuvlari mavjud — faqat shaxssizlantirish mumkin",
+      "deleteError": "O'chirib bo'lmadi. Qayta urinib ko'ring.",
+      "cancel": "Bekor qilish"
     }
   },
   "limits": {
@@ -905,6 +920,25 @@
       "AI_92": "AI-92",
       "AI_95": "AI-95",
       "AI_100": "AI-100"
+    },
+    "deletion": {
+      "title": "Hisobni o'chirish",
+      "cta": "Hisobni o'chirish",
+      "whatGoesTitle": "Butunlay o'chiriladi",
+      "whatGoes": "Ism-familiya, telefon raqami, Telegram bog'lanishi, mashinalar va ularning suratlari, saqlangan manzillar.",
+      "whatStaysTitle": "Shaxssiz holda saqlanadi",
+      "whatStays": "Buyurtmalar tarixi va bonus yozuvlari moliyaviy hujjat sifatida qoladi — ismingiz va raqamingizsiz.",
+      "blockedOrder": "Avval faol buyurtmani yakunlang yoki bekor qiling",
+      "blockedBooking": "Avval faol propan bronini yakunlang yoki bekor qiling",
+      "sendCode": "Tasdiqlash kodini yuborish",
+      "sending": "Yuborilmoqda…",
+      "codeSentTo": "Kod raqamingizga SMS orqali yuborildi",
+      "codePlaceholder": "SMS'dagi kod",
+      "confirm": "Butunlay o'chirish",
+      "deleting": "O'chirilmoqda…",
+      "invalidCode": "Kod noto'g'ri. Tekshirib, qayta urinib ko'ring.",
+      "genericError": "Xatolik yuz berdi. Qayta urinib ko'ring.",
+      "cancel": "Bekor qilish"
     }
   },
   "benzin": {

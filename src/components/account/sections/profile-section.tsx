@@ -6,6 +6,7 @@ import { LogOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { cardCls, inputCls } from '@/components/account/shared';
+import { DeleteAccount } from '@/components/account/delete-account';
 
 // Профиль: read-only phone + optional name/lastName + sign-out.
 export function ProfileSection({
@@ -100,6 +101,8 @@ export function ProfileSection({
           <LogOut className="h-4 w-4" /> {t('logout')}
         </Button>
       </div>
+
+      <DeleteAccount locale={locale} />
     </section>
   );
 }

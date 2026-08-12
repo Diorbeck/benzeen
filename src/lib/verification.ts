@@ -20,7 +20,7 @@ function generateCode(): string {
   return s;
 }
 
-export type VerificationPurpose = 'signup' | 'password_reset' | 'client_auth';
+export type VerificationPurpose = 'signup' | 'password_reset' | 'client_auth' | 'account_delete';
 
 // --- Eskiz.uz SMS gateway ---------------------------------------------------
 // Auth (email/password) returns a bearer token (valid ~30 days); we cache it in

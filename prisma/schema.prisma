@@ -88,6 +88,9 @@ enum AuditAction {
   COURIER_DEACTIVATE
   COURIER_ACTIVATE
   COURIER_CSV_EXPORT
+  // Account deletion (Поддержка 2.0 волна): анонимизация и hard-delete клиента.
+  CLIENT_ANONYMIZE
+  CLIENT_HARD_DELETE
 }
 
 enum OrderStatus {
@@ -139,6 +142,10 @@ model User {
   // toggled via the bot's "На смене" / "Завершить смену" buttons. Only couriers
   // that are onDuty AND have a fresh live location get offered new orders.
   onDuty        Boolean   @default(false)
+
+  // Account deletion (клиент): anonymized-at. Orders/ledger/referrals stay as
+  // financial records; PII is wiped and the client auth path rejects the user.
+  deletedAt     DateTime?
 
   // Courier deactivation (Курьер 2.0 admin). When set, the courier is blocked
   // from authenticating and is excluded from every dispatch path. Nullable —
