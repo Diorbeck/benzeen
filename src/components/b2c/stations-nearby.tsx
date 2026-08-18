@@ -125,44 +125,55 @@ export function StationsNearby() {
   const fuelLabel = (type: string) => t(`fuel.${type}`);
 
   return (
-    <div className="space-y-6">
-      <div className="relative">
-        <Search
-          className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500"
-          aria-hidden
-        />
-        <input
-          className="h-12 w-full rounded-control border border-transparent bg-gray-100 py-3 pl-10 pr-4 text-navy placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:bg-white/10 dark:text-white dark:placeholder-gray-500 dark:focus:bg-white/15 dark:focus:ring-white/60"
-          placeholder={t('searchPlaceholder')}
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-      </div>
+    <div>
+      {/* Карта — первое, что видит клиент: экран открывается сразу на ней. */}
+      <section className="relative h-[calc(100vh-4rem)] min-h-[420px] w-full overflow-hidden">
+        <StationsMap stations={visible} />
 
-      <div className="flex flex-wrap items-center gap-2">
-        <FilterChip active={fuel === null} onClick={() => setFuel(null)}>
-          {t('allFuels')}
-        </FilterChip>
-        {STATION_FUEL_TYPES.map((type) => (
-          <FilterChip key={type} active={fuel === type} onClick={() => setFuel(type)}>
-            {fuelLabel(type)}
-          </FilterChip>
-        ))}
-        <span className="ml-auto flex items-center gap-2">
-          <FilterChip active={sortBy === 'distance'} onClick={() => setSortBy('distance')}>
-            {t('sortDistance')}
-          </FilterChip>
-          <FilterChip active={sortBy === 'price'} onClick={() => setSortBy('price')}>
-            {t('sortPrice')}
-          </FilterChip>
-        </span>
-      </div>
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 space-y-2.5 p-3 sm:p-4">
+          <div className="pointer-events-auto relative mx-auto max-w-2xl">
+            <Search
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+              aria-hidden
+            />
+            <input
+              className="h-12 w-full rounded-control border border-gray-200 bg-white/95 py-3 pl-10 pr-4 text-navy shadow-lg backdrop-blur placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:border-white/10 dark:bg-navy-900/95 dark:text-white dark:placeholder-gray-500 dark:focus:ring-white/60"
+              placeholder={t('searchPlaceholder')}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+          <div className="pointer-events-auto mx-auto flex max-w-2xl gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <FilterChip active={fuel === null} onClick={() => setFuel(null)}>
+              {t('allFuels')}
+            </FilterChip>
+            {STATION_FUEL_TYPES.map((type) => (
+              <FilterChip key={type} active={fuel === type} onClick={() => setFuel(type)}>
+                {fuelLabel(type)}
+              </FilterChip>
+            ))}
+            <span className="ml-auto flex shrink-0 items-center gap-2">
+              <FilterChip active={sortBy === 'distance'} onClick={() => setSortBy('distance')}>
+                {t('sortDistance')}
+              </FilterChip>
+              <FilterChip active={sortBy === 'price'} onClick={() => setSortBy('price')}>
+                {t('sortPrice')}
+              </FilterChip>
+            </span>
+          </div>
+        </div>
+      </section>
 
-      {!me && state === 'ready' && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">{t('noGeo')}</p>
-      )}
+      {/* Раздел со списком заправок — ниже карты, отдельным блоком. */}
+      <section className="mx-auto max-w-2xl space-y-4 px-4 py-8 sm:px-6 lg:py-12">
+        <div>
+          <h2 className="text-title text-navy dark:text-white">{t('listTitle')}</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
+        </div>
 
-      <StationsMap stations={visible} />
+        {!me && state === 'ready' && (
+          <p className="text-xs text-gray-500 dark:text-gray-400">{t('noGeo')}</p>
+        )}
 
       {state === 'loading' && (
         <div className="space-y-3" aria-busy>
@@ -290,6 +301,7 @@ export function StationsNearby() {
           ))}
         </ul>
       )}
+      </section>
     </div>
   );
 }
@@ -310,8 +322,8 @@ function FilterChip({
       aria-pressed={active}
       className={
         active
-          ? 'rounded-control bg-navy px-3 py-1.5 text-xs font-medium text-white dark:bg-white dark:text-navy'
-          : 'rounded-control bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition hover:bg-gray-200 dark:bg-white/10 dark:text-gray-300 dark:hover:bg-white/15'
+          ? 'shrink-0 whitespace-nowrap rounded-control bg-navy px-3 py-1.5 text-xs font-medium text-white shadow-sm dark:bg-white dark:text-navy'
+          : 'shrink-0 whitespace-nowrap rounded-control bg-white/95 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm backdrop-blur transition hover:bg-white dark:bg-navy-900/95 dark:text-gray-300 dark:hover:bg-navy-900'
       }
     >
       {children}
@@ -386,7 +398,7 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
   }, [stations]);
 
   return (
-    <div className="relative h-56 w-full overflow-hidden rounded-card border border-gray-200/60 dark:border-white/10 sm:h-72">
+    <div className="absolute inset-0 h-full w-full">
       <div ref={containerRef} className="h-full w-full" />
     </div>
   );

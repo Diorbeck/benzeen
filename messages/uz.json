@@ -1359,6 +1359,7 @@
   },
   "stations": {
     "title": "Xaritadagi shoxobchalar",
+    "listTitle": "Yoqilgʻi quyish shoxobchalari",
     "subtitle": "Ulangan yoqilg'i quyish shoxobchalari va rezervuar sensorlari ma'lumotiga ko'ra real vaqtdagi qoldiqlar.",
     "searchPlaceholder": "Nomi, brend yoki manzil",
     "allFuels": "Barcha turlar",

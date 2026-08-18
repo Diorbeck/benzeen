@@ -1359,6 +1359,7 @@
   },
   "stations": {
     "title": "Stations map",
+    "listTitle": "Petrol stations",
     "subtitle": "Connected filling stations and live fuel stocks, straight from the tank level sensors.",
     "searchPlaceholder": "Name, brand or address",
     "allFuels": "All fuels",
