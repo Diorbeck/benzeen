@@ -1356,5 +1356,75 @@
       "colAvgTime": "Oʻrtacha yetkazish vaqti",
       "colAvgRating": "O'rtacha baho"
     }
+  },
+  "stations": {
+    "title": "Xaritadagi shoxobchalar",
+    "subtitle": "Ulangan yoqilg'i quyish shoxobchalari va rezervuar sensorlari ma'lumotiga ko'ra real vaqtdagi qoldiqlar.",
+    "searchPlaceholder": "Nomi, brend yoki manzil",
+    "allFuels": "Barcha turlar",
+    "sortDistance": "Yaqinroq",
+    "sortPrice": "Arzonroq",
+    "noGeo": "Joylashuv aniqlanmadi — ro'yxat nom bo'yicha tartiblandi. Eng yaqin shoxobchalarni ko'rish uchun ruxsat bering.",
+    "online": "Aloqada",
+    "offline": "Aloqa yo'q",
+    "paused": "Ishlamaydi",
+    "liters": "{n} l",
+    "noData": "Ma'lumot yo'q",
+    "kmAway": "Sizdan {km} km",
+    "openInMaps": "Xaritada ochish",
+    "emptyTitle": "Shoxobcha topilmadi",
+    "emptyDesc": "Yoqilg'i turi bo'yicha filtrni olib tashlab ko'ring yoki so'rovni o'zgartiring.",
+    "error": "Shoxobchalar ro'yxatini yuklab bo'lmadi.",
+    "retry": "Qayta urinish",
+    "fuel": {
+      "AI_92": "AI-92",
+      "AI_95": "AI-95",
+      "AI_98": "AI-98",
+      "AI_100": "AI-100",
+      "DIESEL": "Dizel"
+    }
+  },
+  "stationPanel": {
+    "title": "Shoxobcha kabineti",
+    "subtitle": "Sensorlar bo'yicha rezervuar qoldiqlari, kolonkalar holati va infratuzilma uchun hisob.",
+    "emptyTitle": "Hozircha obyekt yo'q",
+    "emptyDesc": "Akkauntingizga birorta shoxobcha bog'lanmagan. Bizga yozing — obyekt va sensorlarni ulaymiz.",
+    "online": "Aloqada",
+    "offline": "Aloqa yo'q",
+    "never": "hech qachon",
+    "alertOffline": "Obyekt aloqaga chiqmayapti. Oxirgi ma'lumot: {when}.",
+    "alertLow": "{tank} ({fuel}): qoldiq {liters} l minimal darajadan past.",
+    "alertStale": "{tank}: sensor 15 daqiqadan ortiq jim — qoldiq eskirgan bo'lishi mumkin.",
+    "tanks": "Rezervuarlar",
+    "capacity": "hajmi {n} l",
+    "liters": "l",
+    "noData": "Ma'lumot yo'q",
+    "lastReading": "O'lchov: {when}",
+    "noReadings": "O'lchovlar hali yo'q",
+    "noTanks": "Rezervuarlar ulanmagan",
+    "dispensers": "Kolonkalar",
+    "dispenserNo": "№{n} kolonka",
+    "billedDaily": "{sum} so'm/kun",
+    "noDispensers": "Kolonkalar ulanmagan",
+    "identification": {
+      "MANUAL": "Qo'lda tanlash",
+      "BLE": "BLE-mayoq",
+      "CAMERA": "Kamera (raqam)"
+    },
+    "billing": "Hisob",
+    "accruedThisMonth": "Oy boshidan hisoblangan",
+    "accruedBreakdown": "Rezervuarlar: {tankDays} kun · Identifikatsiyali kolonkalar: {dispenserDays} kun",
+    "invoiceNote": "Hisob keyingi oy boshida bir marta chiqariladi.",
+    "period": "Davr",
+    "amount": "Summa",
+    "status": "Holat",
+    "sum": "so'm",
+    "invoiceStatus": {
+      "DRAFT": "Qoralama",
+      "ISSUED": "Chiqarilgan",
+      "PAID": "To'langan",
+      "OVERDUE": "Muddati o'tgan",
+      "CANCELLED": "Bekor qilingan"
+    }
   }
 }

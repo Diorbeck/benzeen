@@ -1356,5 +1356,75 @@
       "colAvgTime": "Average delivery time",
       "colAvgRating": "Avg rating"
     }
+  },
+  "stations": {
+    "title": "Stations map",
+    "subtitle": "Connected filling stations and live fuel stocks, straight from the tank level sensors.",
+    "searchPlaceholder": "Name, brand or address",
+    "allFuels": "All fuels",
+    "sortDistance": "Nearest",
+    "sortPrice": "Cheapest",
+    "noGeo": "Location unavailable — the list is sorted by name. Allow access to see the nearest stations.",
+    "online": "Online",
+    "offline": "Offline",
+    "paused": "Closed",
+    "liters": "{n} L",
+    "noData": "No data",
+    "kmAway": "{km} km away",
+    "openInMaps": "Open in maps",
+    "emptyTitle": "No stations found",
+    "emptyDesc": "Try clearing the fuel filter or changing your search.",
+    "error": "Could not load the station list.",
+    "retry": "Retry",
+    "fuel": {
+      "AI_92": "AI-92",
+      "AI_95": "AI-95",
+      "AI_98": "AI-98",
+      "AI_100": "AI-100",
+      "DIESEL": "Diesel"
+    }
+  },
+  "stationPanel": {
+    "title": "Station panel",
+    "subtitle": "Sensor-based tank levels, dispenser status and your infrastructure invoice.",
+    "emptyTitle": "No stations yet",
+    "emptyDesc": "No filling station is linked to your account. Contact us to connect the site and its sensors.",
+    "online": "Online",
+    "offline": "Offline",
+    "never": "never",
+    "alertOffline": "The site is not reporting. Last data: {when}.",
+    "alertLow": "{tank} ({fuel}): {liters} L left, below the minimum level.",
+    "alertStale": "{tank}: the sensor has been silent for over 15 minutes — the level may be outdated.",
+    "tanks": "Tanks",
+    "capacity": "capacity {n} L",
+    "liters": "L",
+    "noData": "No data",
+    "lastReading": "Reading: {when}",
+    "noReadings": "No readings yet",
+    "noTanks": "No tanks connected",
+    "dispensers": "Dispensers",
+    "dispenserNo": "Dispenser #{n}",
+    "billedDaily": "{sum} UZS/day",
+    "noDispensers": "No dispensers connected",
+    "identification": {
+      "MANUAL": "Manual choice",
+      "BLE": "BLE beacon",
+      "CAMERA": "Camera (plate)"
+    },
+    "billing": "Invoice",
+    "accruedThisMonth": "Accrued since the 1st",
+    "accruedBreakdown": "Tanks: {tankDays} days · Dispensers with identification: {dispenserDays} days",
+    "invoiceNote": "The invoice is issued once at the start of the next month.",
+    "period": "Period",
+    "amount": "Amount",
+    "status": "Status",
+    "sum": "UZS",
+    "invoiceStatus": {
+      "DRAFT": "Draft",
+      "ISSUED": "Issued",
+      "PAID": "Paid",
+      "OVERDUE": "Overdue",
+      "CANCELLED": "Cancelled"
+    }
   }
 }

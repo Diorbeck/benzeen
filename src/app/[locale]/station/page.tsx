@@ -1,0 +1,276 @@
+import { redirect } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+import { AlertTriangle, Fuel, Gauge, WifiOff } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
+import { requireStationAccess } from '@/lib/station-auth';
+import { buildInvoiceDraft, monthEnd, monthStart } from '@/lib/station-billing';
+import { isReadingFresh, isStationOnline } from '@/lib/stations';
+
+// Модуль 6 ТЗ v2: кабинет АЗС. Одна страница на объект: остатки по
+// резервуарам, состояние колонок и счёт за месяц — то, из-за чего владелец
+// вообще заходит в кабинет.
+
+export const dynamic = 'force-dynamic';
+
+const FUEL_LABELS: Record<string, string> = {
+  AI_92: 'АИ-92',
+  AI_95: 'АИ-95',
+  AI_98: 'АИ-98',
+  AI_100: 'АИ-100',
+  DIESEL: 'Дизель',
+  PROPANE: 'Пропан',
+};
+
+export default async function StationPanelPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations('stationPanel');
+
+  const access = await requireStationAccess();
+  if ('error' in access) {
+    redirect(access.status === 401 ? `/${locale}/login` : `/${locale}`);
+  }
+
+  const stations = await prisma.fuelStation.findMany({
+    where: { id: { in: access.stationIds }, status: { not: 'ARCHIVED' } },
+    orderBy: { name: 'asc' },
+    include: {
+      tanks: { orderBy: { label: 'asc' } },
+      dispensers: { orderBy: { number: 'asc' } },
+      billing: { where: { OR: [{ endedAt: null }, { endedAt: { gt: new Date() } }] } },
+      invoices: { orderBy: { periodStart: 'desc' }, take: 6 },
+    },
+  });
+
+  const now = new Date();
+  // Счёт выставляется в начале месяца за прошедший месяц, поэтому в кабинете
+  // показывается и уже выставленный, и накопленное за текущий месяц.
+  const currentStart = monthStart(now);
+  const currentEnd = monthEnd(now);
+
+  const money = (uzs: number) => `${uzs.toLocaleString('ru-RU')} ${t('sum')}`;
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-navy dark:bg-navy-950 dark:text-white">
+      <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        <h1 className="text-title text-navy dark:text-white">{t('title')}</h1>
+        <p className="mt-3 text-base text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
+
+        {stations.length === 0 && (
+          <div className="mt-8 rounded-card border border-gray-200 bg-white p-10 text-center dark:border-white/10 dark:bg-navy-900">
+            <h2 className="text-subheading text-navy dark:text-white">{t('emptyTitle')}</h2>
+            <p className="mx-auto mt-1.5 max-w-md text-sm text-gray-600 dark:text-gray-300">
+              {t('emptyDesc')}
+            </p>
+          </div>
+        )}
+
+        {stations.map((station) => {
+          const online = isStationOnline(station.lastSeenAt, now);
+          const accrued = buildInvoiceDraft(
+            station.billing.map((b) => ({
+              item: b.item,
+              dailyRateUzs: b.dailyRateUzs,
+              startedAt: b.startedAt,
+              endedAt: b.endedAt,
+            })),
+            currentStart,
+            // Накопление считается до «сейчас», а не до конца месяца: иначе
+            // владелец увидел бы сумму за дни, которые ещё не наступили.
+            now,
+          );
+
+          const lowTanks = station.tanks.filter(
+            (tank) =>
+              tank.minLevelL !== null &&
+              tank.currentLevelL !== null &&
+              tank.currentLevelL <= tank.minLevelL,
+          );
+          const staleTanks = station.tanks.filter((tank) => !isReadingFresh(tank.lastReadingAt, now));
+
+          return (
+            <section
+              key={station.id}
+              className="mt-8 rounded-card border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-navy-900"
+            >
+              <header className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-subheading text-navy dark:text-white">{station.name}</h2>
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{station.address}</p>
+                </div>
+                {online ? (
+                  <span className="rounded-md bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500">
+                    {t('online')}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-red-500/10 px-2.5 py-0.5 text-xs font-medium text-red-600 dark:text-red-400">
+                    <WifiOff className="h-3 w-3" aria-hidden /> {t('offline')}
+                  </span>
+                )}
+              </header>
+
+              {/* Алерты сверху: то, из-за чего надо действовать сейчас. */}
+              {(lowTanks.length > 0 || staleTanks.length > 0 || !online) && (
+                <ul className="mt-4 space-y-2">
+                  {!online && (
+                    <Alert>
+                      {t('alertOffline', {
+                        when: station.lastSeenAt
+                          ? station.lastSeenAt.toLocaleString(locale)
+                          : t('never'),
+                      })}
+                    </Alert>
+                  )}
+                  {lowTanks.map((tank) => (
+                    <Alert key={`low-${tank.id}`}>
+                      {t('alertLow', {
+                        tank: tank.label,
+                        fuel: FUEL_LABELS[tank.fuelType] ?? tank.fuelType,
+                        liters: Math.round(tank.currentLevelL ?? 0).toLocaleString('ru-RU'),
+                      })}
+                    </Alert>
+                  ))}
+                  {staleTanks.map((tank) => (
+                    <Alert key={`stale-${tank.id}`}>
+                      {t('alertStale', { tank: tank.label })}
+                    </Alert>
+                  ))}
+                </ul>
+              )}
+
+              <h3 className="mt-6 flex items-center gap-2 text-sm font-semibold text-navy dark:text-white">
+                <Gauge className="h-4 w-4" aria-hidden /> {t('tanks')}
+              </h3>
+              <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+                {station.tanks.map((tank) => {
+                  const level = tank.currentLevelL ?? 0;
+                  const percent = Math.min(100, Math.round((level / Math.max(1, tank.capacityL)) * 100));
+                  const fresh = isReadingFresh(tank.lastReadingAt, now);
+                  return (
+                    <li
+                      key={tank.id}
+                      className="rounded-control bg-gray-50 p-4 dark:bg-white/5"
+                    >
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="text-sm font-medium text-navy dark:text-white">
+                          {tank.label} · {FUEL_LABELS[tank.fuelType] ?? tank.fuelType}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {t('capacity', { n: tank.capacityL.toLocaleString('ru-RU') })}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-lg font-semibold tabular-nums text-navy dark:text-white">
+                        {fresh ? `${Math.round(level).toLocaleString('ru-RU')} ${t('liters')}` : t('noData')}
+                      </p>
+                      <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
+                        <div
+                          className={
+                            tank.minLevelL !== null && level <= tank.minLevelL
+                              ? 'h-full rounded-full bg-red-500'
+                              : 'h-full rounded-full bg-primary-600 dark:bg-primary-500'
+                          }
+                          style={{ width: `${fresh ? percent : 0}%` }}
+                        />
+                      </div>
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                        {tank.lastReadingAt
+                          ? t('lastReading', { when: tank.lastReadingAt.toLocaleString(locale) })
+                          : t('noReadings')}
+                      </p>
+                    </li>
+                  );
+                })}
+                {station.tanks.length === 0 && (
+                  <li className="text-sm text-gray-500 dark:text-gray-400">{t('noTanks')}</li>
+                )}
+              </ul>
+
+              <h3 className="mt-6 flex items-center gap-2 text-sm font-semibold text-navy dark:text-white">
+                <Fuel className="h-4 w-4" aria-hidden /> {t('dispensers')}
+              </h3>
+              <ul className="mt-3 space-y-2">
+                {station.dispensers.map((d) => (
+                  <li
+                    key={d.id}
+                    className="flex flex-wrap items-center justify-between gap-2 rounded-control bg-gray-50 px-4 py-3 dark:bg-white/5"
+                  >
+                    <span className="text-sm font-medium text-navy dark:text-white">
+                      {t('dispenserNo', { n: d.number })} ·{' '}
+                      {d.fuelTypes.map((f) => FUEL_LABELS[f] ?? f).join(', ')}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="rounded-md bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700 dark:bg-white/10 dark:text-gray-200">
+                        {t(`identification.${d.identificationMode}`)}
+                      </span>
+                      {d.identificationMode !== 'MANUAL' && (
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {t('billedDaily', { sum: (10_000).toLocaleString('ru-RU') })}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+                {station.dispensers.length === 0 && (
+                  <li className="text-sm text-gray-500 dark:text-gray-400">{t('noDispensers')}</li>
+                )}
+              </ul>
+
+              <h3 className="mt-6 text-sm font-semibold text-navy dark:text-white">{t('billing')}</h3>
+              <div className="mt-3 rounded-control bg-gray-50 p-4 dark:bg-white/5">
+                <p className="text-sm text-gray-600 dark:text-gray-300">{t('accruedThisMonth')}</p>
+                <p className="mt-1 text-2xl font-bold tabular-nums text-navy dark:text-white">
+                  {money(accrued.amountUzs)}
+                </p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  {t('accruedBreakdown', {
+                    tankDays: accrued.tankDays,
+                    dispenserDays: accrued.dispenserDays,
+                  })}
+                </p>
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">{t('invoiceNote')}</p>
+              </div>
+
+              {station.invoices.length > 0 && (
+                <table className="mt-4 w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs uppercase text-gray-500 dark:text-gray-400">
+                      <th className="py-2 font-medium">{t('period')}</th>
+                      <th className="py-2 font-medium">{t('amount')}</th>
+                      <th className="py-2 font-medium">{t('status')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {station.invoices.map((inv) => (
+                      <tr key={inv.id} className="border-t border-gray-200 dark:border-white/10">
+                        <td className="py-2 tabular-nums">
+                          {inv.periodStart.toLocaleDateString(locale, {
+                            month: 'long',
+                            year: 'numeric',
+                          })}
+                        </td>
+                        <td className="py-2 tabular-nums">{money(inv.amountUzs)}</td>
+                        <td className="py-2">{t(`invoiceStatus.${inv.status}`)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </section>
+          );
+        })}
+      </main>
+    </div>
+  );
+}
+
+function Alert({ children }: { children: React.ReactNode }) {
+  return (
+    <li className="flex items-start gap-2 rounded-control bg-warning-500/10 px-4 py-3 text-sm text-warning-600 dark:text-warning-500">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+      <span>{children}</span>
+    </li>
+  );
+}
