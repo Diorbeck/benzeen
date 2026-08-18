@@ -222,7 +222,7 @@ export function StationsNearby() {
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 truncate text-sm text-gray-600 dark:text-gray-300">
+                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                     {s.brand ? `${s.brand} · ` : ''}
                     {s.address}
                   </p>
