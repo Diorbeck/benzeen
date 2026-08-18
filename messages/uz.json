@@ -835,7 +835,8 @@
       "payTitle": "Quydingiz — va ketdingiz",
       "payStep1": "Kolonkaga keldingiz: ilova qaysi kolonka oldida turganingizni o‘zi aniqlaydi.",
       "payStep2": "Pul quyilgan litr bo‘yicha yechiladi, farq darhol qaytariladi.",
-      "payStep3": "Chek Soliqqa ketadi, 1% keshbek sizga qaytadi."
+      "payStep3": "Chek Soliqqa ketadi, 1% keshbek sizga qaytadi.",
+      "orderNote": "Kartada to'liq bak summasi ushlab turiladi, yakunda esa faqat quyilgan yoqilg'i uchun hisob ketadi. Farq darhol qaytariladi."
     },
     "nav": {
       "stations": "Yaqin shoxobchalar"

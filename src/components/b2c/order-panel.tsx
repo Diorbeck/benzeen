@@ -159,7 +159,10 @@ export function OrderPanel({ locale }: { locale: string }) {
         </dl>
       </div>
 
-      <Button size="lg" className="mt-5 w-full" onClick={() => startOrder('console_cta')}>
+      <p className="mt-5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+        {t('console.orderNote')}
+      </p>
+      <Button size="lg" className="mt-3 w-full" onClick={() => startOrder('console_cta')}>
         {t('console.cta')}
         <ArrowRight className="h-4 w-4" aria-hidden />
       </Button>
