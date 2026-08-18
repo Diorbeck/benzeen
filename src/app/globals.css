@@ -321,3 +321,12 @@ input[type="range"].benzeen-range:focus-visible {
   outline: 2px solid #2e5bff;
   outline-offset: 4px;
 }
+
+/* Цвет «вырезов» в силуэте машины скролл-анимации: совпадает с фоном страницы,
+   чтобы стёкла читались, а силуэт оставался плоским фоновым пятном. */
+:root {
+  --journey-cut: #f2f6fe;
+}
+.dark {
+  --journey-cut: #0d1531;
+}

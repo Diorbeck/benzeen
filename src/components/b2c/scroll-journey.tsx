@@ -79,7 +79,7 @@ export function ScrollJourney() {
 
       {/* Силуэт машины: темнее фона, без деталей — это фон, а не иллюстрация. */}
       <div
-        className="absolute left-[68px] -translate-x-1/2 text-navy/[0.09] dark:text-white/[0.09]"
+        className="absolute left-[68px] -translate-x-1/2 text-navy/[0.12] dark:text-white/[0.10]"
         style={{ top: `${carTop}%`, transition: 'top 120ms linear' }}
       >
         <CarSilhouette />
@@ -87,7 +87,7 @@ export function ScrollJourney() {
 
       {/* Заправка в самом низу: машина приезжает к ней в конце страницы. */}
       <div
-        className="absolute bottom-6 left-0 text-navy/[0.11] dark:text-white/[0.11]"
+        className="absolute bottom-6 left-3 text-navy/[0.13] dark:text-white/[0.12]"
         style={{ opacity: stationIn }}
       >
         <StationSilhouette />
@@ -101,13 +101,17 @@ export function ScrollJourney() {
 
 function CarSilhouette() {
   return (
-    <svg width="104" height="70" viewBox="0 0 132 86" fill="currentColor">
-      {/* Вид сверху: кузов, стёкла и колёса — узнаётся как машина одним пятном. */}
-      <rect x="26" y="4" width="80" height="78" rx="26" />
-      <rect x="14" y="18" width="12" height="18" rx="5" />
-      <rect x="106" y="18" width="12" height="18" rx="5" />
-      <rect x="14" y="50" width="12" height="18" rx="5" />
-      <rect x="106" y="50" width="12" height="18" rx="5" />
+    <svg width="96" height="78" viewBox="0 0 120 98" fill="currentColor">
+      {/* Вид сверху, машина едет вниз: кузов сужается к капоту, по бокам колёса,
+          вырезы стёкол делают пятно узнаваемым автомобилем. */}
+      <path d="M60 4c13 0 21 6 24 16l4 16c2 8 3 17 3 26s-1 18-3 26l-3 5c-2 3-6 5-11 5H46c-5 0-9-2-11-5l-3-5c-2-8-3-17-3-26s1-18 3-26l4-16C39 10 47 4 60 4Z" />
+      <rect x="20" y="26" width="11" height="20" rx="5" />
+      <rect x="89" y="26" width="11" height="20" rx="5" />
+      <rect x="20" y="58" width="11" height="20" rx="5" />
+      <rect x="89" y="58" width="11" height="20" rx="5" />
+      {/* Стёкла — вырезы фоном, поэтому силуэт остаётся плоским и приглушённым. */}
+      <path d="M46 28h28l4 12H42l4-12Z" fill="var(--journey-cut, #F2F6FE)" opacity="0.55" />
+      <path d="M43 76h34l-3 9H46l-3-9Z" fill="var(--journey-cut, #F2F6FE)" opacity="0.4" />
     </svg>
   );
 }

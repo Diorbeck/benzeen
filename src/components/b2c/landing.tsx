@@ -178,9 +178,9 @@ function Faq() {
   const qs = ['q1', 'q2', 'q3', 'q4'] as const;
   return (
     <section className="border-t border-gray-100 py-12 dark:border-white/10 lg:py-16">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto grid max-w-[1200px] gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)] lg:gap-12 lg:px-8">
         <h2 className="text-heading text-navy dark:text-white">{t('faq.title')}</h2>
-        <div className="mt-6 divide-y divide-gray-100 dark:divide-white/10">
+        <div className="divide-y divide-gray-100 dark:divide-white/10">
           {qs.map((q) => (
             <details key={q} className="group py-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-body font-medium text-navy dark:text-white">
