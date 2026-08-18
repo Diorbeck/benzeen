@@ -1427,7 +1427,15 @@
       "PAID": "Оплачен",
       "OVERDUE": "Просрочен",
       "CANCELLED": "Отменён"
-    }
+    },
+    "fuelings": "Заправки через приложение",
+    "todayCount": "Заправок за сутки",
+    "todayLiters": "Литров за сутки",
+    "todayAmount": "Сумма за сутки, сум",
+    "noFuelings": "Заправок через приложение пока не было.",
+    "fuelingFlowing": "Идёт",
+    "fuelingReview": "На сверке",
+    "fuelingBuffered": "Из буфера"
   },
   "fueling": {
     "title": "Заправка",

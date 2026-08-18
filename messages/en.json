@@ -1427,7 +1427,15 @@
       "PAID": "Paid",
       "OVERDUE": "Overdue",
       "CANCELLED": "Cancelled"
-    }
+    },
+    "fuelings": "Fill-ups via the app",
+    "todayCount": "Fill-ups today",
+    "todayLiters": "Litres today",
+    "todayAmount": "Amount today, UZS",
+    "noFuelings": "No app fill-ups yet.",
+    "fuelingFlowing": "In progress",
+    "fuelingReview": "Under review",
+    "fuelingBuffered": "Buffered"
   },
   "fueling": {
     "title": "Fueling",

@@ -42,7 +42,35 @@ export default async function StationPanelPage({
       dispensers: { orderBy: { number: 'asc' } },
       billing: { where: { OR: [{ endedAt: null }, { endedAt: { gt: new Date() } }] } },
       invoices: { orderBy: { periodStart: 'desc' }, take: 6 },
+      // Последние заправки через Benzeen — то, что владелец сверяет с сменным
+      // отчётом заправщика.
+      sessions: {
+        where: { status: { in: ['FLOWING', 'SETTLED', 'MANUAL_REVIEW'] } },
+        orderBy: { startedAt: 'desc' },
+        take: 15,
+        select: {
+          id: true,
+          fuelType: true,
+          litersDispensed: true,
+          amountUzs: true,
+          status: true,
+          startedAt: true,
+          offlineBuffered: true,
+          dispenser: { select: { number: true } },
+        },
+      },
     },
+  });
+
+  // Сводка за сутки считается в базе, а не из последних 15 записей: иначе на активном
+  // объекте цифра была бы тихо занижена.
+  const dayStart = new Date();
+  dayStart.setHours(0, 0, 0, 0);
+  const todayTotals = await prisma.fuelingSession.groupBy({
+    by: ['stationId'],
+    where: { stationId: { in: access.stationIds }, status: 'SETTLED', startedAt: { gte: dayStart } },
+    _sum: { litersDispensed: true, amountUzs: true },
+    _count: { _all: true },
   });
 
   const now = new Date();
@@ -90,6 +118,7 @@ export default async function StationPanelPage({
               tank.currentLevelL <= tank.minLevelL,
           );
           const staleTanks = station.tanks.filter((tank) => !isReadingFresh(tank.lastReadingAt, now));
+          const today = todayTotals.find((x) => x.stationId === station.id);
 
           return (
             <section
@@ -217,6 +246,81 @@ export default async function StationPanelPage({
                   <li className="text-sm text-gray-500 dark:text-gray-400">{t('noDispensers')}</li>
                 )}
               </ul>
+
+              {/* Заправки через приложение — Модуль 6 ТЗ v2. Кассовые операции по ним
+                  АЗС не ведёт, поэтому этот список и есть её отчёт по смене. */}
+              <h3 className="mt-6 flex items-center gap-2 text-sm font-semibold text-navy dark:text-white">
+                <Gauge className="h-4 w-4" aria-hidden /> {t('fuelings')}
+              </h3>
+              <div className="mt-3 grid grid-cols-3 gap-2">
+                <div className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('todayCount')}</p>
+                  <p className="mt-0.5 text-lg font-semibold tabular-nums text-navy dark:text-white">
+                    {today?._count._all ?? 0}
+                  </p>
+                </div>
+                <div className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('todayLiters')}</p>
+                  <p className="mt-0.5 text-lg font-semibold tabular-nums text-navy dark:text-white">
+                    {Math.round(today?._sum.litersDispensed ?? 0).toLocaleString('ru-RU')}
+                  </p>
+                </div>
+                <div className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{t('todayAmount')}</p>
+                  <p className="mt-0.5 text-lg font-semibold tabular-nums text-navy dark:text-white">
+                    {(today?._sum.amountUzs ?? 0).toLocaleString('ru-RU')}
+                  </p>
+                </div>
+              </div>
+
+              {station.sessions.length === 0 ? (
+                <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">{t('noFuelings')}</p>
+              ) : (
+                <ul className="mt-3 space-y-2">
+                  {station.sessions.map((s) => (
+                    <li
+                      key={s.id}
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-control bg-gray-50 px-4 py-3 text-sm dark:bg-white/5"
+                    >
+                      <span className="text-navy dark:text-white">
+                        {s.startedAt.toLocaleString(locale, {
+                          day: '2-digit',
+                          month: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                        {' · '}
+                        {t('dispenserNo', { n: s.dispenser?.number ?? 0 })}
+                        {' · '}
+                        {FUEL_LABELS[s.fuelType] ?? s.fuelType}
+                      </span>
+                      <span className="flex items-center gap-3">
+                        <span className="tabular-nums text-gray-600 dark:text-gray-300">
+                          {(s.litersDispensed ?? 0).toFixed(2)} {t('liters')}
+                        </span>
+                        <span className="font-medium tabular-nums text-navy dark:text-white">
+                          {money(s.amountUzs ?? 0)}
+                        </span>
+                        {s.status === 'FLOWING' && (
+                          <span className="rounded-md bg-primary-600/10 px-2 py-0.5 text-xs font-medium text-primary-600 dark:text-primary-500">
+                            {t('fuelingFlowing')}
+                          </span>
+                        )}
+                        {s.status === 'MANUAL_REVIEW' && (
+                          <span className="rounded-md bg-warning-500/10 px-2 py-0.5 text-xs font-medium text-warning-600">
+                            {t('fuelingReview')}
+                          </span>
+                        )}
+                        {s.offlineBuffered && (
+                          <span className="rounded-md bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
+                            {t('fuelingBuffered')}
+                          </span>
+                        )}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               <h3 className="mt-6 text-sm font-semibold text-navy dark:text-white">{t('billing')}</h3>
               <div className="mt-3 rounded-control bg-gray-50 p-4 dark:bg-white/5">

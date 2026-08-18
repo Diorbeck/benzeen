@@ -1427,7 +1427,15 @@
       "PAID": "To'langan",
       "OVERDUE": "Muddati o'tgan",
       "CANCELLED": "Bekor qilingan"
-    }
+    },
+    "fuelings": "Ilova orqali quyishlar",
+    "todayCount": "Sutkadagi quyishlar",
+    "todayLiters": "Sutkadagi litr",
+    "todayAmount": "Sutkadagi summa, soʻm",
+    "noFuelings": "Ilova orqali quyish hozircha boʻlmagan.",
+    "fuelingFlowing": "Davom etmoqda",
+    "fuelingReview": "Tekshiruvda",
+    "fuelingBuffered": "Buferdan"
   },
   "fueling": {
     "title": "Yoqilgʻi quyish",
