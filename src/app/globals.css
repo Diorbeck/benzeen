@@ -39,13 +39,13 @@
   }
 
   .dark {
-    --background: 220 30% 6%;
+    --background: 224 60% 12%;
     --foreground: 210 40% 98%;
     --primary: 217 91% 60%;
     --primary-foreground: 222 47% 11%;
-    --muted: 220 25% 12%;
+    --muted: 224 45% 18%;
     --muted-foreground: 215 20% 65%;
-    --border: 222 20% 19%;
+    --border: 224 35% 27%;
   }
 
   * {
@@ -260,5 +260,5 @@ body {
 /* Растровая подложка карты в тёмной теме: гасим яркость, чтобы карта не
    светила в тёмном интерфейсе. На векторном тёмном стиле не используется. */
 .benzeen-map-damp .maplibregl-canvas {
-  filter: saturate(0.7) brightness(0.62) contrast(1.05);
+  filter: saturate(0.75) brightness(0.68) contrast(1.02) hue-rotate(-8deg);
 }

@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { useTheme } from 'next-themes';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { Gauge, MapPin, Navigation, RefreshCw, WifiOff, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { mapProvider, localizeMapLabels } from '@/components/map/provider';
+import { mapProvider, localizeMapLabels, TASHKENT_CENTER } from '@/components/map/provider';
 import { formatMoney } from '@/lib/format';
+import { haversineKm } from '@/lib/geo';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 // Карта Узбекистана с подключёнными АЗС на главной — Модуль 1 ТЗ v2.
@@ -41,11 +41,13 @@ type Station = {
   stocks: Stock[];
 };
 
-// Центр и зум выбраны так, чтобы в кадр попала вся страна: продукт национальный,
-// и первое впечатление должно быть «карта Узбекистана», а не «карта Ташкента».
-const UZBEKISTAN_CENTER: [number, number] = [64.6, 41.5];
-const UZBEKISTAN_ZOOM = 5.1;
+// По умолчанию карта показывает только 5 км вокруг пользователя: человек ищет,
+// где заправиться сейчас, а не изучает страну. Как только он сам подвинул или
+// отмасштабировал карту — ограничение снимается и видно все подключённые АЗС.
+const DEFAULT_RADIUS_KM = 5;
 const REFRESH_MS = 30_000;
+
+type LatLng = { lat: number; lng: number };
 
 export function HomeStationsMap({ locale }: { locale: string }) {
   const t = useTranslations('homeMap');
@@ -53,6 +55,19 @@ export function HomeStationsMap({ locale }: { locale: string }) {
   const [stations, setStations] = useState<Station[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  // Пока карту не тронули — показываем радиус 5 км вокруг пользователя.
+  const [center, setCenter] = useState<LatLng>(TASHKENT_CENTER);
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+      // Отказ в геолокации — не ошибка: остаёмся на центре Ташкента.
+      () => undefined,
+      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60_000 },
+    );
+  }, []);
 
   const load = useCallback((silent = false) => {
     if (!silent) setState('loading');
@@ -73,12 +88,20 @@ export function HomeStationsMap({ locale }: { locale: string }) {
     return () => clearInterval(id);
   }, [load]);
 
+  const visible = useMemo(
+    () =>
+      expanded
+        ? stations
+        : stations.filter((s) => haversineKm(center, { lat: s.lat, lng: s.lng }) <= DEFAULT_RADIUS_KM),
+    [stations, center, expanded],
+  );
+
   const selected = useMemo(
     () => stations.find((s) => s.id === selectedId) ?? null,
     [stations, selectedId],
   );
 
-  const online = stations.filter((s) => s.online).length;
+  const online = visible.filter((s) => s.online).length;
 
   return (
     <section id="map" className="mx-auto max-w-[1200px] scroll-mt-24 px-4 sm:px-6 lg:px-8">
@@ -93,17 +116,39 @@ export function HomeStationsMap({ locale }: { locale: string }) {
             {t('subtitle')}
           </p>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {state === 'ready' ? t('counter', { online, total: stations.length }) : '\u00A0'}
-        </p>
+        <div className="text-right">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {state === 'ready' ? t('counter', { online, total: visible.length }) : '\u00A0'}
+          </p>
+          {state === 'ready' && (
+            <p className="mt-1 text-caption text-gray-500 dark:text-gray-400">
+              {expanded
+                ? t('scopeAll')
+                : t('scopeRadius', { km: DEFAULT_RADIUS_KM })}
+              {!expanded && stations.length > visible.length && (
+                <button
+                  type="button"
+                  onClick={() => setExpanded(true)}
+                  className="ml-2 font-semibold text-primary-600 underline-offset-2 hover:underline dark:text-primary-300"
+                >
+                  {t('scopeShowAll', { n: stations.length })}
+                </button>
+              )}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="relative mt-5 overflow-hidden rounded-card border border-gray-200 bg-gray-100 dark:border-navy-700 dark:bg-navy-900">
         <div className="h-[380px] sm:h-[460px] lg:h-[520px]">
           <StationsMapCanvas
-            stations={stations}
+            stations={visible}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            center={center}
+            radiusKm={DEFAULT_RADIUS_KM}
+            showRadius={!expanded}
+            onUserMove={() => setExpanded(true)}
           />
         </div>
 
@@ -226,22 +271,54 @@ function StationCard({
   );
 }
 
+/** Следит за классом `dark` на <html> — источник правды о текущей теме. */
+function useHtmlDark(): boolean {
+  const [dark, setDark] = useState(false);
+  useEffect(() => {
+    const root = document.documentElement;
+    const sync = () => setDark(root.classList.contains('dark'));
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
+  return dark;
+}
+
 function StationsMapCanvas({
   stations,
   selectedId,
   onSelect,
+  center,
+  radiusKm,
+  showRadius,
+  onUserMove,
 }: {
   stations: readonly Station[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  center: LatLng;
+  radiusKm: number;
+  showRadius: boolean;
+  onUserMove: () => void;
 }) {
-  const { resolvedTheme } = useTheme();
-  const dark = resolvedTheme === 'dark';
+  // Тему читаем прямо с <html>: next-themes ставит класс до первой отрисовки,
+  // а resolvedTheme на клиенте может отстать на один кадр — карта не должна
+  // мигать светлой подложкой в тёмном интерфейсе.
+  const dark = useHtmlDark();
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const selectRef = useRef(onSelect);
   selectRef.current = onSelect;
+  const moveRef = useRef(onUserMove);
+  moveRef.current = onUserMove;
+  const centerRef = useRef(center);
+  centerRef.current = center;
+  const radiusRef = useRef(radiusKm);
+  radiusRef.current = radiusKm;
+  const showRadiusRef = useRef(showRadius);
+  showRadiusRef.current = showRadius;
 
   useEffect(() => {
     let cancelled = false;
@@ -255,14 +332,24 @@ function StationsMapCanvas({
       map = new maplibregl.Map({
         container: ref.current,
         style: mapProvider.getStyle({ dark: document.documentElement.classList.contains('dark') }),
-        center: UZBEKISTAN_CENTER,
-        zoom: UZBEKISTAN_ZOOM,
+        center: [centerRef.current.lng, centerRef.current.lat],
+        zoom: zoomForRadius(radiusRef.current),
         attributionControl: { compact: true },
       });
       map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
       ro = new ResizeObserver(() => map?.resize());
       ro.observe(ref.current);
-      map.on('load', () => localizeMapLabels(map!, document.documentElement.lang || 'ru'));
+      map.on('load', () => {
+        localizeMapLabels(map!, document.documentElement.lang || 'ru');
+        drawRadius(map!, centerRef.current, radiusRef.current);
+      });
+      // Ручной жест пользователя (перетаскивание, зум, скролл) снимает
+      // ограничение радиусом — дальше он смотрит карту сам.
+      const release = (e: { originalEvent?: unknown }) => {
+        if (e.originalEvent) moveRef.current();
+      };
+      map.on('dragstart', release);
+      map.on('zoomstart', release);
       mapRef.current = map;
     })();
 
@@ -276,12 +363,43 @@ function StationsMapCanvas({
     };
   }, []);
 
+  // Геолокация приходит асинхронно: пока радиус активен, карта переезжает к
+  // пользователю и перерисовывает круг под новый центр.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !showRadius) return;
+    map.easeTo({ center: [center.lng, center.lat], zoom: zoomForRadius(radiusKm), duration: 600 });
+    drawRadius(map, center, radiusKm);
+  }, [center.lat, center.lng, radiusKm, showRadius, center]);
+
+  // Пользователь раскрыл всю страну — убираем круг и вписываем все точки в
+  // кадр, иначе часть АЗС остаётся за пределами видимой области.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || showRadius) return;
+    clearRadius(map);
+    if (stations.length === 0) return;
+    const lats = stations.map((s) => s.lat);
+    const lngs = stations.map((s) => s.lng);
+    map.fitBounds(
+      [
+        [Math.min(...lngs), Math.min(...lats)],
+        [Math.max(...lngs), Math.max(...lats)],
+      ],
+      { padding: 72, maxZoom: 12, duration: 700 },
+    );
+  }, [showRadius, stations]);
+
   // Смена темы меняет подложку карты: светлая карта в тёмном интерфейсе
   // выглядит как чужой вставленный кусок.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     map.setStyle(mapProvider.getStyle({ dark }));
+    // setStyle сбрасывает слои — круг радиуса возвращаем после загрузки нового стиля.
+    map.once('styledata', () => {
+      if (showRadiusRef.current) drawRadius(map, centerRef.current, radiusRef.current);
+    });
   }, [dark]);
 
   // Маркеры перерисовываются при обновлении остатков: точка «на связи» зелёная,
@@ -305,7 +423,11 @@ function StationsMapCanvas({
           event.stopPropagation();
           selectRef.current(s.id);
         });
-        return new maplibregl.Marker({ element: el }).setLngLat([s.lng, s.lat]).addTo(map);
+        const marker = new maplibregl.Marker({ element: el }).setLngLat([s.lng, s.lat]).addTo(map);
+        // MapLibre ставит на элемент свой aria-label — возвращаем название АЗС,
+        // иначе скринридер читает три одинаковых «Map marker».
+        marker.getElement().setAttribute('aria-label', s.name);
+        return marker;
       });
     })();
     return () => {
@@ -317,4 +439,77 @@ function StationsMapCanvas({
   // поэтому подложка приглушается фильтром — иначе в тёмной теме карта светит.
   const fallbackDamp = dark && mapProvider.id === 'osm' ? 'benzeen-map-damp' : '';
   return <div ref={ref} className={`h-full w-full ${fallbackDamp}`} />;
+}
+
+const RADIUS_SOURCE = 'benzeen-radius';
+const RADIUS_FILL = 'benzeen-radius-fill';
+const RADIUS_LINE = 'benzeen-radius-line';
+
+/** Зум, при котором в кадр по вертикали попадает круг заданного радиуса. */
+function zoomForRadius(radiusKm: number): number {
+  // Диаметр в километрах на экран высотой ~520px: подобрано так, чтобы круг
+  // занимал кадр с воздухом по краям и работало на всех широтах Узбекистана.
+  if (radiusKm <= 2) return 13.4;
+  if (radiusKm <= 5) return 12.2;
+  if (radiusKm <= 10) return 11.2;
+  return 10;
+}
+
+/** Полигон-аппроксимация круга: MapLibre не умеет метрические круги из коробки. */
+function circlePolygon(center: LatLng, radiusKm: number, steps = 72): number[][] {
+  const latDeg = radiusKm / 110.574;
+  const lngDeg = radiusKm / (111.32 * Math.cos((center.lat * Math.PI) / 180));
+  const ring: number[][] = [];
+  for (let i = 0; i <= steps; i += 1) {
+    const a = (i / steps) * 2 * Math.PI;
+    ring.push([center.lng + lngDeg * Math.cos(a), center.lat + latDeg * Math.sin(a)]);
+  }
+  return ring;
+}
+
+type RadiusMap = MlMap & {
+  getSource: (id: string) => unknown;
+  getLayer: (id: string) => unknown;
+};
+
+function drawRadius(map: MlMap, center: LatLng, radiusKm: number): void {
+  const m = map as RadiusMap;
+  const data = {
+    type: 'Feature' as const,
+    properties: {},
+    geometry: { type: 'Polygon' as const, coordinates: [circlePolygon(center, radiusKm)] },
+  };
+  try {
+    const existing = m.getSource(RADIUS_SOURCE) as { setData?: (d: unknown) => void } | undefined;
+    if (existing?.setData) {
+      existing.setData(data);
+      return;
+    }
+    map.addSource(RADIUS_SOURCE, { type: 'geojson', data });
+    map.addLayer({
+      id: RADIUS_FILL,
+      type: 'fill',
+      source: RADIUS_SOURCE,
+      paint: { 'fill-color': '#2E5BFF', 'fill-opacity': 0.08 },
+    });
+    map.addLayer({
+      id: RADIUS_LINE,
+      type: 'line',
+      source: RADIUS_SOURCE,
+      paint: { 'line-color': '#2E5BFF', 'line-width': 1.5, 'line-dasharray': [2, 2], 'line-opacity': 0.6 },
+    });
+  } catch {
+    /* стиль ещё не готов или уже уничтожен — круг не критичен для работы карты */
+  }
+}
+
+function clearRadius(map: MlMap): void {
+  const m = map as RadiusMap;
+  try {
+    if (m.getLayer(RADIUS_LINE)) map.removeLayer(RADIUS_LINE);
+    if (m.getLayer(RADIUS_FILL)) map.removeLayer(RADIUS_FILL);
+    if (m.getSource(RADIUS_SOURCE)) map.removeSource(RADIUS_SOURCE);
+  } catch {
+    /* нечего убирать */
+  }
 }

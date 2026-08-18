@@ -739,8 +739,8 @@
     "account": "Kabinet",
     "dashboard": "Panel",
     "hero": {
-      "title": "Yoqilgʻi oʻzi yetib keladi",
-      "subtitle": "Yoqilgʻini mashinaga yetkazib berish va ilova orqali shoxobchada quyish — rezervuardagi jonli qoldiqlar va naqd pulsiz toʻlov bilan.",
+      "title": "Naqd pulsiz va navbatsiz yoqilgʻi",
+      "subtitle": "Yoʻlga chiqishdan avval shoxobchadagi qoldiqni koʻrasiz, quyilgan litr boʻyicha telefondan toʻlaysiz. Yoqilgʻini mashinangizga yetkazib ham beramiz.",
       "ctaBenzin": "Benzin buyurtma qilish",
       "ctaPropan": "Propan topish",
       "how": "Qanday ishlaydi"
@@ -806,7 +806,7 @@
       "privacy": "Maxfiylik",
       "rights": "Barcha huquqlar himoyalangan."
     },
-    "widgetWhere": "Yoqilg'ini qayerga yetkazamiz?",
+    "widgetWhere": "Yoqilgʻi qayerga kerak?",
     "widgetCta": "Buyurtma",
     "svcScheduleTitle": "Oldindan rejalashtirish",
     "svcScheduleDesc": "Sana va vaqtni tanlang — o'z vaqtida yetkazamiz"
@@ -1488,15 +1488,18 @@
     "manualReviewShort": "Tekshiruvda"
   },
   "homeMap": {
-    "badge": "Rezervuar sensorlari",
-    "title": "Oʻzbekiston shoxobchalari xaritasi va jonli qoldiqlar",
-    "subtitle": "Yoqilgʻi qoldiqlari toʻgʻridan-toʻgʻri rezervuar sensorlaridan keladi — mamlakatda bunday xizmat boshqa yoʻq. Baklarda nima borligini koʻrish uchun nuqtani bosing.",
+    "badge": "Rezervuar datchiklari",
+    "title": "Yoqilgʻi bor joyni yoʻlga chiqmasdan koʻring",
+    "subtitle": "Qoldiqlar toʻgʻridan-toʻgʻri shoxobcha rezervuarlaridagi datchiklardan keladi — bu mamlakatda boshqa hech kimda yoʻq. Nuqtani bosing va bakda nima borligini koʻring.",
     "counter": "Aloqada {online} / {total}",
-    "hint": "Shoxobcha nuqtasini bosing",
+    "hint": "Nuqtani bosing — qoldiq va narxlar chiqadi",
     "stocksLabel": "Sensor qoldiqlari",
     "noStocks": "Sensor maʼlumoti hozircha yoʻq",
     "cardCta": "Yoqilgʻi quyish",
     "close": "Yopish",
-    "litersShort": "l"
+    "litersShort": "l",
+    "scopeRadius": "Sizdan {km} km radiusda",
+    "scopeAll": "Barcha ulangan shoxobchalar",
+    "scopeShowAll": "Barchasini koʻrsatish ({n})"
   }
 }

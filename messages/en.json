@@ -739,8 +739,8 @@
     "account": "Account",
     "dashboard": "Dashboard",
     "hero": {
-      "title": "Fuel comes to you",
-      "subtitle": "Fuel delivered to your car and app-based refuelling at stations — with live tank levels and cashless payment.",
+      "title": "Refuel with no cash and no queue",
+      "subtitle": "See how much fuel a station actually has before you drive, then pay from your phone for the litres you pumped. Or have fuel brought to your car.",
       "ctaBenzin": "Order petrol",
       "ctaPropan": "Find propane",
       "how": "How it works"
@@ -806,7 +806,7 @@
       "privacy": "Privacy",
       "rights": "All rights reserved."
     },
-    "widgetWhere": "Where to deliver fuel?",
+    "widgetWhere": "Where should we bring fuel?",
     "widgetCta": "Order",
     "svcScheduleTitle": "Schedule ahead",
     "svcScheduleDesc": "Pick a date and time — we'll arrive on schedule"
@@ -1488,15 +1488,18 @@
     "manualReviewShort": "Under review"
   },
   "homeMap": {
-    "badge": "Tank level sensors",
-    "title": "Map of Uzbek stations with live fuel levels",
-    "subtitle": "Fuel levels come straight from sensors inside the station tanks — nothing like it exists elsewhere in the country. Tap a point to see what is actually in the tanks.",
+    "badge": "Tank sensors",
+    "title": "See where the fuel is before you drive",
+    "subtitle": "Levels come straight from sensors inside station tanks — nobody else in the country has this. Tap a pin to see what is really in the tanks.",
     "counter": "{online} of {total} online",
-    "hint": "Tap a station point",
+    "hint": "Tap a pin for levels and prices",
     "stocksLabel": "Sensor readings",
     "noStocks": "No sensor data yet",
-    "cardCta": "Start fuelling",
+    "cardCta": "Refuel here",
     "close": "Close",
-    "litersShort": "L"
+    "litersShort": "L",
+    "scopeRadius": "Within {km} km of you",
+    "scopeAll": "All connected stations",
+    "scopeShowAll": "Show all ({n})"
   }
 }

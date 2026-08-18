@@ -52,8 +52,8 @@ export function BenzeenLogo({
     <span className={cn('flex shrink-0 items-center gap-2 sm:gap-2.5', className)}>
       <span
         className={cn(
-          'flex shrink-0 items-center justify-center rounded-control bg-navy text-white',
-          'dark:bg-primary-500 dark:text-navy-950',
+          'flex shrink-0 items-center justify-center rounded-control bg-primary-600 text-white',
+          'dark:bg-primary-500 dark:text-white',
           box,
         )}
       >
