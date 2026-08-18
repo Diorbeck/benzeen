@@ -809,7 +809,37 @@
     "widgetWhere": "Where should we bring fuel?",
     "widgetCta": "Order",
     "svcScheduleTitle": "Schedule ahead",
-    "svcScheduleDesc": "Pick a date and time — we'll arrive on schedule"
+    "svcScheduleDesc": "Pick a date and time — we'll arrive on schedule",
+    "console": {
+      "eyebrow": "FUEL & DELIVERY · UZBEKISTAN",
+      "headline": "Your fuel is",
+      "headlineAccent": "on the way.",
+      "lede": "One screen: order delivery, see live tank levels at nearby stations and pay from your phone.",
+      "orderEyebrow": "NEW ORDER",
+      "orderTitle": "Deliver fuel",
+      "couriersOnline": "couriers online",
+      "addressLabel": "Delivery address",
+      "fuelLabel": "Fuel type",
+      "volumeLabel": "Volume",
+      "liters": "{n} L",
+      "costLabel": "Fuel cost",
+      "etaLabel": "Estimated time",
+      "etaValue": "15–25 min",
+      "cta": "Order delivery",
+      "nearbyTitle": "Stations nearby",
+      "nearbyAll": "See all",
+      "nearbyEmpty": "No connected stations nearby yet — see every point on the map.",
+      "km": "{n} km",
+      "perLiter": "UZS/L",
+      "payEyebrow": "PAY FROM THE APP",
+      "payTitle": "Fuel up and drive off",
+      "payStep1": "Pull up to the pump: the app detects which one you are at.",
+      "payStep2": "You are charged for the litres actually pumped; the difference returns instantly.",
+      "payStep3": "The receipt goes to Soliq and 1% cashback comes back to you."
+    },
+    "nav": {
+      "stations": "Stations nearby"
+    }
   },
   "clientLogin": {
     "title": "Sign in",
@@ -1500,6 +1530,7 @@
     "litersShort": "L",
     "scopeRadius": "Within {km} km of you",
     "scopeAll": "All connected stations",
-    "scopeShowAll": "Show all ({n})"
+    "scopeShowAll": "Show all ({n})",
+    "myLocation": "My location"
   }
 }

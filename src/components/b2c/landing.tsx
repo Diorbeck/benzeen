@@ -1,33 +1,21 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import {
-  Fuel,
-  Flame,
-  ArrowRight,
-  ChevronDown,
-  MapPin,
-  CalendarClock,
-  Phone,
-} from 'lucide-react';
+import { Fuel, Flame, ArrowRight, ChevronDown, CalendarClock, Phone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { B2CHeader } from './header';
 import { HomeStationsMap } from './home-stations-map';
+import { OrderPanel } from './order-panel';
+import { NearbyAndPay } from './nearby-and-pay';
+import { useHomeStations } from './use-home-stations';
 import { ScrollJourney } from './scroll-journey';
 import { track } from '@/lib/analytics';
 import { siteConfig } from '@/lib/site-config';
 import { captureRefFromUrl } from '@/lib/referral-client';
-
-const FUELS = ['AI_92', 'AI_95', 'AI_100'] as const;
-const FUEL_LABEL: Record<(typeof FUELS)[number], string> = {
-  AI_92: 'АИ-92',
-  AI_95: 'АИ-95',
-  AI_100: 'АИ-100',
-};
 
 export function B2CLanding() {
   const t = useTranslations('b2c');
@@ -41,15 +29,14 @@ export function B2CLanding() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-navy dark:bg-navy-950 dark:text-white">
+    <div className="min-h-screen bg-canvas text-navy dark:bg-navy-950 dark:text-white">
       <B2CHeader />
       {/* Десктопная скролл-анимация: машина едет по фону к заправке внизу,
           индикатор бака следует за позицией скролла. */}
       <ScrollJourney />
 
       <main className="relative z-10">
-        <Hero locale={locale} />
-        <HomeStationsMap locale={locale} />
+        <Console locale={locale} />
         <Services locale={locale} />
         <HowItWorks />
         <Faq />
@@ -69,63 +56,37 @@ export function B2CLanding() {
   );
 }
 
-/** Форма-первый hero: заголовок → виджет заказа → продуктовый визуал справа. */
-function Hero({ locale }: { locale: string }) {
+/** Первый экран как рабочая консоль: заказ слева, карта топлива справа. */
+function Console({ locale }: { locale: string }) {
   const t = useTranslations('b2c');
-  const router = useRouter();
-  const [fuel, setFuel] = useState<(typeof FUELS)[number]>('AI_92');
-
-  const startOrder = (where: string) => {
-    track('gasoline_order_clicked', { where });
-    router.push(`/${locale}/benzin?fuel=${fuel}`);
-  };
+  const data = useHomeStations();
 
   return (
-    <section className="mx-auto max-w-[1200px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">
-      <div>
-        <h1 className="max-w-2xl font-display text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-navy dark:text-white sm:text-title lg:text-display">
-          {t('hero.title')}
-        </h1>
-
-        <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-600 dark:text-gray-400">
-          {t('hero.subtitle')}
-        </p>
-
-        {/* Панель заказа: главное действие, читается как инструмент и целиком
-            попадает в первый экран — за ним сразу карта АЗС. */}
-        <div className="mt-6 space-y-3 rounded-card border border-gray-200 bg-gray-50 p-4 dark:border-navy-700 dark:bg-navy-900 lg:flex lg:items-center lg:gap-3 lg:space-y-0 lg:p-5">
-          <button
-            type="button"
-            onClick={() => startOrder('hero_widget_where')}
-            className="flex h-12 w-full items-center gap-3 rounded-control border border-gray-200 bg-white px-4 text-left text-body text-gray-500 transition-colors hover:border-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-400 dark:hover:border-white/20 dark:focus-visible:ring-white/60 lg:min-w-0 lg:flex-1"
-          >
-            <MapPin className="h-5 w-5 shrink-0 text-navy dark:text-white" aria-hidden />
-            {t('widgetWhere')}
-          </button>
-
-          <div className="grid grid-cols-3 gap-2 lg:flex lg:shrink-0">
-            {FUELS.map((f) => (
-              <button
-                key={f}
-                type="button"
-                onClick={() => setFuel(f)}
-                className={`h-11 rounded-control px-3 text-sm font-medium transition-colors lg:min-w-[84px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:focus-visible:ring-white/60 ${
-                  fuel === f
-                    ? 'border-2 border-primary-600 bg-white text-navy dark:border-primary-400 dark:bg-primary-500/15 dark:text-white'
-                    : 'border border-gray-200 bg-white text-gray-700 hover:border-gray-300 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:border-white/20'
-                }`}
-              >
-                {FUEL_LABEL[f]}
-              </button>
-            ))}
-          </div>
-
-          <Button size="lg" className="w-full lg:w-auto lg:shrink-0 lg:px-8" onClick={() => startOrder('hero_widget')}>
-            {t('widgetCta')}
-          </Button>
+    <section className="mx-auto max-w-[1200px] px-4 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-16 lg:pt-12">
+      <div className="lg:flex lg:items-end lg:justify-between lg:gap-10">
+        <div>
+          <p className="text-caption font-semibold uppercase tracking-[0.18em] text-sky-600 dark:text-sky-300">
+            {t('console.eyebrow')}
+          </p>
+          <h1 className="mt-4 font-display text-[34px] font-bold leading-[1.05] tracking-[-0.02em] text-navy dark:text-white sm:text-title lg:text-display">
+            {t('console.headline')}
+            <br />
+            <span className="text-sky-500 dark:text-sky-300">{t('console.headlineAccent')}</span>
+          </h1>
         </div>
+        <p className="mt-4 max-w-xs text-sm leading-relaxed text-gray-600 dark:text-gray-400 lg:mb-2 lg:text-right">
+          {t('console.lede')}
+        </p>
       </div>
 
+      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+        <OrderPanel locale={locale} />
+        <HomeStationsMap locale={locale} data={data} />
+      </div>
+
+      <div className="mt-4">
+        <NearbyAndPay locale={locale} data={data} />
+      </div>
     </section>
   );
 }
@@ -169,7 +130,7 @@ function Services({ locale }: { locale: string }) {
               key={c.title}
               href={c.href}
               onClick={() => track(c.event, { where: 'services' })}
-              className="group flex flex-col justify-between rounded-card bg-gray-100 p-5 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:bg-navy-900 dark:hover:bg-navy-800 dark:focus-visible:ring-white/60"
+              className="group flex flex-col justify-between rounded-card border border-gray-200 bg-white p-5 transition-colors hover:border-sky-400 dark:border-navy-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:bg-navy-900 dark:hover:bg-navy-800 dark:focus-visible:ring-white/60"
             >
               <div>
                 <div className="flex items-center justify-between">

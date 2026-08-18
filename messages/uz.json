@@ -809,7 +809,37 @@
     "widgetWhere": "Yoqilgʻi qayerga kerak?",
     "widgetCta": "Buyurtma",
     "svcScheduleTitle": "Oldindan rejalashtirish",
-    "svcScheduleDesc": "Sana va vaqtni tanlang — o'z vaqtida yetkazamiz"
+    "svcScheduleDesc": "Sana va vaqtni tanlang — o'z vaqtida yetkazamiz",
+    "console": {
+      "eyebrow": "YOQILG‘I VA YETKAZIB BERISH · O‘ZBEKISTON",
+      "headline": "Yoqilg‘i allaqachon",
+      "headlineAccent": "yo‘lda.",
+      "lede": "Bitta ekran: yetkazib berishga buyurtma, yaqin shoxobchalardagi qoldiq va telefondan to‘lov.",
+      "orderEyebrow": "YANGI BUYURTMA",
+      "orderTitle": "Yoqilg‘i yetkazib berish",
+      "couriersOnline": "kuryerlar onlayn",
+      "addressLabel": "Qayerga yetkazamiz",
+      "fuelLabel": "Yoqilg‘i turi",
+      "volumeLabel": "Hajmi",
+      "liters": "{n} l",
+      "costLabel": "Yoqilg‘i narxi",
+      "etaLabel": "Taxminiy vaqt",
+      "etaValue": "15–25 daqiqa",
+      "cta": "Yetkazib berishga buyurtma",
+      "nearbyTitle": "Yaqin shoxobchalar",
+      "nearbyAll": "Barchasini ko‘rish",
+      "nearbyEmpty": "Yaqin atrofda ulangan shoxobcha yo‘q — barcha nuqtalarni xaritada ko‘ring.",
+      "km": "{n} km",
+      "perLiter": "so‘m/l",
+      "payEyebrow": "ILOVADAN TO‘LOV",
+      "payTitle": "Quydingiz — va ketdingiz",
+      "payStep1": "Kolonkaga keldingiz: ilova qaysi kolonka oldida turganingizni o‘zi aniqlaydi.",
+      "payStep2": "Pul quyilgan litr bo‘yicha yechiladi, farq darhol qaytariladi.",
+      "payStep3": "Chek Soliqqa ketadi, 1% keshbek sizga qaytadi."
+    },
+    "nav": {
+      "stations": "Yaqin shoxobchalar"
+    }
   },
   "clientLogin": {
     "title": "Kirish",
@@ -1500,6 +1530,7 @@
     "litersShort": "l",
     "scopeRadius": "Sizdan {km} km radiusda",
     "scopeAll": "Barcha ulangan shoxobchalar",
-    "scopeShowAll": "Barchasini koʻrsatish ({n})"
+    "scopeShowAll": "Barchasini koʻrsatish ({n})",
+    "myLocation": "Mening joylashuvim"
   }
 }

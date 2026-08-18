@@ -1,14 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
-import { Gauge, MapPin, Navigation, RefreshCw, WifiOff, X } from 'lucide-react';
+import { Crosshair, Gauge, MapPin, Navigation, RefreshCw, WifiOff, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { mapProvider, localizeMapLabels, TASHKENT_CENTER } from '@/components/map/provider';
 import { formatMoney } from '@/lib/format';
-import { haversineKm } from '@/lib/geo';
+import {
+  DEFAULT_RADIUS_KM,
+  fillPercent,
+  type HomeStations,
+  type LatLng,
+  type Station,
+} from './use-home-stations';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 // Карта Узбекистана с подключёнными АЗС на главной — Модуль 1 ТЗ v2.
@@ -18,118 +24,53 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 // карточка АЗС с остатками, которые приходят с датчиков в резервуарах — это
 // то, чего нет ни у кого в стране, поэтому цифра подаётся крупно.
 
-type Stock = {
-  fuelType: string;
-  litersAvailable: number;
-  capacityL: number;
-  dataFresh: boolean;
-  tanksCount: number;
-  priceUzs: number | null;
-};
-
-type Station = {
-  id: string;
-  name: string;
-  brand: string | null;
-  address: string;
-  region: string | null;
-  lat: number;
-  lng: number;
-  status: 'ACTIVE' | 'PAUSED';
-  online: boolean;
-  lastSeenAt: string | null;
-  stocks: Stock[];
-};
-
-// По умолчанию карта показывает только 5 км вокруг пользователя: человек ищет,
-// где заправиться сейчас, а не изучает страну. Как только он сам подвинул или
-// отмасштабировал карту — ограничение снимается и видно все подключённые АЗС.
-const DEFAULT_RADIUS_KM = 5;
-const REFRESH_MS = 30_000;
-
-type LatLng = { lat: number; lng: number };
-
-export function HomeStationsMap({ locale }: { locale: string }) {
+export function HomeStationsMap({ locale, data }: { locale: string; data: HomeStations }) {
   const t = useTranslations('homeMap');
   const tStations = useTranslations('stations');
-  const [stations, setStations] = useState<Station[]>([]);
-  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const { visible, stations, state, reload, center, expanded, expand, locate } = data;
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  // Пока карту не тронули — показываем радиус 5 км вокруг пользователя.
-  const [center, setCenter] = useState<LatLng>(TASHKENT_CENTER);
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => setCenter({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-      // Отказ в геолокации — не ошибка: остаёмся на центре Ташкента.
-      () => undefined,
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 5 * 60_000 },
-    );
-  }, []);
-
-  const load = useCallback((silent = false) => {
-    if (!silent) setState('loading');
-    fetch('/api/stations')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('request failed'))))
-      .then((d: { stations: Station[] }) => {
-        setStations(d.stations);
-        setState('ready');
-      })
-      // Молчаливое обновление не стирает уже показанные данные: одна неудачная
-      // попытка на плохой связи — не причина обнулять карту.
-      .catch(() => setState((prev) => (silent && prev === 'ready' ? prev : 'error')));
-  }, []);
-
-  useEffect(() => {
-    load();
-    const id = setInterval(() => load(true), REFRESH_MS);
-    return () => clearInterval(id);
-  }, [load]);
-
-  const visible = useMemo(
-    () =>
-      expanded
-        ? stations
-        : stations.filter((s) => haversineKm(center, { lat: s.lat, lng: s.lng }) <= DEFAULT_RADIUS_KM),
-    [stations, center, expanded],
-  );
 
   const selected = useMemo(
     () => stations.find((s) => s.id === selectedId) ?? null,
     [stations, selectedId],
   );
-
   const online = visible.filter((s) => s.online).length;
 
   return (
-    <section id="map" className="mx-auto max-w-[1200px] scroll-mt-24 px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-primary-600/10 px-2.5 py-1 text-caption font-semibold uppercase tracking-wide text-primary-700 dark:bg-primary-500/15 dark:text-primary-300">
+    <section
+      id="map"
+      className="flex scroll-mt-24 flex-col overflow-hidden rounded-card border border-gray-200 bg-white dark:border-navy-700 dark:bg-navy-900"
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-4">
+        <div className="min-w-0">
+          <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.14em] text-sky-600 dark:text-sky-300">
             <Gauge className="h-3.5 w-3.5" aria-hidden />
             {t('badge')}
-          </span>
-          <h2 className="mt-3 text-heading text-navy dark:text-white">{t('title')}</h2>
-          <p className="mt-1.5 max-w-xl text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          </p>
+          <h2 className="mt-2 text-subheading text-navy dark:text-white sm:text-heading">{t('title')}</h2>
+          <p className="mt-1.5 max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-400">
             {t('subtitle')}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {state === 'ready' ? t('counter', { online, total: visible.length }) : '\u00A0'}
-          </p>
+        <div className="flex flex-col items-end gap-2">
+          <button
+            type="button"
+            onClick={locate}
+            className="inline-flex items-center gap-1.5 rounded-control border border-gray-200 bg-white px-3 py-1.5 text-caption font-medium text-navy transition-colors hover:border-sky-400 hover:text-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-navy-700 dark:bg-navy-800 dark:text-white dark:hover:border-sky-400 dark:hover:text-sky-200"
+          >
+            <Crosshair className="h-3.5 w-3.5" aria-hidden />
+            {t('myLocation')}
+          </button>
           {state === 'ready' && (
-            <p className="mt-1 text-caption text-gray-500 dark:text-gray-400">
-              {expanded
-                ? t('scopeAll')
-                : t('scopeRadius', { km: DEFAULT_RADIUS_KM })}
+            <p className="text-right text-caption text-gray-500 dark:text-gray-400">
+              {t('counter', { online, total: visible.length })}
+              <span className="mx-1.5 text-gray-300 dark:text-gray-600">·</span>
+              {expanded ? t('scopeAll') : t('scopeRadius', { km: DEFAULT_RADIUS_KM })}
               {!expanded && stations.length > visible.length && (
                 <button
                   type="button"
-                  onClick={() => setExpanded(true)}
-                  className="ml-2 font-semibold text-primary-600 underline-offset-2 hover:underline dark:text-primary-300"
+                  onClick={expand}
+                  className="ml-2 font-semibold text-primary-600 underline-offset-2 hover:underline dark:text-sky-300"
                 >
                   {t('scopeShowAll', { n: stations.length })}
                 </button>
@@ -139,8 +80,8 @@ export function HomeStationsMap({ locale }: { locale: string }) {
         </div>
       </div>
 
-      <div className="relative mt-5 overflow-hidden rounded-card border border-gray-200 bg-gray-100 dark:border-navy-700 dark:bg-navy-900">
-        <div className="h-[380px] sm:h-[460px] lg:h-[520px]">
+      <div className="relative flex-1 border-t border-gray-100 bg-sky-50 dark:border-navy-700 dark:bg-navy-950">
+        <div className="h-[320px] sm:h-[380px] lg:h-[430px]">
           <StationsMapCanvas
             stations={visible}
             selectedId={selectedId}
@@ -148,14 +89,14 @@ export function HomeStationsMap({ locale }: { locale: string }) {
             center={center}
             radiusKm={DEFAULT_RADIUS_KM}
             showRadius={!expanded}
-            onUserMove={() => setExpanded(true)}
+            onUserMove={expand}
           />
         </div>
 
         {state === 'error' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/85 backdrop-blur dark:bg-navy-950/85">
             <p className="text-sm text-gray-600 dark:text-gray-300">{tStations('error')}</p>
-            <Button variant="secondary" size="sm" onClick={() => load()}>
+            <Button variant="secondary" size="sm" onClick={reload}>
               <RefreshCw className="h-4 w-4" /> {tStations('retry')}
             </Button>
           </div>
@@ -163,12 +104,8 @@ export function HomeStationsMap({ locale }: { locale: string }) {
 
         {/* Карточка выбранной АЗС: на телефоне — снизу, на десктопе — панелью слева. */}
         {selected && (
-          <div className="absolute inset-x-3 bottom-3 z-10 sm:inset-auto sm:bottom-4 sm:left-4 sm:w-[360px]">
-            <StationCard
-              station={selected}
-              locale={locale}
-              onClose={() => setSelectedId(null)}
-            />
+          <div className="absolute inset-x-3 bottom-3 z-10 sm:inset-auto sm:bottom-4 sm:left-4 sm:w-[340px]">
+            <StationCard station={selected} locale={locale} onClose={() => setSelectedId(null)} />
           </div>
         )}
 
@@ -242,6 +179,11 @@ function StationCard({
                   {t('litersShort')}
                 </span>
               </span>
+              {fillPercent(s) !== null && (
+                <span className="text-caption font-semibold tabular-nums text-success-600 dark:text-success-500">
+                  {fillPercent(s)}%
+                </span>
+              )}
               {s.priceUzs !== null && (
                 <span className="text-caption tabular-nums text-gray-500 dark:text-gray-400">
                   {formatMoney(s.priceUzs, locale)}

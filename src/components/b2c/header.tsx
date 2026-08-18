@@ -30,7 +30,7 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
   const role = (session?.user as { role?: string } | undefined)?.role;
 
   return (
-    <header className="sticky top-0 z-header border-b border-gray-100 dark:border-white/10 bg-white dark:bg-navy-950">
+    <header className="sticky top-0 z-header border-b border-gray-100 dark:border-white/10 bg-white/95 backdrop-blur dark:bg-navy-950/95">
       <nav className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
         <Link
           href={`/${locale}`}
@@ -40,13 +40,24 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
           <BenzeenLogo size="lg" />
         </Link>
 
-        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
+        {/* Навигация по разделам первого экрана: заправки рядом — то, за чем
+            приходят чаще всего, поэтому ссылка стоит рядом с «как это работает». */}
+        <div className="hidden shrink-0 items-center gap-1 md:flex">
+          <Link
+            href={`/${locale}#map`}
+            className="rounded-control px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-navy dark:text-gray-300 dark:hover:text-white"
+          >
+            {t('nav.stations')}
+          </Link>
           <Link
             href={`/${locale}#how`}
-            className="hidden rounded-control px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-navy dark:text-gray-300 dark:hover:text-white md:inline-block"
+            className="rounded-control px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-navy dark:text-gray-300 dark:hover:text-white"
           >
             {t('howItWorks')}
           </Link>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
           <LanguageSwitcher />
           {/* Системный режим на телефоне убран из шапки: три кнопки не влезают
               рядом с логотипом и входом, светлая/тёмная закрывают сценарий. */}
