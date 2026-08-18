@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+import { Inter, Space_Grotesk } from 'next/font/google';
 import { Providers } from '@/components/providers';
 import { PwaRegister } from '@/components/pwa-register';
 import './globals.css';
@@ -7,6 +7,15 @@ import './globals.css';
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
   variable: '--font-inter',
+  display: 'swap',
+});
+
+// Витринный шрифт только для логотипа и крупных заголовков: латиница, поэтому
+// кириллица остаётся на Inter и не ломается.
+const displayFont = Space_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-display',
+  weight: ['500', '700'],
   display: 'swap',
 });
 
@@ -33,7 +42,7 @@ export const viewport: Viewport = {
   // PR-C: theme-color обеих тем (Uber-restraint: белый / уголь).
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#FFFFFF' },
-    { media: '(prefers-color-scheme: dark)', color: '#0A0A0A' },
+    { media: '(prefers-color-scheme: dark)', color: '#0B0E14' },
   ],
 };
 
@@ -45,7 +54,7 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body
-        className={`${inter.variable} font-sans antialiased min-h-screen`}
+        className={`${inter.variable} ${displayFont.variable} font-sans antialiased min-h-screen`}
       >
         <Providers>{children}</Providers>
         <PwaRegister />

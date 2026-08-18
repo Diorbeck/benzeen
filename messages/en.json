@@ -19,7 +19,10 @@
       "pricing": "Pricing",
       "contact": "Contact"
     },
-    "ecosystem": {}
+    "ecosystem": {},
+    "themeLight": "Light theme",
+    "themeDark": "Dark theme",
+    "themeSystem": "Match system"
   },
   "hero": {
     "badge": "Tashkent · B2B",
@@ -737,7 +740,7 @@
     "dashboard": "Dashboard",
     "hero": {
       "title": "Fuel comes to you",
-      "subtitle": "Petrol to your car across Tashkent. Price like at the station, shown before you order. Free delivery.",
+      "subtitle": "Fuel delivered to your car and app-based refuelling at stations — with live tank levels and cashless payment.",
       "ctaBenzin": "Order petrol",
       "ctaPropan": "Find propane",
       "how": "How it works"
@@ -1483,5 +1486,17 @@
     "back": "Back to the map",
     "statusLabel": "Status",
     "manualReviewShort": "Under review"
+  },
+  "homeMap": {
+    "badge": "Tank level sensors",
+    "title": "Map of Uzbek stations with live fuel levels",
+    "subtitle": "Fuel levels come straight from sensors inside the station tanks — nothing like it exists elsewhere in the country. Tap a point to see what is actually in the tanks.",
+    "counter": "{online} of {total} online",
+    "hint": "Tap a station point",
+    "stocksLabel": "Sensor readings",
+    "noStocks": "No sensor data yet",
+    "cardCta": "Start fuelling",
+    "close": "Close",
+    "litersShort": "L"
   }
 }

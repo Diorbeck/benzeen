@@ -19,7 +19,10 @@
       "pricing": "Tariflar",
       "contact": "Aloqa"
     },
-    "ecosystem": {}
+    "ecosystem": {},
+    "themeLight": "Yorugʻ mavzu",
+    "themeDark": "Qorongʻi mavzu",
+    "themeSystem": "Tizim boʻyicha"
   },
   "hero": {
     "badge": "Toshkent · B2B",
@@ -737,7 +740,7 @@
     "dashboard": "Panel",
     "hero": {
       "title": "Yoqilgʻi oʻzi yetib keladi",
-      "subtitle": "Butun Toshkent boʻylab benzin mashinangizga. Narx — AZSdagidek, buyurtmadan oldin koʻrinadi. Yetkazish bepul.",
+      "subtitle": "Yoqilgʻini mashinaga yetkazib berish va ilova orqali shoxobchada quyish — rezervuardagi jonli qoldiqlar va naqd pulsiz toʻlov bilan.",
       "ctaBenzin": "Benzin buyurtma qilish",
       "ctaPropan": "Propan topish",
       "how": "Qanday ishlaydi"
@@ -1483,5 +1486,17 @@
     "back": "Shoxobchalar xaritasiga",
     "statusLabel": "Holat",
     "manualReviewShort": "Tekshiruvda"
+  },
+  "homeMap": {
+    "badge": "Rezervuar sensorlari",
+    "title": "Oʻzbekiston shoxobchalari xaritasi va jonli qoldiqlar",
+    "subtitle": "Yoqilgʻi qoldiqlari toʻgʻridan-toʻgʻri rezervuar sensorlaridan keladi — mamlakatda bunday xizmat boshqa yoʻq. Baklarda nima borligini koʻrish uchun nuqtani bosing.",
+    "counter": "Aloqada {online} / {total}",
+    "hint": "Shoxobcha nuqtasini bosing",
+    "stocksLabel": "Sensor qoldiqlari",
+    "noStocks": "Sensor maʼlumoti hozircha yoʻq",
+    "cardCta": "Yoqilgʻi quyish",
+    "close": "Yopish",
+    "litersShort": "l"
   }
 }

@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
-import { Fuel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { BenzeenLogo } from '@/components/brand/logo';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { B2CThemeToggle } from './theme-toggle';
 import { track } from '@/lib/analytics';
@@ -31,15 +31,13 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
 
   return (
     <header className="sticky top-0 z-header border-b border-gray-100 dark:border-white/10 bg-white dark:bg-navy-950">
-      <nav className="mx-auto flex h-16 max-w-[1240px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <nav className="mx-auto flex h-[72px] max-w-[1240px] items-center justify-between gap-2 px-4 sm:gap-3 sm:px-6 lg:px-8">
         <Link
           href={`/${locale}`}
-          className="flex min-w-0 items-center gap-2.5 rounded-control transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+          aria-label={siteConfig.appName}
+          className="shrink-0 rounded-control transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-navy dark:bg-white">
-            <Fuel className="h-5 w-5 text-white dark:text-navy" aria-hidden />
-          </span>
-          <span className="truncate text-lg font-semibold tracking-tight text-navy dark:text-white">{siteConfig.appName}</span>
+          <BenzeenLogo size="lg" />
         </Link>
 
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-3">
@@ -50,7 +48,9 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
             {t('howItWorks')}
           </Link>
           <LanguageSwitcher />
-          <B2CThemeToggle />
+          {/* Системный режим на телефоне убран из шапки: три кнопки не влезают
+              рядом с логотипом и входом, светлая/тёмная закрывают сценарий. */}
+          <B2CThemeToggle hideSystemOnMobile />
 
           {status === 'loading' ? (
             <span className="h-10 w-24 animate-pulse rounded-control bg-gray-100 dark:bg-white/10" aria-hidden />
@@ -64,13 +64,13 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
             </Button>
           ) : (
             <>
-              <Button variant="ghost" size="sm" className="hidden sm:inline-flex" asChild>
+              <Button variant="ghost" size="sm" asChild>
                 <Link href={`/${locale}/client-login`} onClick={() => track('login_clicked', { where: 'header' })}>
                   {t('signIn')}
                 </Link>
               </Button>
               {showOrderCta && (
-                <Button size="sm" asChild>
+                <Button size="sm" className="hidden sm:inline-flex" asChild>
                   <Link
                     href={`/${locale}/benzin`}
                     onClick={() => track('gasoline_order_clicked', { where: 'header' })}

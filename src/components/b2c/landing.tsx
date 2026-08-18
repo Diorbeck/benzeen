@@ -10,13 +10,14 @@ import {
   ArrowRight,
   ChevronDown,
   MapPin,
-  Navigation,
   CalendarClock,
   Phone,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { B2CHeader } from './header';
+import { HomeStationsMap } from './home-stations-map';
+import { ScrollJourney } from './scroll-journey';
 import { track } from '@/lib/analytics';
 import { siteConfig } from '@/lib/site-config';
 import { captureRefFromUrl } from '@/lib/referral-client';
@@ -42,9 +43,13 @@ export function B2CLanding() {
   return (
     <div className="min-h-screen bg-white text-navy dark:bg-navy-950 dark:text-white">
       <B2CHeader />
+      {/* Десктопная скролл-анимация: машина едет по фону к заправке внизу,
+          индикатор бака следует за позицией скролла. */}
+      <ScrollJourney />
 
-      <main>
+      <main className="relative z-10">
         <Hero locale={locale} />
+        <HomeStationsMap locale={locale} />
         <Services locale={locale} />
         <HowItWorks />
         <Faq />
@@ -76,33 +81,38 @@ function Hero({ locale }: { locale: string }) {
   };
 
   return (
-    <section className="mx-auto grid max-w-[1200px] items-center gap-10 px-4 pb-12 pt-8 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-16">
+    <section className="mx-auto max-w-[1200px] px-4 pb-8 pt-6 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">
       <div>
-        <h1 className="text-[28px] font-bold leading-[1.15] tracking-[-0.01em] text-navy dark:text-white sm:text-title lg:text-display">
+        <h1 className="max-w-2xl font-display text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-navy dark:text-white sm:text-title lg:text-display">
           {t('hero.title')}
         </h1>
 
-        {/* Мини-виджет заказа (uber-стиль) */}
-        <div className="mt-7 max-w-md space-y-3">
+        <p className="mt-3 max-w-xl text-base leading-relaxed text-gray-600 dark:text-gray-400">
+          {t('hero.subtitle')}
+        </p>
+
+        {/* Панель заказа: главное действие, читается как инструмент и целиком
+            попадает в первый экран — за ним сразу карта АЗС. */}
+        <div className="mt-6 space-y-3 rounded-card border border-gray-200 bg-gray-50 p-4 dark:border-navy-700 dark:bg-navy-900 lg:flex lg:items-center lg:gap-3 lg:space-y-0 lg:p-5">
           <button
             type="button"
             onClick={() => startOrder('hero_widget_where')}
-            className="flex h-12 w-full items-center gap-3 rounded-control bg-gray-100 px-4 text-left text-body text-gray-500 transition-colors hover:bg-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:bg-white/10 dark:text-gray-400 dark:hover:bg-white/15 dark:focus-visible:ring-white/60"
+            className="flex h-12 w-full items-center gap-3 rounded-control border border-gray-200 bg-white px-4 text-left text-body text-gray-500 transition-colors hover:border-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-400 dark:hover:border-white/20 dark:focus-visible:ring-white/60 lg:min-w-0 lg:flex-1"
           >
             <MapPin className="h-5 w-5 shrink-0 text-navy dark:text-white" aria-hidden />
             {t('widgetWhere')}
           </button>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2 lg:flex lg:shrink-0">
             {FUELS.map((f) => (
               <button
                 key={f}
                 type="button"
                 onClick={() => setFuel(f)}
-                className={`h-11 rounded-control text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:focus-visible:ring-white/60 ${
+                className={`h-11 rounded-control px-3 text-sm font-medium transition-colors lg:min-w-[84px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 dark:focus-visible:ring-white/60 ${
                   fuel === f
-                    ? 'border-2 border-primary-600 bg-white text-navy dark:bg-white/10 dark:text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/15'
+                    ? 'border-2 border-primary-600 bg-white text-navy dark:border-primary-400 dark:bg-primary-500/15 dark:text-white'
+                    : 'border border-gray-200 bg-white text-gray-700 hover:border-gray-300 dark:border-white/10 dark:bg-white/[0.06] dark:text-gray-200 dark:hover:border-white/20'
                 }`}
               >
                 {FUEL_LABEL[f]}
@@ -110,70 +120,13 @@ function Hero({ locale }: { locale: string }) {
             ))}
           </div>
 
-          <Button size="lg" className="w-full sm:w-auto sm:px-10" onClick={() => startOrder('hero_widget')}>
+          <Button size="lg" className="w-full lg:w-auto lg:shrink-0 lg:px-8" onClick={() => startOrder('hero_widget')}>
             {t('widgetCta')}
           </Button>
         </div>
       </div>
 
-      <HeroVisual />
     </section>
-  );
-}
-
-/** Продуктовый визуал: карта с маршрутом + карточка заказа. Без анимаций. */
-function HeroVisual() {
-  const t = useTranslations('b2c');
-  return (
-    <div className="hidden w-full lg:block">
-      <div className="overflow-hidden rounded-card border border-gray-200 bg-white dark:border-white/10 dark:bg-navy-900">
-        <div className="relative h-72 bg-gray-100 dark:bg-navy-800">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(20,23,31,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(20,23,31,0.06) 1px, transparent 1px)',
-              backgroundSize: '32px 32px',
-            }}
-            aria-hidden
-          />
-          <svg className="absolute inset-0 h-full w-full text-primary-600" viewBox="0 0 400 288" fill="none" aria-hidden>
-            <path
-              d="M60 235 C 130 200, 150 120, 250 110 S 340 70, 345 55"
-              stroke="currentColor"
-              strokeWidth="4"
-              strokeLinecap="round"
-              strokeDasharray="2 12"
-            />
-          </svg>
-          <span className="absolute left-[14%] top-[80%] flex h-4 w-4 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
-            <span className="relative h-3.5 w-3.5 rounded-full border-2 border-white bg-primary-600" />
-          </span>
-          <span className="absolute left-[85%] top-[19%] -translate-x-1/2 -translate-y-full text-navy dark:text-white">
-            <MapPin className="h-7 w-7" aria-hidden />
-          </span>
-        </div>
-        <div className="space-y-3 p-5">
-          <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-gray-100 px-2.5 py-1 text-caption font-medium text-navy dark:bg-white/10 dark:text-white">
-              <Navigation className="h-3.5 w-3.5" aria-hidden />
-              {t('heroCard.status')}
-            </span>
-            <span className="text-caption text-gray-500 dark:text-gray-400">{t('heroCard.coverage')}</span>
-          </div>
-          <div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/10">
-            <div>
-              <p className="text-sm font-semibold text-navy dark:text-white">АИ-92</p>
-              <p className="text-caption text-gray-500 dark:text-gray-400">{t('heroCard.priceLabel')}</p>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-semibold text-success-600 dark:text-success-500">{t('heroCard.freeDelivery')}</p>
-              <p className="text-caption text-gray-500 dark:text-gray-400">{t('heroCard.cardPay')}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -288,7 +241,7 @@ function Faq() {
 function Footer({ locale }: { locale: string }) {
   const t = useTranslations('b2c');
   return (
-    <footer className="border-t border-gray-100 bg-white dark:border-white/10 dark:bg-navy-950">
+    <footer className="border-t border-gray-100 dark:border-white/10">
       <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
         <div>
           <span className="flex items-center gap-2.5 text-base font-semibold tracking-tight text-navy dark:text-white">

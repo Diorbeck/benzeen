@@ -45,13 +45,15 @@ const config: Config = {
           400: '#9ca3af',
           500: '#6b7280',
         },
-        // Near-black text on light + the charcoal dark-theme family (Uber-restraint).
+        // Near-black text on light + самостоятельная тёмная тема: не инверсия
+        // светлой, а свой «чернильный» слой с холодным подтоном, на котором
+        // кобальтовый акцент читается, а не выжигает глаз.
         navy: {
           DEFAULT: '#14171F', // primary text on light (black with a faint navy cast)
-          700: '#232323', // subtle borders on dark
-          800: '#1A1A1A', // elevated dark surface
-          900: '#141414', // dark surface (cards, header, sheets)
-          950: '#0A0A0A', // dark background (charcoal)
+          700: '#262C3A', // borders / hairlines on dark
+          800: '#191E29', // elevated dark surface (hover, popovers)
+          900: '#12161F', // dark surface (cards, header, sheets)
+          950: '#0B0E14', // dark background (ink)
         },
         // Semantic — success only for success, warning only for warnings.
         success: { DEFAULT: '#059669', 500: '#10b981', 600: '#059669' },
@@ -65,6 +67,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-display)', 'var(--font-inter)', 'system-ui', 'sans-serif'],
         mono: ['ui-monospace', 'monospace'],
       },
       // Type scale (Uber-restraint): плотно, без display-полотен.

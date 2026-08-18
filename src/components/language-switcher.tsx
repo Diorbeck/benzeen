@@ -46,7 +46,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         type="button"
         onClick={() => setOpen(!open)}
         className={cn(
-          'flex items-center gap-1.5 rounded-lg border border-gray-200/80 bg-white/80 px-3 py-2 text-sm font-medium',
+          'flex items-center gap-1 rounded-lg border border-gray-200/80 bg-white/80 px-2 py-2 text-sm font-medium sm:gap-1.5 sm:px-3',
           'text-gray-700 transition-colors hover:border-primary-500/40 hover:bg-primary-500/5 hover:text-primary-700',
           'dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:border-primary-400/30 dark:hover:bg-primary-500/10 dark:hover:text-primary-300',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900'
@@ -55,7 +55,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         aria-expanded={open}
         aria-label={t('language')}
       >
-        <Languages className="h-4 w-4 opacity-70" aria-hidden />
+        <Languages className="hidden h-4 w-4 opacity-70 sm:block" aria-hidden />
         <span>{currentLocale.toUpperCase()}</span>
         <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', open && 'rotate-180')} aria-hidden />
       </button>
