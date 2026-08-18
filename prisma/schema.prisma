@@ -861,9 +861,20 @@ model FuelingSession {
   holdAmountUzs Int
   priceUzs      Int
 
+  // Лимит отпуска, переданный колонке: за него заливка выйти не должна, иначе
+  // перелив ляжет на АЗС (см. settle() в lib/fueling.ts).
+  limitLiters Float?
+
   // Факт по завершении заливки.
   litersDispensed Float?
   amountUzs       Int?
+
+  // Возвращённая клиенту разница между резервом и фактом.
+  refundUzs Int?
+
+  // Последний тик с колонки. По его давности видно, что заливка кончилась
+  // (минута молчания) или что связь с объектом пропала (полчаса).
+  lastTickAt DateTime?
 
   status         FuelingStatus      @default(RESERVED)
   identifiedBy   IdentificationMode @default(MANUAL)

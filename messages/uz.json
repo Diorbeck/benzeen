@@ -1383,7 +1383,8 @@
       "AI_98": "AI-98",
       "AI_100": "AI-100",
       "DIESEL": "Dizel"
-    }
+    },
+    "startFueling": "Yoqilgʻi quyish"
   },
   "stationPanel": {
     "title": "Shoxobcha kabineti",
@@ -1427,5 +1428,52 @@
       "OVERDUE": "Muddati o'tgan",
       "CANCELLED": "Bekor qilingan"
     }
+  },
+  "fueling": {
+    "title": "Yoqilgʻi quyish",
+    "stationLoading": "Shoxobcha maʼlumotlari yuklanmoqda…",
+    "stationError": "Shoxobchani yuklab boʻlmadi.",
+    "offline": "Shoxobcha aloqada emas — hozir quyish imkonsiz.",
+    "stepDispenser": "Kolonka",
+    "stepDispenserHint": "Turgan kolonkangiz raqamini tanlang.",
+    "dispenser": "№{n} kolonka",
+    "dispenserBle": "Avtomatik aniqlanadi",
+    "dispenserDisabled": "Ishlamaydi",
+    "stepFuel": "Yoqilgʻi",
+    "stepAmount": "Qancha quyiladi",
+    "modeAmount": "Summa boʻyicha",
+    "modeLiters": "Litr",
+    "modeFull": "Toʻliq bak",
+    "amountPlaceholder": "Summa, soʻm",
+    "litersPlaceholder": "Litr",
+    "fullTankNote": "Toʻliq bak uchun summa bloklanadi, faqat quyilgani yechiladi.",
+    "price": "Narx",
+    "holdNote": "Summa quyishdan oldin kartada bloklanadi. Quyilgandan keyin faqat quyilgan litr uchun yechiladi, farq avtomatik qaytadi.",
+    "confirm": "Tasdiqlash va bloklash",
+    "submitting": "Bloklanmoqda…",
+    "history": "Quyish tarixi",
+    "needAuth": "Quyish uchun ilovaga kiring.",
+    "login": "Kirish",
+    "liveTitle": "Quyish davom etmoqda",
+    "reserved": "Blok tasdiqlandi",
+    "reservedHint": "Pistoletni joylang — litrlar shu yerda avtomatik chiqadi.",
+    "flowing": "Quyilmoqda",
+    "litersLabel": "Litr",
+    "amountLabel": "Summa",
+    "holdLabel": "Blok",
+    "limitLabel": "Limit",
+    "settled": "Quyish tugadi",
+    "cashback": "Keshbek 1%",
+    "refund": "Qaytarildi",
+    "manualReview": "Shoxobcha bilan aloqa yoʻqoldi. Blok bekor qilindi, quyish tekshiruvda — siz bilan bogʻlanamiz.",
+    "cancelled": "Quyish bekor qilindi, blok bekor qilindi.",
+    "cancel": "Bekor qilish",
+    "cancelling": "Bekor qilinmoqda…",
+    "receipt": "Chek",
+    "historyTitle": "Quyish tarixi",
+    "historyEmpty": "Hozircha quyish yoʻq.",
+    "back": "Shoxobchalar xaritasiga",
+    "statusLabel": "Holat",
+    "manualReviewShort": "Tekshiruvda"
   }
 }

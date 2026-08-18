@@ -297,6 +297,17 @@ export function StationsNearby() {
                     </li>
                   ))}
               </ul>
+
+              {/* Вход в сценарий заправки. Для АЗС без связи кнопки нет: резерв
+                  на молчащем объекте означал бы замороженные деньги без топлива. */}
+              {s.online && s.status === 'ACTIVE' && (
+                <a
+                  href={`/${locale}/fueling/start?station=${s.id}`}
+                  className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-600 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                >
+                  {t('startFueling')}
+                </a>
+              )}
             </li>
           ))}
         </ul>

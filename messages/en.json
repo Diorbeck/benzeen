@@ -1383,7 +1383,8 @@
       "AI_98": "AI-98",
       "AI_100": "AI-100",
       "DIESEL": "Diesel"
-    }
+    },
+    "startFueling": "Start fueling"
   },
   "stationPanel": {
     "title": "Station panel",
@@ -1427,5 +1428,52 @@
       "OVERDUE": "Overdue",
       "CANCELLED": "Cancelled"
     }
+  },
+  "fueling": {
+    "title": "Fueling",
+    "stationLoading": "Loading station…",
+    "stationError": "Could not load the station.",
+    "offline": "Station is offline — fueling is unavailable right now.",
+    "stepDispenser": "Dispenser",
+    "stepDispenserHint": "Pick the number of the dispenser you are at.",
+    "dispenser": "Dispenser #{n}",
+    "dispenserBle": "Detected automatically",
+    "dispenserDisabled": "Out of service",
+    "stepFuel": "Fuel",
+    "stepAmount": "How much",
+    "modeAmount": "By amount",
+    "modeLiters": "Litres",
+    "modeFull": "Full tank",
+    "amountPlaceholder": "Amount, UZS",
+    "litersPlaceholder": "Litres",
+    "fullTankNote": "We hold a full-tank amount and charge exactly what is dispensed.",
+    "price": "Price",
+    "holdNote": "The amount is held on your card before fuelling. After it ends we charge exactly for the litres dispensed and release the difference automatically.",
+    "confirm": "Confirm and hold",
+    "submitting": "Holding…",
+    "history": "Fueling history",
+    "needAuth": "Sign in to start fueling.",
+    "login": "Sign in",
+    "liveTitle": "Fueling in progress",
+    "reserved": "Hold confirmed",
+    "reservedHint": "Insert the nozzle — litres will appear here automatically.",
+    "flowing": "Dispensing",
+    "litersLabel": "Litres",
+    "amountLabel": "Amount",
+    "holdLabel": "Hold",
+    "limitLabel": "Limit",
+    "settled": "Fueling complete",
+    "cashback": "Cashback 1%",
+    "refund": "Refunded",
+    "manualReview": "Lost connection to the station. The hold was released and the fill-up is under manual review — we will contact you.",
+    "cancelled": "Fueling cancelled, hold released.",
+    "cancel": "Cancel",
+    "cancelling": "Cancelling…",
+    "receipt": "Receipt",
+    "historyTitle": "Fueling history",
+    "historyEmpty": "No fill-ups yet.",
+    "back": "Back to the map",
+    "statusLabel": "Status",
+    "manualReviewShort": "Under review"
   }
 }
