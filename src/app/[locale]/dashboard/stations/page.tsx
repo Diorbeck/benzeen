@@ -10,6 +10,15 @@ import {
   StationsNetworkMap,
   type NetworkStation,
 } from '@/components/dashboard/stations-network-map';
+import {
+  SubscriptionControls,
+  type SubscriptionTargetView,
+} from '@/components/dashboard/subscription-controls';
+import {
+  buildSubscriptionStates,
+  dailyChargeUzs,
+  type SubscriptionTarget,
+} from '@/lib/station-subscriptions';
 
 // Модуль 7 ТЗ v2: админ-панель Benzeen по сети АЗС. Сводка по всем подключённым
 // объектам страны: связь с контроллером, остатки с датчиков, начисление за
@@ -46,8 +55,10 @@ export default async function AdminStationsPage({
     orderBy: { name: 'asc' },
     include: {
       tanks: { orderBy: { label: 'asc' } },
-      dispensers: { select: { id: true } },
-      billing: { where: { OR: [{ endedAt: null }, { endedAt: { gt: now } }] } },
+      dispensers: { orderBy: { number: 'asc' }, select: { id: true, number: true } },
+      // Нужны и закрытые в этом месяце строки: по ним считается начисление за
+      // дни до отключения.
+      billing: { where: { OR: [{ endedAt: null }, { endedAt: { gte: periodStart } }] } },
     },
   });
 
@@ -72,7 +83,39 @@ export default async function AdminStationsPage({
       now,
     );
     const stats = monthly.find((m) => m.stationId === station.id);
+
+    const targets: SubscriptionTarget[] = [
+      ...station.tanks.map((tank) => ({ id: tank.id, item: 'TANK' as const, label: tank.label })),
+      ...station.dispensers.map((d) => ({
+        id: d.id,
+        item: 'DISPENSER' as const,
+        label: `№ ${d.number}`,
+      })),
+    ];
+    const states = buildSubscriptionStates(
+      targets,
+      station.billing.map((b) => ({
+        id: b.id,
+        item: b.item,
+        tankId: b.tankId,
+        dispenserId: b.dispenserId,
+        dailyRateUzs: b.dailyRateUzs,
+        startedAt: b.startedAt,
+        endedAt: b.endedAt,
+      })),
+      now,
+    );
+    const subscriptionTargets: SubscriptionTargetView[] = states.map((state) => ({
+      targetId: state.target.id,
+      item: state.target.item,
+      label: state.target.label,
+      active: state.active !== null,
+      dailyRateUzs: state.dailyRateUzs,
+    }));
+
     return {
+      subscriptionTargets,
+      dailyUzs: dailyChargeUzs(states),
       station,
       online: isStationOnline(station.lastSeenAt, now),
       stocks: aggregateStocks(station.tanks, now),
@@ -240,6 +283,12 @@ export default async function AdminStationsPage({
                   </div>
                 ))}
               </dl>
+
+              <SubscriptionControls
+                stationId={row.station.id}
+                targets={row.subscriptionTargets}
+                dailyUzs={row.dailyUzs}
+              />
             </li>
           ))}
         </ul>

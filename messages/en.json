@@ -1595,6 +1595,12 @@
     "mapTitle": "Network map",
     "mapHint": "Tap a pin for live sensor volumes",
     "close": "Close",
-    "noStocks": "No sensor data yet"
+    "noStocks": "No sensor data yet",
+    "subscriptionTitle": "Subscription: connections and daily rates, UZS",
+    "enable": "Connect",
+    "disable": "Disconnect",
+    "ratePlaceholder": "Daily rate, UZS",
+    "saveError": "Could not save",
+    "perDay": "UZS/day"
   }
 }

@@ -1595,6 +1595,12 @@
     "mapTitle": "Tarmoq xaritasi",
     "mapHint": "Nuqtani bosing — datchiklardan qoldiq",
     "close": "Yopish",
-    "noStocks": "Datchiklardan ma’lumot yo‘q"
+    "noStocks": "Datchiklardan ma’lumot yo‘q",
+    "subscriptionTitle": "Obuna: ulanishlar va tariflar, so‘m/kun",
+    "enable": "Ulash",
+    "disable": "Uzish",
+    "ratePlaceholder": "Tarif, so‘m/kun",
+    "saveError": "Saqlanmadi",
+    "perDay": "so‘m/kun"
   }
 }
