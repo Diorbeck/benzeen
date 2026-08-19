@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { buildInvoiceDraft, monthStart } from "@/lib/station-billing";
 import { MAX_SOLIQ_ATTEMPTS } from "@/lib/soliq-retry";
 import { aggregateStocks, isStationOnline } from "@/lib/stations";
+import { StationOnboardingForm } from "@/components/dashboard/station-onboarding-form";
 import {
   StationsNetworkMap,
   type NetworkStation,
@@ -201,6 +202,8 @@ export default async function AdminStationsPage({
       <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
         {t("subtitle")}
       </p>
+
+      <StationOnboardingForm locale={locale} />
 
       {/* Три цифры, за которыми смотрит Benzeen и банк: сколько объектов, сколько
           на связи и сколько начислено по подписке с начала месяца. */}
