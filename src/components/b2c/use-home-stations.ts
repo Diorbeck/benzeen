@@ -27,6 +27,7 @@ export type Station = {
   lng: number;
   status: 'ACTIVE' | 'PAUSED';
   online: boolean;
+  isDemo?: boolean;
   lastSeenAt: string | null;
   stocks: Stock[];
 };

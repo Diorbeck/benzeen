@@ -1431,7 +1431,8 @@
     "tankLabel": "Tank level",
     "tankPercent": "{n}%",
     "perLiter": "UZS/L",
-    "tankLabelShort": "Level"
+    "tankLabelShort": "Level",
+    "demo": "Demo"
   },
   "stationPanel": {
     "title": "Station panel",

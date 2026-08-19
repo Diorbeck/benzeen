@@ -1431,7 +1431,8 @@
     "tankLabel": "Остаток в резервуаре",
     "tankPercent": "{n}%",
     "perLiter": "сум/л",
-    "tankLabelShort": "Остаток"
+    "tankLabelShort": "Остаток",
+    "demo": "Демо"
   },
   "stationPanel": {
     "title": "Кабинет АЗС",

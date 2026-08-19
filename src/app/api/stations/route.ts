@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { FuelType } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+import { simulateDemoTanks } from '@/lib/station-demo';
 import {
   aggregateStocks,
   isStationFuelType,
@@ -31,6 +32,8 @@ export type StationListItem = {
   lng: number;
   status: 'ACTIVE' | 'PAUSED';
   online: boolean;
+  /** Демонстрационная точка: остатки считает симулятор, физического датчика нет. */
+  isDemo: boolean;
   lastSeenAt: string | null;
   stocks: (Omit<FuelStock, 'fuelType'> & { fuelType: FuelType; priceUzs: number | null })[];
 };
@@ -56,8 +59,10 @@ export async function GET(req: Request) {
       lng: true,
       status: true,
       lastSeenAt: true,
+      isDemo: true,
       tanks: {
         select: {
+          id: true,
           fuelType: true,
           status: true,
           capacityL: true,
@@ -74,7 +79,10 @@ export async function GET(req: Request) {
   const items: StationListItem[] = stations
     .map((s) => {
       const priceByFuel = new Map(s.prices.map((p) => [p.fuelType, p.priceUzs]));
-      const stocks = aggregateStocks(s.tanks, now).map((stock) => ({
+      // Демо-точке датчик никто не подключал, поэтому её уровни считает
+      // симулятор; настоящие АЗС идут по данным из базы как есть.
+      const tanks = s.isDemo ? simulateDemoTanks(s.tanks, now) : s.tanks;
+      const stocks = aggregateStocks(tanks, now).map((stock) => ({
         ...stock,
         priceUzs: priceByFuel.get(stock.fuelType) ?? null,
       }));
@@ -88,7 +96,8 @@ export async function GET(req: Request) {
         lat: s.lat,
         lng: s.lng,
         status: s.status as 'ACTIVE' | 'PAUSED',
-        online: isStationOnline(s.lastSeenAt, now),
+        online: s.isDemo ? true : isStationOnline(s.lastSeenAt, now),
+        isDemo: s.isDemo,
         lastSeenAt: s.lastSeenAt ? s.lastSeenAt.toISOString() : null,
         stocks,
       };
