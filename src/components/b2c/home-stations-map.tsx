@@ -8,6 +8,7 @@ import { Crosshair, Gauge, MapPin, Navigation, RefreshCw, WifiOff, X } from 'luc
 import { Button } from '@/components/ui/button';
 import { mapProvider, localizeMapLabels, TASHKENT_CENTER } from '@/components/map/provider';
 import { formatMoney } from '@/lib/format';
+import { STATION_FUELING_WEB_ENABLED } from '@/lib/features';
 import {
   DEFAULT_RADIUS_KM,
   fillPercent,
@@ -41,13 +42,15 @@ export function HomeStationsMap({ locale, data }: { locale: string; data: HomeSt
       id="map"
       className="flex scroll-mt-24 flex-col overflow-hidden rounded-card border border-gray-200 bg-white dark:border-navy-700 dark:bg-navy-900"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-4 sm:p-6 sm:pb-4">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.14em] text-sky-600 dark:text-sky-300">
+          <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
             <Gauge className="h-3.5 w-3.5" aria-hidden />
             {t('badge')}
           </p>
-          <h2 className="mt-2 text-subheading text-navy dark:text-white sm:text-heading">{t('title')}</h2>
+          <h2 className="mt-2.5 font-display text-[22px] font-bold leading-tight tracking-[-0.015em] text-navy dark:text-white sm:text-[26px]">
+            {t('title')}
+          </h2>
           <p className="mt-1.5 max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-400">
             {t('subtitle')}
           </p>
@@ -195,9 +198,17 @@ function StationCard({
       </ul>
 
       <div className="mt-4 flex items-center gap-2">
-        <Button size="sm" asChild>
-          <Link href={`/${locale}/fueling/start?station=${station.id}`}>{t('cardCta')}</Link>
-        </Button>
+        {/* Старт заправки из браузера выключен — кнопка появляется только с
+            включённым флагом (отладка на пилотной АЗС). */}
+        {STATION_FUELING_WEB_ENABLED ? (
+          <Button size="sm" asChild>
+            <Link href={`/${locale}/fueling/start?station=${station.id}`}>{t('cardCta')}</Link>
+          </Button>
+        ) : (
+          <p className="flex-1 text-caption font-medium leading-snug text-gray-500 dark:text-gray-400">
+            {t('cardAppOnly')}
+          </p>
+        )}
         <Button variant="secondary" size="sm" asChild>
           <a
             href={`https://yandex.uz/maps/?rtext=~${station.lat},${station.lng}`}

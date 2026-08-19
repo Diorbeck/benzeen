@@ -19,9 +19,14 @@ export function NearbyAndPay({ locale, data }: { locale: string; data: HomeStati
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-      <section className="rounded-card border border-gray-200 bg-white p-5 dark:border-navy-700 dark:bg-navy-900">
-        <div className="flex items-baseline justify-between gap-3">
-          <h2 className="text-subheading text-navy dark:text-white">{t('console.nearbyTitle')}</h2>
+      <section className="rounded-card border border-gray-200 bg-white p-5 dark:border-navy-700 dark:bg-navy-900 sm:p-6">
+        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+          {t('console.stepNearby')}
+        </p>
+        <div className="mt-2.5 flex items-baseline justify-between gap-3">
+          <h2 className="font-display text-[22px] font-bold leading-tight tracking-[-0.015em] text-navy dark:text-white sm:text-[26px]">
+            {t('console.nearbyTitle')}
+          </h2>
           {!expanded && stations.length > visible.length ? (
             <button
               type="button"
@@ -90,11 +95,13 @@ export function NearbyAndPay({ locale, data }: { locale: string; data: HomeStati
         )}
       </section>
 
-      <section className="rounded-card bg-navy p-5 text-white dark:bg-navy-800">
-        <p className="text-caption font-semibold uppercase tracking-[0.14em] text-sky-300">
+      <section className="rounded-card bg-navy p-5 text-white dark:bg-navy-800 sm:p-6">
+        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-sky-300">
           {t('console.payEyebrow')}
         </p>
-        <h2 className="mt-2 text-subheading text-white sm:text-heading">{t('console.payTitle')}</h2>
+        <h2 className="mt-2.5 font-display text-[22px] font-bold leading-tight tracking-[-0.015em] text-white sm:text-[26px]">
+          {t('console.payTitle')}
+        </h2>
         <ul className="mt-4 space-y-3">
           {[
             { icon: Smartphone, key: 'payStep1' as const },
@@ -109,6 +116,11 @@ export function NearbyAndPay({ locale, data }: { locale: string; data: HomeStati
             </li>
           ))}
         </ul>
+        {/* Отдельно говорим, что сценарий у колонки живёт в приложении: в вебе
+            заливка на АЗС выключена, и лучше сказать это до клика. */}
+        <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-sky-200">
+          {t('console.payNote')}
+        </p>
       </section>
     </div>
   );

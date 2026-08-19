@@ -811,12 +811,12 @@
     "svcScheduleTitle": "Oldindan rejalashtirish",
     "svcScheduleDesc": "Sana va vaqtni tanlang — o'z vaqtida yetkazamiz",
     "console": {
-      "eyebrow": "YOQILG‘I VA YETKAZIB BERISH · O‘ZBEKISTON",
-      "headline": "Yoqilg‘i allaqachon",
-      "headlineAccent": "yo‘lda.",
-      "lede": "Bitta ekran: yetkazib berishga buyurtma, yaqin shoxobchalardagi qoldiq va telefondan to‘lov.",
-      "orderEyebrow": "YANGI BUYURTMA",
-      "orderTitle": "Yoqilg‘i yetkazib berish",
+      "eyebrow": "YOQILGʻI YETKAZIB BERISH · OʻZBEKISTON",
+      "headline": "Yoqilgʻi oʻzi",
+      "headlineAccent": "mashinangizga keladi.",
+      "lede": "Buyurtma bir daqiqada. Yaqin atrofdagi shoxobchalar qoldiqlari jonli: raqamlar operator soʻzidan emas, rezervuardagi datchiklardan keladi.",
+      "orderEyebrow": "01 / BUYURTMA",
+      "orderTitle": "Yoqilgʻini qayerga keltiramiz",
       "couriersOnline": "kuryerlar onlayn",
       "addressLabel": "Qayerga yetkazamiz",
       "fuelLabel": "Yoqilg‘i turi",
@@ -831,12 +831,15 @@
       "nearbyEmpty": "Yaqin atrofda ulangan shoxobcha yo‘q — barcha nuqtalarni xaritada ko‘ring.",
       "km": "{n} km",
       "perLiter": "so‘m/l",
-      "payEyebrow": "ILOVADAN TO‘LOV",
-      "payTitle": "Quydingiz — va ketdingiz",
-      "payStep1": "Kolonkaga keldingiz: ilova qaysi kolonka oldida turganingizni o‘zi aniqlaydi.",
-      "payStep2": "Pul quyilgan litr bo‘yicha yechiladi, farq darhol qaytariladi.",
+      "payEyebrow": "USTUNDA TOʻLOV · ILOVA",
+      "payTitle": "Quydingiz va joʻnadingiz",
+      "payStep1": "Ustunga yaqinlashdingiz: ilova qaysi ustun oldida turganingizni oʻzi aniqlaydi.",
+      "payStep2": "Faqat quyilgan litrlar yechiladi, zaxiradan qolgan farq darhol qaytariladi.",
       "payStep3": "Chek Soliqqa ketadi, 1% keshbek sizga qaytadi.",
-      "orderNote": "Kartada to'liq bak summasi ushlab turiladi, yakunda esa faqat quyilgan yoqilg'i uchun hisob ketadi. Farq darhol qaytariladi."
+      "orderNote": "Kartada to'liq bak summasi ushlab turiladi, yakunda esa faqat quyilgan yoqilg'i uchun hisob ketadi. Farq darhol qaytariladi.",
+      "stepMap": "02 / YOQILGʻI XARITASI",
+      "stepNearby": "03 / YAQIN SHOXOBCHALAR",
+      "payNote": "Ustunda toʻlash — Benzeen mobil ilovasida."
     },
     "nav": {
       "stations": "Yaqin shoxobchalar"
@@ -1418,7 +1421,8 @@
       "AI_100": "AI-100",
       "DIESEL": "Dizel"
     },
-    "startFueling": "Yoqilgʻi quyish"
+    "startFueling": "Yoqilgʻi quyish",
+    "appOnly": "Ustunda toʻlov — Benzeen ilovasida"
   },
   "stationPanel": {
     "title": "Shoxobcha kabineti",
@@ -1527,10 +1531,25 @@
     "bleUse": "Bu mening ustunim",
     "bleNotFound": "Ustun mayog'i topilmadi. Raqamni qo'lda tanlang.",
     "bleError": "Qidirish amalga oshmadi. Raqamni qo'lda tanlang.",
-    "soliqSent": "Chek Soliqda"
+    "soliqSent": "Chek Soliqda",
+    "appOnly": {
+      "eyebrow": "SHOX SHOXOBCHADA · BENZEEN ILOVASI",
+      "title": "Ustunda yoqilgʻi quyish —",
+      "titleAccent": "ilovada.",
+      "lede": "Ustunda toʻlash Benzeen mobil ilovasida ishlaydi. Bu ataylab shunday: ustun yonida telefon qaysi ustun oldida turganingizni oʻzi aniqlashi va ekran qulflangan boʻlsa ham toʻlovni oxiriga yetkazishi kerak. Brauzer buni qila olmaydi.",
+      "pointBle": "Ilova ustundagi mayoqni eshitib, raqamini oʻzi aniqlaydi — hech narsa kiritish kerak emas.",
+      "pointPay": "Toʻla bak summasi kartada zaxiralanadi, hisobdan esa faqat quyilgan litrlar yechiladi. Farq darhol qaytariladi.",
+      "pointPush": "“Siz №X ustun yonidasiz” push xabari kelganda tasdiqlash bir teginish oladi.",
+      "soon": "Ilova birinchi ulangan shoxobchalar bilan birga chiqadi. Ochilishi bilan havola shu yerda paydo boʻladi va SMS bilan keladi.",
+      "webEyebrow": "BU YERDA NIMA ISHLAYDI",
+      "webTitle": "Brauzerda — buyurtma va nazorat",
+      "webOrder": "Yoqilgʻi yetkazishga buyurtma",
+      "webStations": "Qoldiqlar bilan shoxobchalar xaritasi",
+      "webHistory": "Quyish tarixi va cheklar"
+    }
   },
   "homeMap": {
-    "badge": "Rezervuar datchiklari",
+    "badge": "02 / REZERVUAR DATCHIKLARI",
     "title": "Yoqilgʻi bor joyni yoʻlga chiqmasdan koʻring",
     "subtitle": "Qoldiqlar toʻgʻridan-toʻgʻri shoxobcha rezervuarlaridagi datchiklardan keladi — bu mamlakatda boshqa hech kimda yoʻq. Nuqtani bosing va bakda nima borligini koʻring.",
     "counter": "Aloqada {online} / {total}",
@@ -1543,6 +1562,7 @@
     "scopeRadius": "Sizdan {km} km radiusda",
     "scopeAll": "Barcha ulangan shoxobchalar",
     "scopeShowAll": "Barchasini koʻrsatish ({n})",
-    "myLocation": "Mening joylashuvim"
+    "myLocation": "Mening joylashuvim",
+    "cardAppOnly": "Ustunda toʻlov — Benzeen ilovasida"
   }
 }

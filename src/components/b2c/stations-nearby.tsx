@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { STATION_FUELING_WEB_ENABLED } from '@/lib/features';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { Fuel, Navigation, RefreshCw, Search, WifiOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -300,13 +301,19 @@ export function StationsNearby() {
 
               {/* Вход в сценарий заправки. Для АЗС без связи кнопки нет: резерв
                   на молчащем объекте означал бы замороженные деньги без топлива. */}
-              {s.online && s.status === 'ACTIVE' && (
+              {s.online && s.status === 'ACTIVE' && STATION_FUELING_WEB_ENABLED && (
                 <a
                   href={`/${locale}/fueling/start?station=${s.id}`}
                   className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-600 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                 >
                   {t('startFueling')}
                 </a>
+              )}
+              {/* Без флага вместо кнопки — честная подпись: заливка идёт из приложения. */}
+              {!STATION_FUELING_WEB_ENABLED && (
+                <p className="mt-4 rounded-control bg-canvas px-3 py-2.5 text-caption font-medium leading-snug text-gray-600 dark:bg-navy-800 dark:text-gray-400">
+                  {t('appOnly')}
+                </p>
               )}
             </li>
           ))}

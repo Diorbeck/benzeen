@@ -7,3 +7,11 @@
 // is hidden and redirected. The code is kept intact behind the flag so B2B can
 // be re-enabled by setting NEXT_PUBLIC_FEATURE_B2B="true".
 export const B2B_ENABLED = process.env.NEXT_PUBLIC_FEATURE_B2B === 'true';
+
+// Заправка на стационарной АЗС (Модуль 3 ТЗ v2) в браузере выключена: сценарий у
+// колонки — BLE-определение колонки, пуш «вы у колонки №X», работа при
+// заблокированном экране — технически принадлежит мобильному приложению.
+// Серверные API заправки остаются включёнными: с ними работает приложение.
+// Флаг оставлен, чтобы включать веб-версию точечно на пилотной АЗС для отладки.
+export const STATION_FUELING_WEB_ENABLED =
+  process.env.NEXT_PUBLIC_FEATURE_STATION_FUELING_WEB === 'true';

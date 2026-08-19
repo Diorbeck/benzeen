@@ -63,23 +63,26 @@ function Console({ locale }: { locale: string }) {
 
   return (
     <section className="mx-auto max-w-[1200px] px-4 pb-12 pt-8 sm:px-6 lg:px-8 lg:pb-16 lg:pt-12">
-      <div className="lg:flex lg:items-end lg:justify-between lg:gap-10">
-        <div>
-          <p className="text-caption font-semibold uppercase tracking-[0.18em] text-sky-600 dark:text-sky-300">
+      {/* Издательский заголовок: две строки встраиваются друг в друга плотным
+          интерлиньяжем, вторая — акцентным синим; пояснение уходит вправо вниз,
+          чтобы не спорить с заголовком за внимание. */}
+      <div className="lg:flex lg:items-end lg:justify-between lg:gap-12">
+        <div className="min-w-0">
+          <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
             {t('console.eyebrow')}
           </p>
-          <h1 className="mt-4 font-display text-[34px] font-bold leading-[1.05] tracking-[-0.02em] text-navy dark:text-white sm:text-title lg:text-display">
+          <h1 className="mt-5 font-display text-[38px] font-bold leading-[0.98] tracking-[-0.03em] text-navy dark:text-white sm:text-[54px] lg:text-[68px]">
             {t('console.headline')}
             <br />
-            <span className="text-sky-500 dark:text-sky-300">{t('console.headlineAccent')}</span>
+            <span className="text-primary-600 dark:text-sky-300">{t('console.headlineAccent')}</span>
           </h1>
         </div>
-        <p className="mt-4 max-w-xs text-sm leading-relaxed text-gray-600 dark:text-gray-400 lg:mb-2 lg:text-right">
+        <p className="mt-5 max-w-[19rem] text-sm leading-relaxed text-gray-600 dark:text-gray-400 lg:mb-3 lg:text-right">
           {t('console.lede')}
         </p>
       </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+      <div className="mt-9 grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
         <OrderPanel locale={locale} />
         <HomeStationsMap locale={locale} data={data} />
       </div>

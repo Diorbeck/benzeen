@@ -811,12 +811,12 @@
     "svcScheduleTitle": "Schedule ahead",
     "svcScheduleDesc": "Pick a date and time — we'll arrive on schedule",
     "console": {
-      "eyebrow": "FUEL & DELIVERY · UZBEKISTAN",
-      "headline": "Your fuel is",
-      "headlineAccent": "on the way.",
-      "lede": "One screen: order delivery, see live tank levels at nearby stations and pay from your phone.",
-      "orderEyebrow": "NEW ORDER",
-      "orderTitle": "Deliver fuel",
+      "eyebrow": "FUEL DELIVERY · UZBEKISTAN",
+      "headline": "Fuel comes",
+      "headlineAccent": "to your car.",
+      "lede": "Ordering takes a minute. Stations nearby show live volumes — numbers come from sensors in the tanks, not from an operator.",
+      "orderEyebrow": "01 / ORDER",
+      "orderTitle": "Where to bring the fuel",
       "couriersOnline": "couriers online",
       "addressLabel": "Delivery address",
       "fuelLabel": "Fuel type",
@@ -831,12 +831,15 @@
       "nearbyEmpty": "No connected stations nearby yet — see every point on the map.",
       "km": "{n} km",
       "perLiter": "UZS/L",
-      "payEyebrow": "PAY FROM THE APP",
+      "payEyebrow": "PAYING AT THE PUMP · APP",
       "payTitle": "Fuel up and drive off",
-      "payStep1": "Pull up to the pump: the app detects which one you are at.",
-      "payStep2": "You are charged for the litres actually pumped; the difference returns instantly.",
+      "payStep1": "Pull up to a pump: the app works out which one you are at.",
+      "payStep2": "You are charged for the litres dispensed; the rest of the hold comes back at once.",
       "payStep3": "The receipt goes to Soliq and 1% cashback comes back to you.",
-      "orderNote": "We hold the full-tank amount on your card and charge only for the litres actually delivered. The difference is refunded right away."
+      "orderNote": "We hold the full-tank amount on your card and charge only for the litres actually delivered. The difference is refunded right away.",
+      "stepMap": "02 / FUEL MAP",
+      "stepNearby": "03 / STATIONS NEARBY",
+      "payNote": "Paying at the pump lives in the Benzeen mobile app."
     },
     "nav": {
       "stations": "Stations nearby"
@@ -1418,7 +1421,8 @@
       "AI_100": "AI-100",
       "DIESEL": "Diesel"
     },
-    "startFueling": "Start fueling"
+    "startFueling": "Start fueling",
+    "appOnly": "Paying at the pump — in the Benzeen app"
   },
   "stationPanel": {
     "title": "Station panel",
@@ -1527,10 +1531,25 @@
     "bleUse": "This is my pump",
     "bleNotFound": "No pump beacon found. Pick the number manually.",
     "bleError": "Search failed. Pick the number manually.",
-    "soliqSent": "Receipt in Soliq"
+    "soliqSent": "Receipt in Soliq",
+    "appOnly": {
+      "eyebrow": "FUELING AT A STATION · BENZEEN APP",
+      "title": "Paying at the pump —",
+      "titleAccent": "in the app.",
+      "lede": "Paying right at the pump works in the Benzeen mobile app. That is by design: at the pump your phone has to recognise which one you are at and finish the payment even with the screen locked. A browser cannot do that.",
+      "pointBle": "The app hears the beacon on the pump and identifies its number on its own — nothing to type in.",
+      "pointPay": "A full-tank amount is held on your card, then only the litres actually dispensed are charged. The difference comes back at once.",
+      "pointPush": "A “you are at pump #X” push arrives as you pull up, and confirming takes one tap.",
+      "soon": "The app ships together with the first connected stations. As soon as it opens, the link will appear here and arrive by SMS.",
+      "webEyebrow": "WHAT WORKS HERE",
+      "webTitle": "In the browser — ordering and control",
+      "webOrder": "Order fuel delivery",
+      "webStations": "Station map with live volumes",
+      "webHistory": "Fueling history and receipts"
+    }
   },
   "homeMap": {
-    "badge": "Tank sensors",
+    "badge": "02 / TANK SENSORS",
     "title": "See where the fuel is before you drive",
     "subtitle": "Levels come straight from sensors inside station tanks — nobody else in the country has this. Tap a pin to see what is really in the tanks.",
     "counter": "{online} of {total} online",
@@ -1543,6 +1562,7 @@
     "scopeRadius": "Within {km} km of you",
     "scopeAll": "All connected stations",
     "scopeShowAll": "Show all ({n})",
-    "myLocation": "My location"
+    "myLocation": "My location",
+    "cardAppOnly": "Paying at the pump — in the Benzeen app"
   }
 }

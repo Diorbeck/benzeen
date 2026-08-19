@@ -135,7 +135,7 @@ const config: Config = {
       // Uber-restraint: прямоугольники. 8 контролы, 12 карточки, 16 шиты.
       borderRadius: {
         control: '0.5rem', // 8px — inputs, chips, buttons
-        card: '0.75rem', // 12px — cards, panels
+        card: '0.875rem', // 14px — cards, panels
         sheet: '1rem', // 16px — bottom sheets only
       },
       transitionDuration: { DEFAULT: '200ms' },
