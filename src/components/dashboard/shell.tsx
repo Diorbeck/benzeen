@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+  AlertTriangle,
   Fuel,
   LogOut,
   LayoutDashboard,
@@ -47,11 +48,13 @@ type NavKey =
   | 'deliveries'
   | 'reports'
   | 'invoices'
+  | 'fuelStations'
   | 'couriers'
   | 'propane'
   | 'clients'
   | 'bonuses'
   | 'support'
+  | 'incidents'
   | 'audit'
   | 'settings'
   | 'myCars'
@@ -74,12 +77,14 @@ const navByRole: Record<
     { path: '/companies', labelKey: 'companies', icon: Building2 },
     { path: '/requests', labelKey: 'requests', icon: ClipboardList },
     { path: '/deliveries', labelKey: 'deliveries', icon: Truck },
+    { path: '/stations', labelKey: 'fuelStations', icon: Fuel },
     { path: '/invoices', labelKey: 'reports', icon: BarChart3 },
     { path: '/couriers', labelKey: 'couriers', icon: Bike },
     { path: '/propane', labelKey: 'propane', icon: Flame },
     { path: '/clients', labelKey: 'clients', icon: UserRound },
     { path: '/bonuses', labelKey: 'bonuses', icon: Gift },
     { path: '/support', labelKey: 'support', icon: MessageSquare },
+    { path: '/incidents', labelKey: 'incidents', icon: AlertTriangle },
     { path: '/audit', labelKey: 'audit', icon: ScrollText },
     { path: '/settings', labelKey: 'settings', icon: Settings },
   ],

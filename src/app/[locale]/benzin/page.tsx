@@ -103,7 +103,7 @@ export default async function BenzinPage({
   const t = await getTranslations('benzin');
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-navy-950 text-navy dark:text-white">
+    <div className="min-h-screen bg-canvas dark:bg-navy-950 text-navy dark:text-white">
       <B2CHeader />
       <main className="mx-auto max-w-[1240px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         <h1 className="mb-8 text-title text-navy dark:text-white">{t('title')}</h1>

@@ -44,3 +44,12 @@ prisma/migrations/**/migration_lock.toml
 # Playwright
 test-results/
 playwright-report/
+
+# Скриншоты QA — локальные артефакты, в репозитории не нужны
+v3-*.png
+home-*.png
+zapravka-*.png
+proverka-*.png
+karta-*.png
+kabinet-*.png
+q-*.png

@@ -16,6 +16,9 @@ enum Role {
   DISPATCHER
   CLIENT
   PROPANE_OPERATOR
+  // v2: владелец стационарной АЗС. Видит только свои резервуары, колонки и
+  // счёт; к заказам доставки доступа не имеет.
+  STATION_OWNER
 }
 
 enum FuelType {
@@ -23,6 +26,11 @@ enum FuelType {
   AI_95
   AI_100
   PROPANE
+  // v2: на стационарных АЗС есть 98-й и дизель, которых нет в доставке.
+  // Добавлено в конец: порядок значений в PostgreSQL значим, а вставлять
+  // значение в середину типа дороже и рискованнее, чем сортировать в коде.
+  AI_98
+  DIESEL
 }
 
 // B2C payment (M2). B2B orders leave these null (paymentStatus NOT_REQUIRED).
@@ -99,6 +107,16 @@ enum AuditAction {
   CLIENT_HARD_DELETE
   // PR-D: неудачная попытка staff-логина (brute-force видимость).
   LOGIN_FAILED
+  // Модуль 7 ТЗ v2: администратор вручную переотправил фискальный чек в Солик
+  // с инцидент-борда. Ручное вмешательство в налоговые данные обязано
+  // оставлять след.
+  SOLIQ_RECEIPT_RETRY
+  // Модуль 6 ТЗ v2: подключение новой АЗС к платформе. Создание объекта — это
+  // деньги (подписка) и право писать телеметрию, поэтому оставляет след.
+  STATION_ONBOARDED
+  // Модуль 6 ТЗ v2: владелец АЗС сменил режим идентификации на колонке. Влияет
+  // на счёт, поэтому попадает в журнал.
+  STATION_DISPENSER_IDENTIFICATION
 }
 
 // Причина клиентской отмены (Этап 1 финального марафона).
@@ -143,6 +161,10 @@ model User {
 
   // M4 Propane: this client's slot bookings.
   propaneBookings PropaneBooking[] @relation("ClientPropaneBookings")
+
+  // v2: АЗС, которыми владеет этот пользователь, и его заправки на них.
+  ownedStations   FuelStation[]    @relation("StationOwner")
+  fuelingSessions FuelingSession[] @relation("ClientFuelingSessions")
 
   // M4 Propane: points this operator is assigned to.
   operatedPropanePoints PropanePoint[] @relation("PropanePointOperator")
@@ -629,4 +651,331 @@ model PropaneBooking {
   @@unique([pointId, clientId, slotStart])
   @@index([pointId, slotStart, status])
   @@index([clientId, slotStart])
+}
+
+// ============================================================================
+// v2 — цифровой контроль топлива на стационарных АЗС
+//
+// Ядро версии 2 — датчики уровня в резервуарах. Всё остальное (идентификация
+// клиента у колонки, налоговая, оплата) наращивается поверх и может быть
+// выключено на конкретной АЗС, не ломая остатки на карте.
+//
+// Модель доставки (Order, Courier, PropanePoint) не тронута: это отдельный
+// бизнес с отдельной ценой. Здесь только стационарные АЗС.
+// ============================================================================
+
+// Административное состояние АЗС. Онлайн/офлайн — НЕ здесь: это вычисляется
+// из lastSeenAt и меняется каждую минуту, ему нечего делать в поле статуса.
+enum StationStatus {
+  ACTIVE
+  PAUSED // владелец приостановил показ в приложении
+  ARCHIVED
+}
+
+enum TankStatus {
+  ACTIVE
+  MAINTENANCE // остатки не показываются клиенту
+}
+
+enum DispenserStatus {
+  ACTIVE
+  DISABLED
+}
+
+// Способ, которым приложение понимает, что клиент стоит у этой колонки.
+// Возрастает по удобству и по цене для АЗС.
+enum IdentificationMode {
+  MANUAL // клиент сам выбирает колонку в приложении — работает везде, без железа
+  BLE    // маячок на колонке, приложение определяет её по силе сигнала
+  CAMERA // распознавание номера, ставится за счёт Benzeen по желанию АЗС
+}
+
+// Источник показания уровня. Ручной ввод существует ради пилота и сверок и
+// всегда отличим от датчика — иначе расхождение невозможно расследовать.
+enum TankReadingSource {
+  SENSOR
+  MANUAL
+}
+
+// Жизненный цикл одной заправки. Двухфазная транзакция: сначала резерв под
+// полный бак, потом точное списание по факту литров.
+enum FuelingStatus {
+  RESERVED       // деньги захолдированы, пистолет ещё не вставлен
+  FLOWING        // идёт заливка, литры приходят с колонки
+  COMPLETED      // заливка кончилась, сумма известна
+  SETTLED        // точное списание прошло, разница возвращена
+  CANCELLED      // клиент отменил до начала заливки, резерв разморожен
+  MANUAL_REVIEW  // связь не вернулась за 30 минут — сверка по логу колонки
+  FAILED
+}
+
+// Что именно тарифицируется. Датчик обязателен, колонка — опция.
+enum StationBillingItem {
+  TANK      // 25 000 сум/сутки за резервуар
+  DISPENSER // 10 000 сум/сутки за колонку с идентификацией клиента
+}
+
+enum StationInvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+// Стационарная АЗС, подключённая к Benzeen.
+model FuelStation {
+  id       String        @id @default(cuid())
+  name     String
+  brand    String?
+  address  String
+  region   String?
+  lat      Float
+  lng      Float
+  status   StationStatus @default(ACTIVE)
+
+  // Владелец АЗС: видит только свою точку в кабинете.
+  ownerId String?
+
+  // ИНН АЗС для фискального чека в Солик. Пока не заполнен — чек уходит без
+  // ИНН, поэтому поле необязательное: подключение объекта не должно ждать
+  // бумажной части, а Солик принимает чек и без ИНН на этапе пилота.
+  tin String?
+
+  // Ключ пограничного контроллера на объекте. Хранится только хеш — по той же
+  // причине, по которой не хранятся пароли: утечка дампа не должна давать
+  // право писать телеметрию от имени АЗС.
+  controllerKeyHash String?
+  // Последний признак жизни от контроллера. Онлайн/офлайн считается отсюда.
+  lastSeenAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner    User?                 @relation("StationOwner", fields: [ownerId], references: [id])
+  tanks    Tank[]
+  dispensers Dispenser[]
+  prices   StationPrice[]
+  sessions FuelingSession[]
+  billing  StationBillingSubscription[]
+  invoices StationInvoice[]
+
+  @@index([ownerId])
+  @@index([status])
+}
+
+// Цена АЗС по виду топлива. Решение владельца: цену ставит сама АЗС в своём
+// приложении, к нам она приезжает; цена доставки — отдельная сущность и здесь
+// её нет намеренно.
+model StationPrice {
+  id        String   @id @default(cuid())
+  stationId String
+  fuelType  FuelType
+  priceUzs  Int // за литр
+  updatedAt DateTime @updatedAt
+
+  station FuelStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  @@unique([stationId, fuelType])
+}
+
+// Резервуар с датчиком уровня. Датчик обязателен — это ядро продукта.
+model Tank {
+  id        String     @id @default(cuid())
+  stationId String
+  label     String // как резервуар назван на объекте
+  fuelType  FuelType
+  capacityL Int
+  // Порог, ниже которого остаток считается критическим (алерт в кабинете).
+  minLevelL Int?
+  status    TankStatus @default(ACTIVE)
+
+  sensorSerial String? @unique
+
+  // Денормализованный последний уровень. Карта страны запрашивается на каждом
+  // открытии приложения; считать последнее показание подзапросом по таблице
+  // истории на каждый резервуар — это то, что положит карту первым.
+  currentLevelL  Float?
+  lastReadingAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  station  FuelStation                  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  readings TankReading[]
+  billing  StationBillingSubscription[]
+
+  @@unique([stationId, label])
+  @@index([stationId, fuelType])
+}
+
+// История показаний. Append-only: это доказательная база при расхождениях,
+// строки не обновляются и не удаляются.
+model TankReading {
+  id     String @id @default(cuid())
+  tankId String
+
+  levelL       Float
+  temperatureC Float?
+  // Объём, если датчик считает его сам, а не только высоту столба.
+  volumeL      Float?
+
+  source TankReadingSource @default(SENSOR)
+
+  // Время на объекте и время получения нами. Расходятся при буферизации на
+  // контроллере после потери связи, и по этому расхождению видно офлайн.
+  measuredAt DateTime
+  receivedAt DateTime @default(now())
+
+  tank Tank @relation(fields: [tankId], references: [id], onDelete: Cascade)
+
+  @@index([tankId, measuredAt])
+}
+
+// Колонка (ТРК). Идентификация клиента — опция, которая тарифицируется отдельно.
+model Dispenser {
+  id        String          @id @default(cuid())
+  stationId String
+  number    Int // номер колонки, как он написан на объекте
+  status    DispenserStatus @default(ACTIVE)
+
+  fuelTypes FuelType[]
+
+  identificationMode IdentificationMode @default(MANUAL)
+  // Идентификатор BLE-маячка на этой колонке.
+  bleBeaconId        String?            @unique
+
+  lastSeenAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  station  FuelStation                  @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  sessions FuelingSession[]
+  billing  StationBillingSubscription[]
+
+  @@unique([stationId, number])
+  @@index([stationId])
+}
+
+// Одна заправка на стационарной АЗС.
+model FuelingSession {
+  id          String @id @default(cuid())
+  stationId   String
+  dispenserId String
+  clientId    String?
+  carId       String?
+
+  fuelType FuelType
+
+  // Чего попросил клиент: литры, сумму или полный бак (оба поля пустые).
+  requestedLiters    Int?
+  requestedAmountUzs Int?
+
+  // Сумма резерва (hold) и цена, по которой резерв считался.
+  holdAmountUzs Int
+  priceUzs      Int
+
+  // Лимит отпуска, переданный колонке: за него заливка выйти не должна, иначе
+  // перелив ляжет на АЗС (см. settle() в lib/fueling.ts).
+  limitLiters Float?
+
+  // Факт по завершении заливки.
+  litersDispensed Float?
+  amountUzs       Int?
+
+  // Возвращённая клиенту разница между резервом и фактом.
+  refundUzs Int?
+
+  // Последний тик с колонки. По его давности видно, что заливка кончилась
+  // (минута молчания) или что связь с объектом пропала (полчаса).
+  lastTickAt DateTime?
+
+  status         FuelingStatus      @default(RESERVED)
+  identifiedBy   IdentificationMode @default(MANUAL)
+
+  // Ссылка на транзакцию эквайринга. Платёжных данных карты у нас нет и не
+  // будет — только ссылка банка.
+  acquirerRef String?
+
+  // Налоговая: когда чек ушёл в Солик и сколько кешбека начислено (1%).
+  soliqSyncedAt DateTime?
+  cashbackUzs   Int?
+
+  // Фискальный номер чека в Солик и состояние очереди отправки. Отправка чека
+  // не имеет права ломать заправку, поэтому неудача не откатывает транзакцию, а
+  // копится здесь: по attempts и lastError видно, что именно застряло, а
+  // lastAttemptAt даёт выдержку между повторами.
+  soliqFiscalId      String?
+  soliqAttempts      Int       @default(0)
+  soliqLastAttemptAt DateTime?
+  soliqLastError     String?
+
+  // Заливка, пришедшая из буфера контроллера после восстановления связи.
+  offlineBuffered Boolean @default(false)
+
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  station   FuelStation @relation(fields: [stationId], references: [id])
+  dispenser Dispenser   @relation(fields: [dispenserId], references: [id])
+  client    User?       @relation("ClientFuelingSessions", fields: [clientId], references: [id])
+
+  @@index([stationId, startedAt])
+  @@index([clientId, startedAt])
+  @@index([status])
+  @@index([soliqSyncedAt, status])
+}
+
+// Подписка АЗС на инфраструктуру: не комиссия с оборота, а суточная ставка за
+// каждый подключённый резервуар и за каждую колонку с идентификацией.
+// Строка живёт от подключения до отключения — по ней и считаются сутки в счёте.
+model StationBillingSubscription {
+  id        String             @id @default(cuid())
+  stationId String
+  item      StationBillingItem
+  tankId      String?
+  dispenserId String?
+
+  dailyRateUzs Int
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+
+  station    FuelStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+  tank       Tank?       @relation(fields: [tankId], references: [id], onDelete: Cascade)
+  dispenser  Dispenser?  @relation(fields: [dispenserId], references: [id], onDelete: Cascade)
+
+  @@index([stationId, endedAt])
+  @@index([tankId])
+  @@index([dispenserId])
+}
+
+// Счёт за месяц. Решение владельца: выставляется один раз в начале месяца, и
+// нужна таблица, из которой видно, кто сколько должен.
+model StationInvoice {
+  id        String @id @default(cuid())
+  stationId String
+
+  periodStart DateTime // первое число месяца
+  periodEnd   DateTime
+
+  tankDays      Int // сумма суток по всем резервуарам за период
+  dispenserDays Int
+  amountUzs     Int
+
+  status StationInvoiceStatus @default(DRAFT)
+
+  issuedAt DateTime?
+  paidAt   DateTime?
+  dueAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  station FuelStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  // Один счёт на АЗС за период — повторный запуск начисления не должен
+  // выставить второй счёт за тот же месяц.
+  @@unique([stationId, periodStart])
+  @@index([status, dueAt])
 }

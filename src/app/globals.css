@@ -39,13 +39,13 @@
   }
 
   .dark {
-    --background: 222 47% 6%;
+    --background: 224 60% 12%;
     --foreground: 210 40% 98%;
     --primary: 217 91% 60%;
     --primary-foreground: 222 47% 11%;
-    --muted: 217 33% 10%;
+    --muted: 224 45% 18%;
     --muted-foreground: 215 20% 65%;
-    --border: 217.2 32.6% 17.5%;
+    --border: 224 35% 27%;
   }
 
   * {
@@ -57,7 +57,15 @@
   }
 
   body {
-    @apply bg-white text-gray-900 antialiased transition-colors duration-200 dark:bg-gray-950 dark:text-gray-100;
+    @apply bg-canvas text-gray-900 antialiased transition-colors duration-200 dark:bg-navy-950 dark:text-gray-100;
+  }
+
+  /* Заголовки по умолчанию — издательская антиква. Числа и показатели остаются
+     на витринном сан-серифе: у них своя утилита font-display, а класс
+     перебивает это правило. */
+  h1,
+  h2 {
+    font-family: var(--font-editorial), Georgia, serif;
   }
 }
 
@@ -223,4 +231,110 @@ body {
   to {
     stroke-dashoffset: 0;
   }
+}
+
+/* Точка АЗС на карте главной. Кружок с «дыркой» читается на любом фоне карты,
+   активная точка увеличивается — видно, какая карточка открыта. */
+.benzeen-pin {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  border: 3px solid #ffffff;
+  background: #059669;
+  box-shadow: 0 2px 6px rgba(11, 14, 20, 0.35);
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+.benzeen-pin[data-online='false'] {
+  background: #9ca3af;
+}
+.benzeen-pin[data-active='true'] {
+  transform: scale(1.45);
+  box-shadow: 0 0 0 6px rgba(46, 91, 255, 0.25);
+}
+.benzeen-pin:hover {
+  transform: scale(1.25);
+}
+.dark .benzeen-pin {
+  border-color: #12161f;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+@media (prefers-reduced-motion: reduce) {
+  .benzeen-pin {
+    transition: none;
+  }
+}
+
+/* Растровая подложка карты в тёмной теме: гасим яркость, чтобы карта не
+   светила в тёмном интерфейсе. На векторном тёмном стиле не используется. */
+.benzeen-map-damp .maplibregl-canvas {
+  filter: saturate(0.75) brightness(0.68) contrast(1.02) hue-rotate(-8deg);
+}
+
+/* Ползунок объёма в карточке заказа: дорожку рисуем фоном самого input,
+   чтобы вид совпадал во всех браузерах, а заполненную часть красим синим. */
+input[type="range"].benzeen-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 20px;
+  cursor: pointer;
+  background-image: linear-gradient(
+    to right,
+    #2e5bff 0%,
+    #1e96f0 var(--range-fill, 50%),
+    #d6dded var(--range-fill, 50%),
+    #d6dded 100%
+  );
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 6px;
+  border-radius: 999px;
+}
+.dark input[type="range"].benzeen-range {
+  background-image: linear-gradient(
+    to right,
+    #2e5bff 0%,
+    #4fb2ff var(--range-fill, 50%),
+    rgba(255, 255, 255, 0.18) var(--range-fill, 50%),
+    rgba(255, 255, 255, 0.18) 100%
+  );
+}
+input[type="range"].benzeen-range::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+input[type="range"].benzeen-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  margin-top: -6px;
+  height: 18px;
+  width: 18px;
+  border-radius: 999px;
+  background: #fff;
+  border: 2px solid #2e5bff;
+  box-shadow: 0 1px 3px rgba(12, 20, 48, 0.25);
+}
+input[type="range"].benzeen-range::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+input[type="range"].benzeen-range::-moz-range-thumb {
+  height: 18px;
+  width: 18px;
+  border: 2px solid #2e5bff;
+  border-radius: 999px;
+  background: #fff;
+}
+input[type="range"].benzeen-range:focus-visible {
+  outline: 2px solid #2e5bff;
+  outline-offset: 4px;
+}
+
+/* Цвет «вырезов» в силуэте машины скролл-анимации: совпадает с фоном страницы,
+   чтобы стёкла читались, а силуэт оставался плоским фоновым пятном. */
+:root {
+  --journey-cut: #f2f6fe;
+}
+.dark {
+  --journey-cut: #0d1531;
 }

@@ -58,7 +58,7 @@ export function AccountView({
   const [tab, setTab] = useState<AccountTab>('profile');
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-navy-950 text-navy dark:text-white">
+    <div className="min-h-screen bg-canvas dark:bg-navy-950 text-navy dark:text-white">
       <header className="sticky top-0 z-header border-b border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href={`/${locale}`} className="flex min-w-0 items-center gap-2.5">
