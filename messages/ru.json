@@ -1591,6 +1591,10 @@
     "liters": "л",
     "totalStations": "АЗС",
     "totalOnline": "на связи",
-    "totalAccrued": "начислено за месяц"
+    "totalAccrued": "начислено за месяц",
+    "mapTitle": "Карта сети",
+    "mapHint": "Нажмите точку — остатки с датчиков",
+    "close": "Закрыть",
+    "noStocks": "Данных с датчиков пока нет"
   }
 }

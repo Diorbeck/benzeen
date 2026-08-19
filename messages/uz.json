@@ -1591,6 +1591,10 @@
     "liters": "l",
     "totalStations": "shoxobcha",
     "totalOnline": "aloqada",
-    "totalAccrued": "oy uchun hisoblandi"
+    "totalAccrued": "oy uchun hisoblandi",
+    "mapTitle": "Tarmoq xaritasi",
+    "mapHint": "Nuqtani bosing — datchiklardan qoldiq",
+    "close": "Yopish",
+    "noStocks": "Datchiklardan ma’lumot yo‘q"
   }
 }

@@ -6,6 +6,10 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { buildInvoiceDraft, monthStart } from '@/lib/station-billing';
 import { aggregateStocks, isStationOnline } from '@/lib/stations';
+import {
+  StationsNetworkMap,
+  type NetworkStation,
+} from '@/components/dashboard/stations-network-map';
 
 // Модуль 7 ТЗ v2: админ-панель Benzeen по сети АЗС. Сводка по всем подключённым
 // объектам страны: связь с контроллером, остатки с датчиков, начисление за
@@ -78,6 +82,23 @@ export default async function AdminStationsPage({
     };
   });
 
+  const mapStations: NetworkStation[] = rows.map((row) => ({
+    id: row.station.id,
+    name: row.station.name,
+    address: row.station.address,
+    tin: row.station.tin,
+    lat: row.station.lat,
+    lng: row.station.lng,
+    online: row.online,
+    tanks: row.station.tanks.length,
+    dispensers: row.station.dispensers.length,
+    stocks: row.stocks.map((s) => ({
+      fuelType: s.fuelType,
+      litersAvailable: s.litersAvailable,
+      dataFresh: s.dataFresh,
+    })),
+  }));
+
   const money = (uzs: number) => `${Math.round(uzs).toLocaleString('ru-RU')} ${t('sum')}`;
   const onlineCount = rows.filter((r) => r.online).length;
   const totalAccrued = rows.reduce((sum, r) => sum + r.accruedUzs, 0);
@@ -115,6 +136,8 @@ export default async function AdminStationsPage({
           </div>
         ))}
       </div>
+
+      {mapStations.length > 0 && <StationsNetworkMap stations={mapStations} />}
 
       <section className="mt-8 rounded-card border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-navy-900">
         <h2 className="font-display text-[20px] font-bold text-navy dark:text-white">

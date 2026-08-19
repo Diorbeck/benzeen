@@ -1591,6 +1591,10 @@
     "liters": "L",
     "totalStations": "stations",
     "totalOnline": "online",
-    "totalAccrued": "accrued this month"
+    "totalAccrued": "accrued this month",
+    "mapTitle": "Network map",
+    "mapHint": "Tap a pin for live sensor volumes",
+    "close": "Close",
+    "noStocks": "No sensor data yet"
   }
 }

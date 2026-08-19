@@ -7,6 +7,7 @@ import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { Crosshair, Gauge, MapPin, Navigation, RefreshCw, WifiOff, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { mapProvider, localizeMapLabels, TASHKENT_CENTER } from '@/components/map/provider';
+import { useHtmlDark } from '@/components/map/use-html-dark';
 import { formatMoney } from '@/lib/format';
 import { STATION_FUELING_WEB_ENABLED } from '@/lib/features';
 import {
@@ -222,20 +223,6 @@ function StationCard({
       </div>
     </div>
   );
-}
-
-/** Следит за классом `dark` на <html> — источник правды о текущей теме. */
-function useHtmlDark(): boolean {
-  const [dark, setDark] = useState(false);
-  useEffect(() => {
-    const root = document.documentElement;
-    const sync = () => setDark(root.classList.contains('dark'));
-    sync();
-    const observer = new MutationObserver(sync);
-    observer.observe(root, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, []);
-  return dark;
 }
 
 function StationsMapCanvas({
