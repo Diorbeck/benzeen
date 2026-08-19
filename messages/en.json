@@ -1478,7 +1478,19 @@
     "fuelingBuffered": "Buffered",
     "eyebrow": "STATION CABINET · BENZEEN",
     "tin": "TIN",
-    "tinMissing": "TIN is empty — the Soliq receipt will be sent without it"
+    "tinMissing": "TIN is empty — the Soliq receipt will be sent without it",
+    "identificationFree": "free",
+    "identificationTitle": "Customer identification at the dispenser",
+    "identificationHint": {
+      "MANUAL": "The customer picks the dispenser in the app",
+      "BLE": "A BLE beacon is required — contact Benzeen",
+      "CAMERA": "Benzeen enables the camera module after the personal-data approval"
+    },
+    "identificationError": {
+      "beaconRequired": "No BLE beacon is linked to this dispenser",
+      "cameraNotAvailable": "Camera is not available yet: Benzeen enables the module",
+      "generic": "Could not save"
+    }
   },
   "fueling": {
     "title": "Fueling",

@@ -1478,7 +1478,19 @@
     "fuelingBuffered": "Из буфера",
     "eyebrow": "КАБИНЕТ АЗС · BENZEEN",
     "tin": "ИНН",
-    "tinMissing": "ИНН не заполнен — чек в Солик уйдёт без ИНН"
+    "tinMissing": "ИНН не заполнен — чек в Солик уйдёт без ИНН",
+    "identificationFree": "бесплатно",
+    "identificationTitle": "Идентификация клиента у колонки",
+    "identificationHint": {
+      "MANUAL": "Клиент выбирает колонку в приложении сам",
+      "BLE": "Нужен BLE-маячок на колонке — обращайтесь в Benzeen",
+      "CAMERA": "Модуль камер включает Benzeen после согласования обработки персональных данных"
+    },
+    "identificationError": {
+      "beaconRequired": "К колонке не привязан BLE-маячок",
+      "cameraNotAvailable": "Камера пока недоступна: модуль включает Benzeen",
+      "generic": "Не удалось сохранить"
+    }
   },
   "fueling": {
     "title": "Заправка",

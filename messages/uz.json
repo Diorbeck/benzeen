@@ -1478,7 +1478,19 @@
     "fuelingBuffered": "Buferdan",
     "eyebrow": "SHOXOBCHA KABINETI · BENZEEN",
     "tin": "STIR",
-    "tinMissing": "STIR kiritilmagan — chek Soliqqa STIRsiz ketadi"
+    "tinMissing": "STIR kiritilmagan — chek Soliqqa STIRsiz ketadi",
+    "identificationFree": "bepul",
+    "identificationTitle": "Kolonkada mijozni aniqlash",
+    "identificationHint": {
+      "MANUAL": "Mijoz kolonkani ilovada o‘zi tanlaydi",
+      "BLE": "Kolonkaga BLE-mayoq kerak — Benzeen bilan bog‘laning",
+      "CAMERA": "Kamera modulini shaxsiy ma’lumotlar kelishuvidan keyin Benzeen yoqadi"
+    },
+    "identificationError": {
+      "beaconRequired": "Kolonkaga BLE-mayoq ulanmagan",
+      "cameraNotAvailable": "Kamera hozircha mavjud emas: modulni Benzeen yoqadi",
+      "generic": "Saqlanmadi"
+    }
   },
   "fueling": {
     "title": "Yoqilgʻi quyish",

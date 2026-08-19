@@ -15,3 +15,9 @@ export const B2B_ENABLED = process.env.NEXT_PUBLIC_FEATURE_B2B === 'true';
 // Флаг оставлен, чтобы включать веб-версию точечно на пилотной АЗС для отладки.
 export const STATION_FUELING_WEB_ENABLED =
   process.env.NEXT_PUBLIC_FEATURE_STATION_FUELING_WEB === 'true';
+
+// Модуль 3, уровень «камера» (распознавание номера). До согласования формы
+// согласия по закону «О персональных данных» РУз (раздел 5 ТЗ) режим CAMERA
+// недоступен владельцам АЗС: включает его только платформа.
+export const CAMERA_IDENTIFICATION_ENABLED =
+  process.env.NEXT_PUBLIC_FEATURE_CAMERA_IDENTIFICATION === 'true';
