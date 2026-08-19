@@ -47,6 +47,7 @@ type NavKey =
   | 'deliveries'
   | 'reports'
   | 'invoices'
+  | 'fuelStations'
   | 'couriers'
   | 'propane'
   | 'clients'
@@ -74,6 +75,7 @@ const navByRole: Record<
     { path: '/companies', labelKey: 'companies', icon: Building2 },
     { path: '/requests', labelKey: 'requests', icon: ClipboardList },
     { path: '/deliveries', labelKey: 'deliveries', icon: Truck },
+    { path: '/stations', labelKey: 'fuelStations', icon: Fuel },
     { path: '/invoices', labelKey: 'reports', icon: BarChart3 },
     { path: '/couriers', labelKey: 'couriers', icon: Bike },
     { path: '/propane', labelKey: 'propane', icon: Flame },

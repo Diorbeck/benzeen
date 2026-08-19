@@ -364,7 +364,8 @@
       "clients": "Mijozlar",
       "bonuses": "Bonuslar",
       "support": "Murojaatlar",
-      "propane": "Propan"
+      "propane": "Propan",
+      "fuelStations": "Shoxobchalar"
     },
     "logout": "Chiqish",
     "subtitle": "Ushbu oy uchun asosiy ko'rsatkichlar",
@@ -1569,5 +1570,27 @@
     "scopeShowAll": "Barchasini koʻrsatish ({n})",
     "myLocation": "Mening joylashuvim",
     "cardAppOnly": "Ustunda toʻlov — Benzeen ilovasida"
+  },
+  "adminStations": {
+    "eyebrow": "ADMIN · SHOXOBCHALAR TARMOG‘I",
+    "title": "Ulangan shoxobchalar",
+    "subtitle": "Mamlakatdagi barcha obyektlar: kontroller aloqasi, datchiklardan qoldiq, infratuzilma uchun hisob.",
+    "online": "onlayn",
+    "offline": "aloqa yo‘q",
+    "tanks": "rezervuarlar",
+    "dispensers": "ustunlar",
+    "accrued": "oy uchun hisoblandi",
+    "tin": "STIR",
+    "tinMissing": "STIR kiritilmagan",
+    "sessions": "oyda quyish",
+    "empty": "Hozircha ulangan shoxobcha yo‘q.",
+    "exportTitle": "Joriy oy uchun eksport",
+    "exportSoliq": "Soliq uchun",
+    "exportAcquiring": "Bank uchun (ekvayring)",
+    "sum": "so‘m",
+    "liters": "l",
+    "totalStations": "shoxobcha",
+    "totalOnline": "aloqada",
+    "totalAccrued": "oy uchun hisoblandi"
   }
 }

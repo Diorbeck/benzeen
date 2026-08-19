@@ -364,7 +364,8 @@
       "clients": "Clients",
       "bonuses": "Bonuses",
       "support": "Support",
-      "propane": "Propane"
+      "propane": "Propane",
+      "fuelStations": "Stations"
     },
     "logout": "Sign out",
     "subtitle": "Key metrics for this month",
@@ -1569,5 +1570,27 @@
     "scopeShowAll": "Show all ({n})",
     "myLocation": "My location",
     "cardAppOnly": "Paying at the pump — in the Benzeen app"
+  },
+  "adminStations": {
+    "eyebrow": "ADMIN · STATION NETWORK",
+    "title": "Connected stations",
+    "subtitle": "Every site in the country: controller link, live sensor volumes, infrastructure billing.",
+    "online": "online",
+    "offline": "no link",
+    "tanks": "tanks",
+    "dispensers": "dispensers",
+    "accrued": "accrued this month",
+    "tin": "TIN",
+    "tinMissing": "TIN is empty",
+    "sessions": "fuel-ups this month",
+    "empty": "No connected stations yet.",
+    "exportTitle": "Exports for the current month",
+    "exportSoliq": "For the tax office (Soliq)",
+    "exportAcquiring": "For the bank (acquiring)",
+    "sum": "UZS",
+    "liters": "L",
+    "totalStations": "stations",
+    "totalOnline": "online",
+    "totalAccrued": "accrued this month"
   }
 }
