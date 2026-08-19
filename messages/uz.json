@@ -1422,7 +1422,8 @@
       "DIESEL": "Dizel"
     },
     "startFueling": "Yoqilgʻi quyish",
-    "appOnly": "Ustunda toʻlov — Benzeen ilovasida"
+    "appOnly": "Ustunda toʻlov — Benzeen ilovasida",
+    "listEyebrow": "SHOXOBCHALAR · DATCHIKLARDAN JONLI QOLDIQ"
   },
   "stationPanel": {
     "title": "Shoxobcha kabineti",
@@ -1546,7 +1547,8 @@
       "webOrder": "Yoqilgʻi yetkazishga buyurtma",
       "webStations": "Qoldiqlar bilan shoxobchalar xaritasi",
       "webHistory": "Quyish tarixi va cheklar"
-    }
+    },
+    "historyEyebrow": "QUYISHLARINGIZ · CHEKLAR"
   },
   "homeMap": {
     "badge": "02 / REZERVUAR DATCHIKLARI",

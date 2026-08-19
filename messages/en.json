@@ -1422,7 +1422,8 @@
       "DIESEL": "Diesel"
     },
     "startFueling": "Start fueling",
-    "appOnly": "Paying at the pump — in the Benzeen app"
+    "appOnly": "Paying at the pump — in the Benzeen app",
+    "listEyebrow": "STATIONS · LIVE SENSOR VOLUMES"
   },
   "stationPanel": {
     "title": "Station panel",
@@ -1546,7 +1547,8 @@
       "webOrder": "Order fuel delivery",
       "webStations": "Station map with live volumes",
       "webHistory": "Fueling history and receipts"
-    }
+    },
+    "historyEyebrow": "YOUR FUEL-UPS · RECEIPTS"
   },
   "homeMap": {
     "badge": "02 / TANK SENSORS",

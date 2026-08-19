@@ -962,8 +962,12 @@ function StepCard({
     <section className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-5 sm:p-6">
       <div className="mb-5 flex items-center gap-2.5">
         <Icon className="h-5 w-5 text-gray-500 dark:text-gray-400" aria-hidden />
-        <h2 className="text-subheading text-navy dark:text-white">
-          <span className="mr-1.5 tabular-nums text-gray-400 dark:text-gray-500">{step}.</span>
+        {/* Нумерация шагов в том же издательском ключе, что и блоки на главной:
+            номер акцентным синим через слеш, заголовок акцидентным начертанием. */}
+        <h2 className="font-display text-[20px] font-bold leading-tight tracking-[-0.015em] text-navy dark:text-white sm:text-[22px]">
+          <span className="mr-2 tabular-nums text-primary-600 dark:text-sky-300">
+            {String(step).padStart(2, '0')} /
+          </span>
           {title}
         </h2>
       </div>

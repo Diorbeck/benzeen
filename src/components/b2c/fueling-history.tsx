@@ -75,7 +75,12 @@ export function FuelingHistory() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 pb-24">
-      <h1 className="text-heading text-navy dark:text-white">{t('historyTitle')}</h1>
+      <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+        {t('historyEyebrow')}
+      </p>
+      <h1 className="mt-3 font-display text-[30px] font-bold leading-[1.02] tracking-[-0.025em] text-navy dark:text-white sm:text-[38px]">
+        {t('historyTitle')}
+      </h1>
 
       {items.length === 0 ? (
         <p className="mt-6 text-sm text-gray-600 dark:text-gray-300">{t('historyEmpty')}</p>
