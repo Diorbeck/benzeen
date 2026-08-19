@@ -842,7 +842,8 @@
       "stepMap": "02 / КАРТА ТОПЛИВА",
       "stepNearby": "03 / ЗАПРАВКИ РЯДОМ",
       "payNote": "Оплата на колонке — в мобильном приложении Benzeen.",
-      "money": "{n} сум"
+      "money": "{n} сум",
+      "inTank": "бак АЗС"
     },
     "nav": {
       "stations": "АЗС рядом"
@@ -1426,7 +1427,11 @@
     },
     "startFueling": "Заправиться",
     "appOnly": "Заправка у колонки — в приложении Benzeen",
-    "listEyebrow": "АЗС · ЖИВЫЕ ОСТАТКИ С ДАТЧИКОВ"
+    "listEyebrow": "АЗС · ЖИВЫЕ ОСТАТКИ С ДАТЧИКОВ",
+    "tankLabel": "Остаток в резервуаре",
+    "tankPercent": "{n}%",
+    "perLiter": "сум/л",
+    "tankLabelShort": "Остаток"
   },
   "stationPanel": {
     "title": "Кабинет АЗС",

@@ -842,7 +842,8 @@
       "stepMap": "02 / FUEL MAP",
       "stepNearby": "03 / STATIONS NEARBY",
       "payNote": "Paying at the pump lives in the Benzeen mobile app.",
-      "money": "{n} UZS"
+      "money": "{n} UZS",
+      "inTank": "tank level"
     },
     "nav": {
       "stations": "Stations nearby"
@@ -1426,7 +1427,11 @@
     },
     "startFueling": "Start fueling",
     "appOnly": "Paying at the pump — in the Benzeen app",
-    "listEyebrow": "STATIONS · LIVE SENSOR VOLUMES"
+    "listEyebrow": "STATIONS · LIVE SENSOR VOLUMES",
+    "tankLabel": "Tank level",
+    "tankPercent": "{n}%",
+    "perLiter": "UZS/L",
+    "tankLabelShort": "Level"
   },
   "stationPanel": {
     "title": "Station panel",

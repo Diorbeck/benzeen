@@ -199,34 +199,53 @@ function StationCard({
             {t("noStocks")}
           </li>
         )}
-        {station.stocks.map((s) => (
-          <li
-            key={s.fuelType}
-            className="flex items-baseline justify-between gap-3 rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5"
-          >
-            <span className="text-sm font-medium text-navy dark:text-white">
-              {tStations(`fuel.${s.fuelType}`)}
-            </span>
-            <span className="flex items-baseline gap-2">
-              <span className="text-base font-bold tabular-nums text-navy dark:text-white">
-                {Math.round(s.litersAvailable).toLocaleString("ru-RU")}
-                <span className="ml-1 text-caption font-medium text-gray-500 dark:text-gray-400">
-                  {t("litersShort")}
+        {station.stocks.map((s) => {
+          const fill = fillPercent(s);
+          const fresh = s.dataFresh && station.online;
+          return (
+            <li
+              key={s.fuelType}
+              className="rounded-control bg-gray-50 px-3 py-2.5 dark:bg-white/5"
+            >
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm font-medium text-navy dark:text-white">
+                  {tStations(`fuel.${s.fuelType}`)}
                 </span>
-              </span>
-              {fillPercent(s) !== null && (
-                <span className="text-caption font-semibold tabular-nums text-success-600 dark:text-success-500">
-                  {fillPercent(s)}%
+                <span className="text-base font-bold tabular-nums text-navy dark:text-white">
+                  {s.priceUzs !== null ? formatMoney(s.priceUzs, locale) : "—"}
+                  <span className="ml-1 text-caption font-medium text-gray-500 dark:text-gray-400">
+                    {tStations("perLiter")}
+                  </span>
                 </span>
+              </div>
+              {fresh && fill !== null ? (
+                <>
+                  <div className="mt-2 flex items-baseline justify-between gap-2">
+                    <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
+                      {tStations("tankLabel")}
+                    </span>
+                    <span className="text-sm font-semibold tabular-nums text-navy dark:text-white">
+                      {tStations("tankPercent", { n: fill })}
+                    </span>
+                  </div>
+                  <div
+                    className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"
+                    role="presentation"
+                  >
+                    <div
+                      className="h-full rounded-full bg-primary-600 dark:bg-primary-500"
+                      style={{ width: `${fill}%` }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <p className="mt-2 text-caption font-medium text-gray-400 dark:text-gray-500">
+                  {tStations("noData")}
+                </p>
               )}
-              {s.priceUzs !== null && (
-                <span className="text-caption tabular-nums text-gray-500 dark:text-gray-400">
-                  {formatMoney(s.priceUzs, locale)}
-                </span>
-              )}
-            </span>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
 
       <div className="mt-4 flex items-center gap-2">
