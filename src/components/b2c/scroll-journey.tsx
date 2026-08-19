@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 // Скролл-анимация главной (только десктоп) — метафора продукта: страница
 // «заправляется» вместе с пользователем.
@@ -20,16 +20,16 @@ export function ScrollJourney() {
   const frame = useRef<number | null>(null);
 
   useEffect(() => {
-    const wide = window.matchMedia('(min-width: 1024px)');
-    const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const wide = window.matchMedia("(min-width: 1024px)");
+    const calm = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const sync = () => setEnabled(wide.matches && !calm.matches);
     sync();
-    wide.addEventListener('change', sync);
-    calm.addEventListener('change', sync);
+    wide.addEventListener("change", sync);
+    calm.addEventListener("change", sync);
     return () => {
-      wide.removeEventListener('change', sync);
-      calm.removeEventListener('change', sync);
+      wide.removeEventListener("change", sync);
+      calm.removeEventListener("change", sync);
     };
   }, []);
 
@@ -42,7 +42,9 @@ export function ScrollJourney() {
       const max = doc.scrollHeight - window.innerHeight;
       // Короткая страница (или ещё не отрисованный контент) не должна давать
       // деления на ноль и рывка индикатора в полный бак.
-      setProgress(max > 120 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0);
+      setProgress(
+        max > 120 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0,
+      );
     };
 
     const onScroll = () => {
@@ -51,11 +53,11 @@ export function ScrollJourney() {
     };
 
     read();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
     return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       if (frame.current !== null) window.cancelAnimationFrame(frame.current);
     };
   }, [enabled]);
@@ -69,7 +71,10 @@ export function ScrollJourney() {
   const fuelLeft = 1 - progress;
 
   return (
-    <div aria-hidden className="pointer-events-none fixed inset-0 z-0 hidden select-none lg:block">
+    <div
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-0 hidden select-none lg:block"
+    >
       {/* Полоса дороги, по которой идёт машина. */}
       <div className="absolute inset-y-0 left-[68px] w-px bg-navy/[0.05] dark:bg-white/[0.05]" />
       <div
@@ -80,7 +85,7 @@ export function ScrollJourney() {
       {/* Силуэт машины: темнее фона, без деталей — это фон, а не иллюстрация. */}
       <div
         className="absolute left-[68px] -translate-x-1/2 text-navy/[0.12] dark:text-white/[0.10]"
-        style={{ top: `${carTop}%`, transition: 'top 120ms linear' }}
+        style={{ top: `${carTop}%`, transition: "top 120ms linear" }}
       >
         <CarSilhouette />
       </div>
@@ -110,8 +115,16 @@ function CarSilhouette() {
       <rect x="20" y="58" width="11" height="20" rx="5" />
       <rect x="89" y="58" width="11" height="20" rx="5" />
       {/* Стёкла — вырезы фоном, поэтому силуэт остаётся плоским и приглушённым. */}
-      <path d="M46 28h28l4 12H42l4-12Z" fill="var(--journey-cut, #F2F6FE)" opacity="0.55" />
-      <path d="M43 76h34l-3 9H46l-3-9Z" fill="var(--journey-cut, #F2F6FE)" opacity="0.4" />
+      <path
+        d="M46 28h28l4 12H42l4-12Z"
+        fill="var(--journey-cut, #F2F6FE)"
+        opacity="0.55"
+      />
+      <path
+        d="M43 76h34l-3 9H46l-3-9Z"
+        fill="var(--journey-cut, #F2F6FE)"
+        opacity="0.4"
+      />
     </svg>
   );
 }
@@ -140,7 +153,7 @@ function FuelGauge({ value }: { value: number }) {
       <div className="relative h-44 w-2 overflow-hidden rounded-full bg-navy/[0.08] dark:bg-white/[0.08]">
         <div
           className="absolute inset-x-0 bottom-0 rounded-full bg-primary-600/70 dark:bg-primary-400/70"
-          style={{ height: `${pct}%`, transition: 'height 140ms linear' }}
+          style={{ height: `${pct}%`, transition: "height 140ms linear" }}
         />
       </div>
       <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-navy/25 dark:text-white/25">

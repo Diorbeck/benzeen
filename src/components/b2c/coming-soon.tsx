@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { ArrowLeft, Clock } from 'lucide-react';
-import { B2CHeader } from './header';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { ArrowLeft, Clock } from "lucide-react";
+import { B2CHeader } from "./header";
 
-export function ComingSoon({ section }: { section: 'benzin' | 'propan' }) {
-  const t = useTranslations('b2c');
-  const pathname = usePathname() ?? '';
-  const locale = pathname.split('/').filter(Boolean)[0] || 'ru';
-  const safeLocale = ['ru', 'en', 'uz'].includes(locale) ? locale : 'ru';
+export function ComingSoon({ section }: { section: "benzin" | "propan" }) {
+  const t = useTranslations("b2c");
+  const pathname = usePathname() ?? "";
+  const locale = pathname.split("/").filter(Boolean)[0] || "ru";
+  const safeLocale = ["ru", "en", "uz"].includes(locale) ? locale : "ru";
 
   return (
     <div className="min-h-screen bg-white dark:bg-navy-950 text-navy dark:text-white">
@@ -24,17 +24,17 @@ export function ComingSoon({ section }: { section: 'benzin' | 'propan' }) {
             {t(`${section}.title`)}
           </p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight text-navy dark:text-white sm:text-4xl">
-            {t('comingSoon.title')}
+            {t("comingSoon.title")}
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-            {t('comingSoon.desc')}
+            {t("comingSoon.desc")}
           </p>
           <Link
             href={`/${safeLocale}`}
             className="mt-8 inline-flex min-h-11 items-center gap-2 rounded-control bg-gray-100 dark:bg-white/10 px-6 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 transition-colors hover:bg-gray-200/70 dark:hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-950"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
-            {t('comingSoon.back')}
+            {t("comingSoon.back")}
           </Link>
         </div>
       </main>

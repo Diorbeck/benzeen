@@ -1,31 +1,31 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
-import { BenzeenLogo } from '@/components/brand/logo';
-import { LanguageSwitcher } from '@/components/language-switcher';
-import { B2CThemeToggle } from './theme-toggle';
-import { track } from '@/lib/analytics';
-import { siteConfig } from '@/lib/site-config';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { BenzeenLogo } from "@/components/brand/logo";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { B2CThemeToggle } from "./theme-toggle";
+import { track } from "@/lib/analytics";
+import { siteConfig } from "@/lib/site-config";
 
 const STAFF_ROLES = new Set([
-  'SUPER_ADMIN',
-  'COMPANY_ADMIN',
-  'DRIVER',
-  'COURIER',
-  'DISPATCHER',
-  'PROPANE_OPERATOR',
+  "SUPER_ADMIN",
+  "COMPANY_ADMIN",
+  "DRIVER",
+  "COURIER",
+  "DISPATCHER",
+  "PROPANE_OPERATOR",
 ]);
 
 /** B2C header: session-aware — CLIENT → cabinet, staff → dashboard, guest → sign in + order CTA. */
 export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
-  const t = useTranslations('b2c');
-  const pathname = usePathname() ?? '';
-  const seg = pathname.split('/').filter(Boolean)[0];
-  const locale = seg === 'ru' || seg === 'en' || seg === 'uz' ? seg : 'ru';
+  const t = useTranslations("b2c");
+  const pathname = usePathname() ?? "";
+  const seg = pathname.split("/").filter(Boolean)[0];
+  const locale = seg === "ru" || seg === "en" || seg === "uz" ? seg : "ru";
   const { data: session, status } = useSession();
   const role = (session?.user as { role?: string } | undefined)?.role;
 
@@ -47,13 +47,13 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
             href={`/${locale}#map`}
             className="rounded-control px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-navy dark:text-gray-300 dark:hover:text-white"
           >
-            {t('nav.stations')}
+            {t("nav.stations")}
           </Link>
           <Link
             href={`/${locale}#how`}
             className="rounded-control px-3 py-2 text-sm font-medium text-gray-600 transition-colors hover:text-navy dark:text-gray-300 dark:hover:text-white"
           >
-            {t('howItWorks')}
+            {t("howItWorks")}
           </Link>
         </div>
 
@@ -63,30 +63,38 @@ export function B2CHeader({ showOrderCta = true }: { showOrderCta?: boolean }) {
               рядом с логотипом и входом, светлая/тёмная закрывают сценарий. */}
           <B2CThemeToggle hideSystemOnMobile />
 
-          {status === 'loading' ? (
-            <span className="h-10 w-24 animate-pulse rounded-control bg-gray-100 dark:bg-white/10" aria-hidden />
-          ) : role === 'CLIENT' ? (
+          {status === "loading" ? (
+            <span
+              className="h-10 w-24 animate-pulse rounded-control bg-gray-100 dark:bg-white/10"
+              aria-hidden
+            />
+          ) : role === "CLIENT" ? (
             <Button variant="secondary" size="sm" asChild>
-              <Link href={`/${locale}/account`}>{t('account')}</Link>
+              <Link href={`/${locale}/account`}>{t("account")}</Link>
             </Button>
           ) : role && STAFF_ROLES.has(role) ? (
             <Button variant="secondary" size="sm" asChild>
-              <Link href={`/${locale}/dashboard`}>{t('dashboard')}</Link>
+              <Link href={`/${locale}/dashboard`}>{t("dashboard")}</Link>
             </Button>
           ) : (
             <>
               <Button variant="ghost" size="sm" asChild>
-                <Link href={`/${locale}/client-login`} onClick={() => track('login_clicked', { where: 'header' })}>
-                  {t('signIn')}
+                <Link
+                  href={`/${locale}/client-login`}
+                  onClick={() => track("login_clicked", { where: "header" })}
+                >
+                  {t("signIn")}
                 </Link>
               </Button>
               {showOrderCta && (
                 <Button size="sm" className="hidden sm:inline-flex" asChild>
                   <Link
                     href={`/${locale}/benzin`}
-                    onClick={() => track('gasoline_order_clicked', { where: 'header' })}
+                    onClick={() =>
+                      track("gasoline_order_clicked", { where: "header" })
+                    }
                   >
-                    {t('orderFuel')}
+                    {t("orderFuel")}
                   </Link>
                 </Button>
               )}

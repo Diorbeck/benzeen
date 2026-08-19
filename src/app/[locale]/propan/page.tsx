@@ -6,7 +6,7 @@ export default async function PropanPage() {
   const t = await getTranslations('propan');
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-navy-950 text-navy dark:text-white">
+    <div className="min-h-screen bg-canvas dark:bg-navy-950 text-navy dark:text-white">
       <B2CHeader />
       <main className="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         <h1 className="text-title text-navy dark:text-white">{t('title')}</h1>

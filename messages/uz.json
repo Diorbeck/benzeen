@@ -841,7 +841,8 @@
       "orderNote": "Kartada to'liq bak summasi ushlab turiladi, yakunda esa faqat quyilgan yoqilg'i uchun hisob ketadi. Farq darhol qaytariladi.",
       "stepMap": "02 / YOQILGʻI XARITASI",
       "stepNearby": "03 / YAQIN SHOXOBCHALAR",
-      "payNote": "Ustunda toʻlash — Benzeen mobil ilovasida."
+      "payNote": "Ustunda toʻlash — Benzeen mobil ilovasida.",
+      "money": "{n} soʻm"
     },
     "nav": {
       "stations": "Yaqin shoxobchalar"

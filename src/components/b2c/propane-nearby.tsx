@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { useTranslations } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
-import type { Map as MlMap, Marker } from 'maplibre-gl';
-import { Flame, Search, RefreshCw, X, Navigation } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { mapProvider, localizeMapLabels } from '@/components/map/provider';
-import { formatMoney } from '@/lib/format';
-import { spring } from '@/lib/motion';
-import { track } from '@/lib/analytics';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+import { AnimatePresence, motion } from "framer-motion";
+import type { Map as MlMap, Marker } from "maplibre-gl";
+import { Flame, Search, RefreshCw, X, Navigation } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { mapProvider, localizeMapLabels } from "@/components/map/provider";
+import { formatMoney } from "@/lib/format";
+import { spring } from "@/lib/motion";
+import { track } from "@/lib/analytics";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 type PropanePoint = {
   id: string;
   name: string;
   lat: number;
   lng: number;
-  status: 'ACTIVE' | 'PAUSED';
+  status: "ACTIVE" | "PAUSED";
   priceUzs: number;
   postsCount: number;
 };
@@ -28,47 +28,56 @@ type Slot = { start: string; free: number };
 type MyBooking = {
   id: string;
   slotStart: string;
-  status: 'BOOKED' | 'SERVED' | 'CANCELLED';
+  status: "BOOKED" | "SERVED" | "CANCELLED";
   code: string;
-  point: { id: string; name: string; lat: number; lng: number; priceUzs: number };
+  point: {
+    id: string;
+    name: string;
+    lat: number;
+    lng: number;
+    priceUzs: number;
+  };
 };
-type State = 'loading' | 'ready' | 'error';
+type State = "loading" | "ready" | "error";
 
 const TASHKENT: [number, number] = [69.2401, 41.2995];
 
 export function PropaneNearby() {
-  const t = useTranslations('propan');
-  const pathname = usePathname() ?? '';
-  const seg = pathname.split('/').filter(Boolean)[0];
-  const locale = seg === 'ru' || seg === 'en' || seg === 'uz' ? seg : 'ru';
+  const t = useTranslations("propan");
+  const pathname = usePathname() ?? "";
+  const seg = pathname.split("/").filter(Boolean)[0];
+  const locale = seg === "ru" || seg === "en" || seg === "uz" ? seg : "ru";
   const { data: session } = useSession();
-  const isClient = (session?.user as { role?: string } | undefined)?.role === 'CLIENT';
+  const isClient =
+    (session?.user as { role?: string } | undefined)?.role === "CLIENT";
 
-  const [state, setState] = useState<State>('loading');
+  const [state, setState] = useState<State>("loading");
   const [points, setPoints] = useState<PropanePoint[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<PropanePoint | null>(null);
   const [myBooking, setMyBooking] = useState<MyBooking | null>(null);
   const [cancelling, setCancelling] = useState(false);
 
   const load = useCallback(() => {
-    setState('loading');
-    fetch('/api/propane/points')
+    setState("loading");
+    fetch("/api/propane/points")
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d: { points: PropanePoint[] }) => {
         setPoints(d.points);
-        setState('ready');
+        setState("ready");
       })
-      .catch(() => setState('error'));
+      .catch(() => setState("error"));
   }, []);
 
   const loadMyBooking = useCallback(() => {
     if (!isClient) return;
-    fetch('/api/propane/bookings')
+    fetch("/api/propane/bookings")
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d: { bookings: MyBooking[] }) => {
         const active = d.bookings.find(
-          (b) => b.status === 'BOOKED' && new Date(b.slotStart).getTime() > Date.now() - 30 * 60 * 1000,
+          (b) =>
+            b.status === "BOOKED" &&
+            new Date(b.slotStart).getTime() > Date.now() - 30 * 60 * 1000,
         );
         setMyBooking(active ?? null);
       })
@@ -76,7 +85,7 @@ export function PropaneNearby() {
   }, [isClient]);
 
   useEffect(() => {
-    track('propane_points_clicked', { where: 'propan_page' });
+    track("propane_points_clicked", { where: "propan_page" });
     load();
   }, [load]);
   useEffect(loadMyBooking, [loadMyBooking]);
@@ -85,17 +94,21 @@ export function PropaneNearby() {
     if (!myBooking) return;
     setCancelling(true);
     try {
-      const res = await fetch(`/api/propane/bookings/${myBooking.id}/cancel`, { method: 'POST' });
+      const res = await fetch(`/api/propane/bookings/${myBooking.id}/cancel`, {
+        method: "POST",
+      });
       if (res.ok) {
         setMyBooking(null);
-        track('propane_booking_cancelled');
+        track("propane_booking_cancelled");
       }
     } finally {
       setCancelling(false);
     }
   };
 
-  const filtered = points.filter((p) => p.name.toLowerCase().includes(query.trim().toLowerCase()));
+  const filtered = points.filter((p) =>
+    p.name.toLowerCase().includes(query.trim().toLowerCase()),
+  );
 
   return (
     <div className="space-y-6">
@@ -104,20 +117,27 @@ export function PropaneNearby() {
         <div className="rounded-card bg-gray-100 p-5 dark:bg-white/10">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{t('yourBooking')}</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                {t("yourBooking")}
+              </p>
               <p className="mt-1 text-subheading text-navy dark:text-white">
-                {t('bookedAt', {
+                {t("bookedAt", {
                   point: myBooking.point.name,
-                  time: new Date(myBooking.slotStart).toLocaleTimeString(locale, {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  }),
+                  time: new Date(myBooking.slotStart).toLocaleTimeString(
+                    locale,
+                    {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    },
+                  ),
                 })}
               </p>
               <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight text-primary-700 dark:text-primary-300">
                 {myBooking.code}
               </p>
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('showCode')}</p>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {t("showCode")}
+              </p>
             </div>
             <Button
               variant="ghost"
@@ -126,17 +146,20 @@ export function PropaneNearby() {
               onClick={cancelBooking}
               disabled={cancelling}
             >
-              {cancelling ? t('cancelling') : t('cancelBooking')}
+              {cancelling ? t("cancelling") : t("cancelBooking")}
             </Button>
           </div>
         </div>
       )}
 
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" aria-hidden />
+        <Search
+          className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500"
+          aria-hidden
+        />
         <input
           className="h-12 w-full rounded-control border border-transparent bg-gray-100 py-3 pl-10 pr-4 text-navy placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:bg-white/10 dark:text-white dark:placeholder-gray-500 dark:focus:bg-white/15 dark:focus:ring-white/60"
-          placeholder={t('searchPlaceholder')}
+          placeholder={t("searchPlaceholder")}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
@@ -144,34 +167,43 @@ export function PropaneNearby() {
 
       <PointsMap points={filtered} onSelect={(p) => setSelected(p)} />
 
-      {state === 'loading' && (
+      {state === "loading" && (
         <div className="space-y-3" aria-busy>
           {[0, 1, 2].map((i) => (
-            <div key={i} className="skeleton-shimmer relative h-20 overflow-hidden rounded-card border border-gray-100 dark:border-white/10 bg-white dark:bg-navy-900" />
+            <div
+              key={i}
+              className="skeleton-shimmer relative h-20 overflow-hidden rounded-card border border-gray-100 dark:border-white/10 bg-white dark:bg-navy-900"
+            />
           ))}
         </div>
       )}
 
-      {state === 'error' && (
+      {state === "error" && (
         <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-8 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-300">{t('error')}</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {t("error")}
+          </p>
           <Button variant="secondary" className="mt-4" onClick={load}>
-            <RefreshCw className="h-4 w-4" /> {t('retry')}
+            <RefreshCw className="h-4 w-4" /> {t("retry")}
           </Button>
         </div>
       )}
 
-      {state === 'ready' && filtered.length === 0 && (
+      {state === "ready" && filtered.length === 0 && (
         <div className="rounded-card border border-gray-200 dark:border-white/10 bg-white dark:bg-navy-900 p-10 text-center">
           <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5 text-gray-400 dark:text-gray-500">
             <Flame className="h-6 w-6" aria-hidden />
           </span>
-          <h2 className="mt-4 text-subheading text-navy dark:text-white">{t('emptyTitle')}</h2>
-          <p className="mx-auto mt-1.5 max-w-sm text-sm text-gray-600 dark:text-gray-300">{t('emptyDesc')}</p>
+          <h2 className="mt-4 text-subheading text-navy dark:text-white">
+            {t("emptyTitle")}
+          </h2>
+          <p className="mx-auto mt-1.5 max-w-sm text-sm text-gray-600 dark:text-gray-300">
+            {t("emptyDesc")}
+          </p>
         </div>
       )}
 
-      {state === 'ready' && filtered.length > 0 && (
+      {state === "ready" && filtered.length > 0 && (
         <ul className="space-y-3">
           {filtered.map((p) => (
             <li
@@ -181,22 +213,24 @@ export function PropaneNearby() {
               <div className="flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-subheading text-navy dark:text-white">{p.name}</p>
+                    <p className="truncate text-subheading text-navy dark:text-white">
+                      {p.name}
+                    </p>
                     <span
                       className={
-                        p.status === 'ACTIVE'
-                          ? 'shrink-0 rounded-md bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500'
-                          : 'shrink-0 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400'
+                        p.status === "ACTIVE"
+                          ? "shrink-0 rounded-md bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500"
+                          : "shrink-0 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400"
                       }
                     >
-                      {p.status === 'ACTIVE' ? t('active') : t('paused')}
+                      {p.status === "ACTIVE" ? t("active") : t("paused")}
                     </span>
                   </div>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
                     <span className="font-semibold tabular-nums text-navy dark:text-white">
                       {formatMoney(p.priceUzs, locale)}
-                    </span>{' '}
-                    {t('pricePerLiter')} · {t('postsFree', { n: p.postsCount })}
+                    </span>{" "}
+                    {t("pricePerLiter")} · {t("postsFree", { n: p.postsCount })}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
@@ -205,12 +239,16 @@ export function PropaneNearby() {
                     target="_blank"
                     rel="noreferrer"
                     className="flex h-11 w-11 items-center justify-center rounded-control text-gray-500 transition-colors hover:bg-gray-100 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
-                    aria-label={t('openInMaps')}
+                    aria-label={t("openInMaps")}
                   >
                     <Navigation className="h-5 w-5" aria-hidden />
                   </a>
-                  <Button size="sm" disabled={p.status !== 'ACTIVE'} onClick={() => setSelected(p)}>
-                    {t('chooseSlot')}
+                  <Button
+                    size="sm"
+                    disabled={p.status !== "ACTIVE"}
+                    onClick={() => setSelected(p)}
+                  >
+                    {t("chooseSlot")}
                   </Button>
                 </div>
               </div>
@@ -238,7 +276,13 @@ export function PropaneNearby() {
 }
 
 /** Read-only map of points; tapping a marker selects the point. */
-function PointsMap({ points, onSelect }: { points: PropanePoint[]; onSelect: (p: PropanePoint) => void }) {
+function PointsMap({
+  points,
+  onSelect,
+}: {
+  points: PropanePoint[];
+  onSelect: (p: PropanePoint) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
@@ -250,17 +294,21 @@ function PointsMap({ points, onSelect }: { points: PropanePoint[]; onSelect: (p:
     let map: MlMap | null = null;
     let ro: ResizeObserver | null = null;
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = (await import("maplibre-gl")).default;
       if (cancelled || !containerRef.current) return;
       map = new maplibregl.Map({
         container: containerRef.current,
-        style: mapProvider.getStyle({ dark: document.documentElement.classList.contains('dark') }),
+        style: mapProvider.getStyle({
+          dark: document.documentElement.classList.contains("dark"),
+        }),
         center: TASHKENT,
         zoom: 11,
         attributionControl: { compact: true },
       });
       mapRef.current = map;
-      map.on('load', () => localizeMapLabels(map!, document.documentElement.lang || 'ru'));
+      map.on("load", () =>
+        localizeMapLabels(map!, document.documentElement.lang || "ru"),
+      );
       ro = new ResizeObserver(() => map?.resize());
       ro.observe(containerRef.current);
     })();
@@ -278,15 +326,19 @@ function PointsMap({ points, onSelect }: { points: PropanePoint[]; onSelect: (p:
     if (!map) return;
     let disposed = false;
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = (await import("maplibre-gl")).default;
       if (disposed || !mapRef.current) return;
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = points.map((p) => {
-        const marker = new maplibregl.Marker({ color: p.status === 'ACTIVE' ? '#2E5BFF' : '#9ca3af' })
+        const marker = new maplibregl.Marker({
+          color: p.status === "ACTIVE" ? "#2E5BFF" : "#9ca3af",
+        })
           .setLngLat([p.lng, p.lat])
           .addTo(mapRef.current!);
-        marker.getElement().style.cursor = 'pointer';
-        marker.getElement().addEventListener('click', () => onSelectRef.current(p));
+        marker.getElement().style.cursor = "pointer";
+        marker
+          .getElement()
+          .addEventListener("click", () => onSelectRef.current(p));
         return marker;
       });
       if (points.length > 0) {
@@ -327,12 +379,12 @@ function SlotSheet({
   onClose: () => void;
   onBooked: (b: MyBooking) => void;
 }) {
-  const t = useTranslations('propan');
+  const t = useTranslations("propan");
   const [slots, setSlots] = useState<Slot[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [chosen, setChosen] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const loadSlots = useCallback(() => {
     setFailed(false);
@@ -348,37 +400,45 @@ function SlotSheet({
   const book = async () => {
     if (!chosen) return;
     setBusy(true);
-    setError('');
+    setError("");
     try {
-      const res = await fetch('/api/propane/bookings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/propane/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pointId: point.id, slotStart: chosen }),
       });
       if (res.status === 201) {
-        const d = (await res.json()) as { booking: { id: string; code: string } };
-        track('propane_slot_booked');
+        const d = (await res.json()) as {
+          booking: { id: string; code: string };
+        };
+        track("propane_slot_booked");
         onBooked({
           id: d.booking.id,
           code: d.booking.code,
           slotStart: chosen,
-          status: 'BOOKED',
-          point: { id: point.id, name: point.name, lat: point.lat, lng: point.lng, priceUzs: point.priceUzs },
+          status: "BOOKED",
+          point: {
+            id: point.id,
+            name: point.name,
+            lat: point.lat,
+            lng: point.lng,
+            priceUzs: point.priceUzs,
+          },
         });
         return;
       }
       const d = (await res.json().catch(() => ({}))) as { error?: string };
-      if (d.error === 'slot_full') {
-        setError(t('slotFull'));
+      if (d.error === "slot_full") {
+        setError(t("slotFull"));
         setChosen(null);
         loadSlots(); // refresh availability after losing the race
-      } else if (d.error === 'already_booked') {
-        setError(t('alreadyBooked'));
+      } else if (d.error === "already_booked") {
+        setError(t("alreadyBooked"));
       } else {
-        setError(t('loadError'));
+        setError(t("loadError"));
       }
     } catch {
-      setError(t('loadError'));
+      setError(t("loadError"));
     } finally {
       setBusy(false);
     }
@@ -397,9 +457,9 @@ function SlotSheet({
       onClick={onClose}
     >
       <motion.div
-        initial={{ y: '100%', opacity: 0.5 }}
+        initial={{ y: "100%", opacity: 0.5 }}
         animate={{ y: 0, opacity: 1 }}
-        exit={{ y: '100%', opacity: 0.5 }}
+        exit={{ y: "100%", opacity: 0.5 }}
         transition={spring.sheet}
         className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-t-sheet bg-white p-6 shadow-soft-lg dark:bg-navy-900 sm:rounded-card"
         onClick={(e) => e.stopPropagation()}
@@ -408,14 +468,18 @@ function SlotSheet({
       >
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-subheading text-navy dark:text-white">{point.name}</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{t('slotsTitle')}</p>
+            <h3 className="text-subheading text-navy dark:text-white">
+              {point.name}
+            </h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {t("slotsTitle")}
+            </p>
           </div>
           <button
             type="button"
             onClick={onClose}
             className="rounded-control p-2 text-gray-400 hover:bg-gray-100 dark:text-gray-500 dark:hover:bg-white/10"
-            aria-label={t('close')}
+            aria-label={t("close")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -423,34 +487,48 @@ function SlotSheet({
 
         {!isClient ? (
           <div className="space-y-4 py-4 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-300">{t('loginToBook')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {t("loginToBook")}
+            </p>
             <Button asChild className="w-full" size="lg">
-              <Link href={`/${locale}/client-login`}>{t('signIn')}</Link>
+              <Link href={`/${locale}/client-login`}>{t("signIn")}</Link>
             </Button>
           </div>
         ) : failed ? (
           <div className="space-y-4 py-4 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-300">{t('loadError')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {t("loadError")}
+            </p>
             <Button variant="secondary" onClick={loadSlots}>
-              <RefreshCw className="h-4 w-4" /> {t('retry')}
+              <RefreshCw className="h-4 w-4" /> {t("retry")}
             </Button>
           </div>
         ) : slots === null ? (
           <div className="grid grid-cols-4 gap-2" aria-busy>
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="skeleton-shimmer relative h-11 overflow-hidden rounded-control bg-gray-100 dark:bg-white/10" />
+              <div
+                key={i}
+                className="skeleton-shimmer relative h-11 overflow-hidden rounded-control bg-gray-100 dark:bg-white/10"
+              />
             ))}
           </div>
         ) : free.length === 0 ? (
-          <p className="py-6 text-center text-sm text-gray-600 dark:text-gray-300">{t('slotsEmpty')}</p>
+          <p className="py-6 text-center text-sm text-gray-600 dark:text-gray-300">
+            {t("slotsEmpty")}
+          </p>
         ) : (
           <>
             <div className="grid max-h-72 grid-cols-4 gap-2 overflow-y-auto pr-1">
               {free.map((s) => {
                 const d = new Date(s.start);
                 const isToday = d.toDateString() === today;
-                const label = d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
-                const dayTag = isToday ? '' : d.toLocaleDateString(locale, { weekday: 'short' });
+                const label = d.toLocaleTimeString(locale, {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                const dayTag = isToday
+                  ? ""
+                  : d.toLocaleDateString(locale, { weekday: "short" });
                 const activeChip = chosen === s.start;
                 return (
                   <button
@@ -459,11 +537,11 @@ function SlotSheet({
                     onClick={() => setChosen(s.start)}
                     className={`min-h-[44px] rounded-control border-2 px-2 text-sm font-medium tabular-nums transition active:scale-[0.97] motion-reduce:active:scale-100 ${
                       activeChip
-                        ? 'border-primary-600 bg-white text-navy dark:bg-white/10 dark:text-white'
-                        : 'border-transparent bg-gray-100 text-gray-700 hover:bg-gray-200/70 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10'
+                        ? "border-primary-600 bg-white text-navy dark:bg-white/10 dark:text-white"
+                        : "border-transparent bg-gray-100 text-gray-700 hover:bg-gray-200/70 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
                     }`}
                   >
-                    {dayTag ? `${dayTag} ` : ''}
+                    {dayTag ? `${dayTag} ` : ""}
                     {label}
                   </button>
                 );
@@ -471,13 +549,21 @@ function SlotSheet({
             </div>
 
             {error && (
-              <p className="mt-3 rounded-control bg-warning-500/10 px-3 py-2 text-sm text-warning-600 dark:text-warning-500" role="alert">
+              <p
+                className="mt-3 rounded-control bg-warning-500/10 px-3 py-2 text-sm text-warning-600 dark:text-warning-500"
+                role="alert"
+              >
                 {error}
               </p>
             )}
 
-            <Button className="mt-5 w-full" size="lg" disabled={!chosen || busy} onClick={book}>
-              {busy ? t('booking') : t('book')}
+            <Button
+              className="mt-5 w-full"
+              size="lg"
+              disabled={!chosen || busy}
+              onClick={book}
+            >
+              {busy ? t("booking") : t("book")}
             </Button>
           </>
         )}

@@ -5,7 +5,7 @@ import { StationsNearby } from '@/components/b2c/stations-nearby';
 // в резервуарах. Экран открывается сразу на карте, список заправок — ниже.
 export default function StationsPage() {
   return (
-    <div className="min-h-screen bg-gray-50 text-navy dark:bg-navy-950 dark:text-white">
+    <div className="min-h-screen bg-canvas text-navy dark:bg-navy-950 dark:text-white">
       <B2CHeader />
       <main>
         <StationsNearby />

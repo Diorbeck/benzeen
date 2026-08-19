@@ -1,23 +1,35 @@
-'use client';
+"use client";
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
-import { useTranslations } from 'next-intl';
-import type { Map as MlMap, Marker } from 'maplibre-gl';
-import { Crosshair, Gauge, MapPin, Navigation, RefreshCw, WifiOff, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { mapProvider, localizeMapLabels, TASHKENT_CENTER } from '@/components/map/provider';
-import { useHtmlDark } from '@/components/map/use-html-dark';
-import { formatMoney } from '@/lib/format';
-import { STATION_FUELING_WEB_ENABLED } from '@/lib/features';
+import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+import type { Map as MlMap, Marker } from "maplibre-gl";
+import {
+  Crosshair,
+  Gauge,
+  MapPin,
+  Navigation,
+  RefreshCw,
+  WifiOff,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  mapProvider,
+  localizeMapLabels,
+  TASHKENT_CENTER,
+} from "@/components/map/provider";
+import { useHtmlDark } from "@/components/map/use-html-dark";
+import { formatMoney } from "@/lib/format";
+import { STATION_FUELING_WEB_ENABLED } from "@/lib/features";
 import {
   DEFAULT_RADIUS_KM,
   fillPercent,
   type HomeStations,
   type LatLng,
   type Station,
-} from './use-home-stations';
-import 'maplibre-gl/dist/maplibre-gl.css';
+} from "./use-home-stations";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 // Карта Узбекистана с подключёнными АЗС на главной — Модуль 1 ТЗ v2.
 //
@@ -26,10 +38,17 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 // карточка АЗС с остатками, которые приходят с датчиков в резервуарах — это
 // то, чего нет ни у кого в стране, поэтому цифра подаётся крупно.
 
-export function HomeStationsMap({ locale, data }: { locale: string; data: HomeStations }) {
-  const t = useTranslations('homeMap');
-  const tStations = useTranslations('stations');
-  const { visible, stations, state, reload, center, expanded, expand, locate } = data;
+export function HomeStationsMap({
+  locale,
+  data,
+}: {
+  locale: string;
+  data: HomeStations;
+}) {
+  const t = useTranslations("homeMap");
+  const tStations = useTranslations("stations");
+  const { visible, stations, state, reload, center, expanded, expand, locate } =
+    data;
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selected = useMemo(
@@ -41,42 +60,44 @@ export function HomeStationsMap({ locale, data }: { locale: string; data: HomeSt
   return (
     <section
       id="map"
-      className="flex scroll-mt-24 flex-col overflow-hidden rounded-card border border-gray-200 bg-white dark:border-navy-700 dark:bg-navy-900"
+      className="flex scroll-mt-24 flex-col overflow-hidden rounded-card border border-paper-300 bg-white dark:border-navy-700 dark:bg-navy-900"
     >
       <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-4 sm:p-6 sm:pb-4">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+          <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.2em] text-gold-600 dark:text-gold-300">
             <Gauge className="h-3.5 w-3.5" aria-hidden />
-            {t('badge')}
+            {t("badge")}
           </p>
-          <h2 className="mt-2.5 font-display text-[22px] font-bold leading-tight tracking-[-0.015em] text-navy dark:text-white sm:text-[26px]">
-            {t('title')}
+          <h2 className="mt-2.5 font-editorial text-[24px] font-semibold leading-[1.1] tracking-[-0.01em] text-navy dark:text-white sm:text-[28px]">
+            {t("title")}
           </h2>
           <p className="mt-1.5 max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-            {t('subtitle')}
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <button
             type="button"
             onClick={locate}
-            className="inline-flex items-center gap-1.5 rounded-control border border-gray-200 bg-white px-3 py-1.5 text-caption font-medium text-navy transition-colors hover:border-sky-400 hover:text-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-navy-700 dark:bg-navy-800 dark:text-white dark:hover:border-sky-400 dark:hover:text-sky-200"
+            className="inline-flex items-center gap-1.5 rounded-control border border-paper-300 bg-white px-3 py-1.5 text-caption font-medium text-navy transition-colors hover:border-sky-400 hover:text-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-navy-700 dark:bg-navy-800 dark:text-white dark:hover:border-sky-400 dark:hover:text-sky-200"
           >
             <Crosshair className="h-3.5 w-3.5" aria-hidden />
-            {t('myLocation')}
+            {t("myLocation")}
           </button>
-          {state === 'ready' && (
+          {state === "ready" && (
             <p className="text-right text-caption text-gray-500 dark:text-gray-400">
-              {t('counter', { online, total: visible.length })}
+              {t("counter", { online, total: visible.length })}
               <span className="mx-1.5 text-gray-300 dark:text-gray-600">·</span>
-              {expanded ? t('scopeAll') : t('scopeRadius', { km: DEFAULT_RADIUS_KM })}
+              {expanded
+                ? t("scopeAll")
+                : t("scopeRadius", { km: DEFAULT_RADIUS_KM })}
               {!expanded && stations.length > visible.length && (
                 <button
                   type="button"
                   onClick={expand}
                   className="ml-2 font-semibold text-primary-600 underline-offset-2 hover:underline dark:text-sky-300"
                 >
-                  {t('scopeShowAll', { n: stations.length })}
+                  {t("scopeShowAll", { n: stations.length })}
                 </button>
               )}
             </p>
@@ -84,7 +105,7 @@ export function HomeStationsMap({ locale, data }: { locale: string; data: HomeSt
         </div>
       </div>
 
-      <div className="relative flex-1 border-t border-gray-100 bg-sky-50 dark:border-navy-700 dark:bg-navy-950">
+      <div className="relative flex-1 border-t border-paper-200 bg-sky-50 dark:border-navy-700 dark:bg-navy-950">
         <div className="h-[320px] sm:h-[380px] lg:h-[430px]">
           <StationsMapCanvas
             stations={visible}
@@ -97,11 +118,13 @@ export function HomeStationsMap({ locale, data }: { locale: string; data: HomeSt
           />
         </div>
 
-        {state === 'error' && (
+        {state === "error" && (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/85 backdrop-blur dark:bg-navy-950/85">
-            <p className="text-sm text-gray-600 dark:text-gray-300">{tStations('error')}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {tStations("error")}
+            </p>
             <Button variant="secondary" size="sm" onClick={reload}>
-              <RefreshCw className="h-4 w-4" /> {tStations('retry')}
+              <RefreshCw className="h-4 w-4" /> {tStations("retry")}
             </Button>
           </div>
         )}
@@ -109,13 +132,17 @@ export function HomeStationsMap({ locale, data }: { locale: string; data: HomeSt
         {/* Карточка выбранной АЗС: на телефоне — снизу, на десктопе — панелью слева. */}
         {selected && (
           <div className="absolute inset-x-3 bottom-3 z-10 sm:inset-auto sm:bottom-4 sm:left-4 sm:w-[340px]">
-            <StationCard station={selected} locale={locale} onClose={() => setSelectedId(null)} />
+            <StationCard
+              station={selected}
+              locale={locale}
+              onClose={() => setSelectedId(null)}
+            />
           </div>
         )}
 
-        {!selected && state === 'ready' && (
+        {!selected && state === "ready" && (
           <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-control bg-white/90 px-3 py-1.5 text-caption font-medium text-navy shadow-sm backdrop-blur dark:bg-navy-900/90 dark:text-white">
-            {t('hint')}
+            {t("hint")}
           </p>
         )}
       </div>
@@ -132,14 +159,16 @@ function StationCard({
   locale: string;
   onClose: () => void;
 }) {
-  const t = useTranslations('homeMap');
-  const tStations = useTranslations('stations');
+  const t = useTranslations("homeMap");
+  const tStations = useTranslations("stations");
 
   return (
-    <div className="rounded-card border border-gray-200 bg-white p-4 shadow-xl dark:border-navy-700 dark:bg-navy-900">
+    <div className="rounded-card border border-paper-300 bg-white p-4 shadow-xl dark:border-navy-700 dark:bg-navy-900">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-subheading text-navy dark:text-white">{station.name}</h3>
+          <h3 className="truncate text-subheading text-navy dark:text-white">
+            {station.name}
+          </h3>
           <p className="mt-1 flex items-start gap-1.5 text-sm text-gray-600 dark:text-gray-400">
             <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
             <span className="line-clamp-2">{station.address}</span>
@@ -148,7 +177,7 @@ function StationCard({
         <button
           type="button"
           onClick={onClose}
-          aria-label={t('close')}
+          aria-label={t("close")}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-control text-gray-500 transition-colors hover:bg-gray-100 hover:text-navy dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
         >
           <X className="h-4 w-4" aria-hidden />
@@ -157,16 +186,18 @@ function StationCard({
 
       {!station.online && (
         <p className="mt-3 flex items-center gap-1.5 rounded-control bg-warning-500/10 px-2.5 py-1.5 text-caption font-medium text-warning-600">
-          <WifiOff className="h-3.5 w-3.5" aria-hidden /> {tStations('offline')}
+          <WifiOff className="h-3.5 w-3.5" aria-hidden /> {tStations("offline")}
         </p>
       )}
 
       <p className="mt-3 text-caption font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        {t('stocksLabel')}
+        {t("stocksLabel")}
       </p>
       <ul className="mt-2 space-y-1.5">
         {station.stocks.length === 0 && (
-          <li className="text-sm text-gray-500 dark:text-gray-400">{t('noStocks')}</li>
+          <li className="text-sm text-gray-500 dark:text-gray-400">
+            {t("noStocks")}
+          </li>
         )}
         {station.stocks.map((s) => (
           <li
@@ -178,9 +209,9 @@ function StationCard({
             </span>
             <span className="flex items-baseline gap-2">
               <span className="text-base font-bold tabular-nums text-navy dark:text-white">
-                {Math.round(s.litersAvailable).toLocaleString('ru-RU')}
+                {Math.round(s.litersAvailable).toLocaleString("ru-RU")}
                 <span className="ml-1 text-caption font-medium text-gray-500 dark:text-gray-400">
-                  {t('litersShort')}
+                  {t("litersShort")}
                 </span>
               </span>
               {fillPercent(s) !== null && (
@@ -203,11 +234,13 @@ function StationCard({
             включённым флагом (отладка на пилотной АЗС). */}
         {STATION_FUELING_WEB_ENABLED ? (
           <Button size="sm" asChild>
-            <Link href={`/${locale}/fueling/start?station=${station.id}`}>{t('cardCta')}</Link>
+            <Link href={`/${locale}/fueling/start?station=${station.id}`}>
+              {t("cardCta")}
+            </Link>
           </Button>
         ) : (
           <p className="flex-1 text-caption font-medium leading-snug text-gray-500 dark:text-gray-400">
-            {t('cardAppOnly')}
+            {t("cardAppOnly")}
           </p>
         )}
         <Button variant="secondary" size="sm" asChild>
@@ -215,7 +248,7 @@ function StationCard({
             href={`https://yandex.uz/maps/?rtext=~${station.lat},${station.lng}`}
             target="_blank"
             rel="noreferrer"
-            aria-label={tStations('openInMaps')}
+            aria-label={tStations("openInMaps")}
           >
             <Navigation className="h-4 w-4" aria-hidden />
           </a>
@@ -266,21 +299,26 @@ function StationsMapCanvas({
     let ro: ResizeObserver | null = null;
 
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = (await import("maplibre-gl")).default;
       if (cancelled || !ref.current) return;
 
       map = new maplibregl.Map({
         container: ref.current,
-        style: mapProvider.getStyle({ dark: document.documentElement.classList.contains('dark') }),
+        style: mapProvider.getStyle({
+          dark: document.documentElement.classList.contains("dark"),
+        }),
         center: [centerRef.current.lng, centerRef.current.lat],
         zoom: zoomForRadius(radiusRef.current),
         attributionControl: { compact: true },
       });
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+      map.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        "top-right",
+      );
       ro = new ResizeObserver(() => map?.resize());
       ro.observe(ref.current);
-      map.on('load', () => {
-        localizeMapLabels(map!, document.documentElement.lang || 'ru');
+      map.on("load", () => {
+        localizeMapLabels(map!, document.documentElement.lang || "ru");
         drawRadius(map!, centerRef.current, radiusRef.current);
       });
       // Ручной жест пользователя (перетаскивание, зум, скролл) снимает
@@ -288,8 +326,8 @@ function StationsMapCanvas({
       const release = (e: { originalEvent?: unknown }) => {
         if (e.originalEvent) moveRef.current();
       };
-      map.on('dragstart', release);
-      map.on('zoomstart', release);
+      map.on("dragstart", release);
+      map.on("zoomstart", release);
       mapRef.current = map;
     })();
 
@@ -308,7 +346,11 @@ function StationsMapCanvas({
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !showRadius) return;
-    map.easeTo({ center: [center.lng, center.lat], zoom: zoomForRadius(radiusKm), duration: 600 });
+    map.easeTo({
+      center: [center.lng, center.lat],
+      zoom: zoomForRadius(radiusKm),
+      duration: 600,
+    });
     drawRadius(map, center, radiusKm);
   }, [center.lat, center.lng, radiusKm, showRadius, center]);
 
@@ -337,8 +379,9 @@ function StationsMapCanvas({
     if (!map) return;
     map.setStyle(mapProvider.getStyle({ dark }));
     // setStyle сбрасывает слои — круг радиуса возвращаем после загрузки нового стиля.
-    map.once('styledata', () => {
-      if (showRadiusRef.current) drawRadius(map, centerRef.current, radiusRef.current);
+    map.once("styledata", () => {
+      if (showRadiusRef.current)
+        drawRadius(map, centerRef.current, radiusRef.current);
     });
   }, [dark]);
 
@@ -347,26 +390,28 @@ function StationsMapCanvas({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = (await import("maplibre-gl")).default;
       const map = mapRef.current;
       if (cancelled || !map) return;
 
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = stations.map((s) => {
-        const el = document.createElement('button');
-        el.type = 'button';
-        el.setAttribute('aria-label', s.name);
-        el.className = 'benzeen-pin';
+        const el = document.createElement("button");
+        el.type = "button";
+        el.setAttribute("aria-label", s.name);
+        el.className = "benzeen-pin";
         el.dataset.online = String(s.online);
         el.dataset.active = String(s.id === selectedId);
-        el.addEventListener('click', (event) => {
+        el.addEventListener("click", (event) => {
           event.stopPropagation();
           selectRef.current(s.id);
         });
-        const marker = new maplibregl.Marker({ element: el }).setLngLat([s.lng, s.lat]).addTo(map);
+        const marker = new maplibregl.Marker({ element: el })
+          .setLngLat([s.lng, s.lat])
+          .addTo(map);
         // MapLibre ставит на элемент свой aria-label — возвращаем название АЗС,
         // иначе скринридер читает три одинаковых «Map marker».
-        marker.getElement().setAttribute('aria-label', s.name);
+        marker.getElement().setAttribute("aria-label", s.name);
         return marker;
       });
     })();
@@ -377,13 +422,14 @@ function StationsMapCanvas({
 
   // На растровом фолбэке (локально, без ключа MapTiler) тёмного стиля нет,
   // поэтому подложка приглушается фильтром — иначе в тёмной теме карта светит.
-  const fallbackDamp = dark && mapProvider.id === 'osm' ? 'benzeen-map-damp' : '';
+  const fallbackDamp =
+    dark && mapProvider.id === "osm" ? "benzeen-map-damp" : "";
   return <div ref={ref} className={`h-full w-full ${fallbackDamp}`} />;
 }
 
-const RADIUS_SOURCE = 'benzeen-radius';
-const RADIUS_FILL = 'benzeen-radius-fill';
-const RADIUS_LINE = 'benzeen-radius-line';
+const RADIUS_SOURCE = "benzeen-radius";
+const RADIUS_FILL = "benzeen-radius-fill";
+const RADIUS_LINE = "benzeen-radius-line";
 
 /** Зум, при котором в кадр по вертикали попадает круг заданного радиуса. */
 function zoomForRadius(radiusKm: number): number {
@@ -396,13 +442,20 @@ function zoomForRadius(radiusKm: number): number {
 }
 
 /** Полигон-аппроксимация круга: MapLibre не умеет метрические круги из коробки. */
-function circlePolygon(center: LatLng, radiusKm: number, steps = 72): number[][] {
+function circlePolygon(
+  center: LatLng,
+  radiusKm: number,
+  steps = 72,
+): number[][] {
   const latDeg = radiusKm / 110.574;
   const lngDeg = radiusKm / (111.32 * Math.cos((center.lat * Math.PI) / 180));
   const ring: number[][] = [];
   for (let i = 0; i <= steps; i += 1) {
     const a = (i / steps) * 2 * Math.PI;
-    ring.push([center.lng + lngDeg * Math.cos(a), center.lat + latDeg * Math.sin(a)]);
+    ring.push([
+      center.lng + lngDeg * Math.cos(a),
+      center.lat + latDeg * Math.sin(a),
+    ]);
   }
   return ring;
 }
@@ -415,28 +468,37 @@ type RadiusMap = MlMap & {
 function drawRadius(map: MlMap, center: LatLng, radiusKm: number): void {
   const m = map as RadiusMap;
   const data = {
-    type: 'Feature' as const,
+    type: "Feature" as const,
     properties: {},
-    geometry: { type: 'Polygon' as const, coordinates: [circlePolygon(center, radiusKm)] },
+    geometry: {
+      type: "Polygon" as const,
+      coordinates: [circlePolygon(center, radiusKm)],
+    },
   };
   try {
-    const existing = m.getSource(RADIUS_SOURCE) as { setData?: (d: unknown) => void } | undefined;
+    const existing = m.getSource(RADIUS_SOURCE) as
+      { setData?: (d: unknown) => void } | undefined;
     if (existing?.setData) {
       existing.setData(data);
       return;
     }
-    map.addSource(RADIUS_SOURCE, { type: 'geojson', data });
+    map.addSource(RADIUS_SOURCE, { type: "geojson", data });
     map.addLayer({
       id: RADIUS_FILL,
-      type: 'fill',
+      type: "fill",
       source: RADIUS_SOURCE,
-      paint: { 'fill-color': '#2E5BFF', 'fill-opacity': 0.08 },
+      paint: { "fill-color": "#2E5BFF", "fill-opacity": 0.08 },
     });
     map.addLayer({
       id: RADIUS_LINE,
-      type: 'line',
+      type: "line",
       source: RADIUS_SOURCE,
-      paint: { 'line-color': '#2E5BFF', 'line-width': 1.5, 'line-dasharray': [2, 2], 'line-opacity': 0.6 },
+      paint: {
+        "line-color": "#2E5BFF",
+        "line-width": 1.5,
+        "line-dasharray": [2, 2],
+        "line-opacity": 0.6,
+      },
     });
   } catch {
     /* стиль ещё не готов или уже уничтожен — круг не критичен для работы карты */

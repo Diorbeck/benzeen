@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
-import { useTranslations } from 'next-intl';
-import { STATION_FUELING_WEB_ENABLED } from '@/lib/features';
-import type { Map as MlMap, Marker } from 'maplibre-gl';
-import { Fuel, Navigation, RefreshCw, Search, WifiOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { mapProvider, localizeMapLabels } from '@/components/map/provider';
-import { formatMoney } from '@/lib/format';
-import { distanceKm, STATION_FUEL_TYPES } from '@/lib/stations';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { STATION_FUELING_WEB_ENABLED } from "@/lib/features";
+import type { Map as MlMap, Marker } from "maplibre-gl";
+import { Fuel, Navigation, RefreshCw, Search, WifiOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { mapProvider, localizeMapLabels } from "@/components/map/provider";
+import { formatMoney } from "@/lib/format";
+import { distanceKm, STATION_FUEL_TYPES } from "@/lib/stations";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 // Карта подключённых АЗС с остатками с датчиков — Модуль 1 ТЗ v2.
 //
@@ -34,42 +34,46 @@ type Station = {
   region: string | null;
   lat: number;
   lng: number;
-  status: 'ACTIVE' | 'PAUSED';
+  status: "ACTIVE" | "PAUSED";
   online: boolean;
   lastSeenAt: string | null;
   stocks: Stock[];
 };
 
-type State = 'loading' | 'ready' | 'error';
-type SortBy = 'distance' | 'price';
+type State = "loading" | "ready" | "error";
+type SortBy = "distance" | "price";
 
 const TASHKENT: [number, number] = [69.2401, 41.2995];
 const REFRESH_MS = 30_000;
 
 export function StationsNearby() {
-  const t = useTranslations('stations');
-  const pathname = usePathname() ?? '';
-  const seg = pathname.split('/').filter(Boolean)[0];
-  const locale = seg === 'ru' || seg === 'en' || seg === 'uz' ? seg : 'ru';
+  const t = useTranslations("stations");
+  const pathname = usePathname() ?? "";
+  const seg = pathname.split("/").filter(Boolean)[0];
+  const locale = seg === "ru" || seg === "en" || seg === "uz" ? seg : "ru";
 
-  const [state, setState] = useState<State>('loading');
+  const [state, setState] = useState<State>("loading");
   const [stations, setStations] = useState<Station[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [fuel, setFuel] = useState<string | null>(null);
-  const [sortBy, setSortBy] = useState<SortBy>('distance');
+  const [sortBy, setSortBy] = useState<SortBy>("distance");
   const [me, setMe] = useState<{ lat: number; lng: number } | null>(null);
 
   const load = useCallback((silent = false) => {
-    if (!silent) setState('loading');
-    fetch('/api/stations')
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('request failed'))))
+    if (!silent) setState("loading");
+    fetch("/api/stations")
+      .then((r) =>
+        r.ok ? r.json() : Promise.reject(new Error("request failed")),
+      )
       .then((d: { stations: Station[] }) => {
         setStations(d.stations);
-        setState('ready');
+        setState("ready");
       })
       // Молчаливое обновление не должно ронять уже показанный список в ошибку:
       // одна неудачная попытка на плохой связи — не причина стирать данные.
-      .catch(() => setState((prev) => (silent && prev === 'ready' ? prev : 'error')));
+      .catch(() =>
+        setState((prev) => (silent && prev === "ready" ? prev : "error")),
+      );
   }, []);
 
   useEffect(() => {
@@ -79,7 +83,7 @@ export function StationsNearby() {
   }, [load]);
 
   useEffect(() => {
-    if (!('geolocation' in navigator)) return;
+    if (!("geolocation" in navigator)) return;
     navigator.geolocation.getCurrentPosition(
       (pos) => setMe({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       // Отказ в геолокации — нормальный сценарий: тогда список сортируется по
@@ -92,9 +96,13 @@ export function StationsNearby() {
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     const withDistance = stations
-      .filter((s) => (fuel ? s.stocks.some((st) => st.fuelType === fuel) : true))
       .filter((s) =>
-        q ? `${s.name} ${s.brand ?? ''} ${s.address}`.toLowerCase().includes(q) : true,
+        fuel ? s.stocks.some((st) => st.fuelType === fuel) : true,
+      )
+      .filter((s) =>
+        q
+          ? `${s.name} ${s.brand ?? ""} ${s.address}`.toLowerCase().includes(q)
+          : true,
       )
       .map((s) => ({
         ...s,
@@ -113,12 +121,13 @@ export function StationsNearby() {
       // АЗС на связи всегда выше: остаток офлайн-точки нельзя проверить, и
       // отправлять к ней человека первым делом нечестно.
       if (a.online !== b.online) return a.online ? -1 : 1;
-      if (sortBy === 'price') {
+      if (sortBy === "price") {
         if (a.sortPrice === null) return 1;
         if (b.sortPrice === null) return -1;
         return a.sortPrice - b.sortPrice;
       }
-      if (a.distance === null || b.distance === null) return a.name.localeCompare(b.name);
+      if (a.distance === null || b.distance === null)
+        return a.name.localeCompare(b.name);
       return a.distance - b.distance;
     });
   }, [stations, query, fuel, me, sortBy]);
@@ -138,27 +147,37 @@ export function StationsNearby() {
               aria-hidden
             />
             <input
-              className="h-12 w-full rounded-control border border-gray-200 bg-white/95 py-3 pl-10 pr-4 text-navy shadow-lg backdrop-blur placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-navy dark:border-white/10 dark:bg-navy-900/95 dark:text-white dark:placeholder-gray-500 dark:focus:ring-white/60"
-              placeholder={t('searchPlaceholder')}
+              className="h-12 w-full rounded-control border border-gray-200 bg-white/95 py-3 pl-10 pr-4 text-navy shadow-lg backdrop-blur placeholder-gray-500 transition focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary-600 dark:border-white/10 dark:bg-navy-900/95 dark:text-white dark:placeholder-gray-500 dark:focus:ring-white/60"
+              placeholder={t("searchPlaceholder")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
           </div>
           <div className="pointer-events-auto mx-auto flex max-w-2xl gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <FilterChip active={fuel === null} onClick={() => setFuel(null)}>
-              {t('allFuels')}
+              {t("allFuels")}
             </FilterChip>
             {STATION_FUEL_TYPES.map((type) => (
-              <FilterChip key={type} active={fuel === type} onClick={() => setFuel(type)}>
+              <FilterChip
+                key={type}
+                active={fuel === type}
+                onClick={() => setFuel(type)}
+              >
                 {fuelLabel(type)}
               </FilterChip>
             ))}
             <span className="ml-auto flex shrink-0 items-center gap-2">
-              <FilterChip active={sortBy === 'distance'} onClick={() => setSortBy('distance')}>
-                {t('sortDistance')}
+              <FilterChip
+                active={sortBy === "distance"}
+                onClick={() => setSortBy("distance")}
+              >
+                {t("sortDistance")}
               </FilterChip>
-              <FilterChip active={sortBy === 'price'} onClick={() => setSortBy('price')}>
-                {t('sortPrice')}
+              <FilterChip
+                active={sortBy === "price"}
+                onClick={() => setSortBy("price")}
+              >
+                {t("sortPrice")}
               </FilterChip>
             </span>
           </div>
@@ -169,161 +188,180 @@ export function StationsNearby() {
       <section className="mx-auto max-w-2xl space-y-4 px-4 py-8 sm:px-6 lg:py-12">
         <div>
           <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
-            {t('listEyebrow')}
+            {t("listEyebrow")}
           </p>
-          <h2 className="mt-3 font-display text-[30px] font-bold leading-[1.02] tracking-[-0.025em] text-navy dark:text-white sm:text-[38px]">
-            {t('listTitle')}
+          <h2 className="mt-3 font-editorial text-[32px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[38px]">
+            {t("listTitle")}
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
+          <p className="mt-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+            {t("subtitle")}
+          </p>
         </div>
 
-        {!me && state === 'ready' && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">{t('noGeo')}</p>
+        {!me && state === "ready" && (
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {t("noGeo")}
+          </p>
         )}
 
-      {state === 'loading' && (
-        <div className="space-y-3" aria-busy>
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="skeleton-shimmer relative h-28 overflow-hidden rounded-card border border-gray-100 bg-white dark:border-white/10 dark:bg-navy-900"
-            />
-          ))}
-        </div>
-      )}
+        {state === "loading" && (
+          <div className="space-y-3" aria-busy>
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="skeleton-shimmer relative h-28 overflow-hidden rounded-card border border-gray-100 bg-white dark:border-white/10 dark:bg-navy-900"
+              />
+            ))}
+          </div>
+        )}
 
-      {state === 'error' && (
-        <div className="rounded-card border border-gray-200 bg-white p-8 text-center dark:border-white/10 dark:bg-navy-900">
-          <p className="text-sm text-gray-600 dark:text-gray-300">{t('error')}</p>
-          <Button variant="secondary" className="mt-4" onClick={() => load()}>
-            <RefreshCw className="h-4 w-4" /> {t('retry')}
-          </Button>
-        </div>
-      )}
+        {state === "error" && (
+          <div className="rounded-card border border-gray-200 bg-white p-8 text-center dark:border-white/10 dark:bg-navy-900">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
+              {t("error")}
+            </p>
+            <Button variant="secondary" className="mt-4" onClick={() => load()}>
+              <RefreshCw className="h-4 w-4" /> {t("retry")}
+            </Button>
+          </div>
+        )}
 
-      {state === 'ready' && visible.length === 0 && (
-        <div className="rounded-card border border-gray-200 bg-white p-10 text-center dark:border-white/10 dark:bg-navy-900">
-          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">
-            <Fuel className="h-6 w-6" aria-hidden />
-          </span>
-          <h2 className="mt-4 text-subheading text-navy dark:text-white">{t('emptyTitle')}</h2>
-          <p className="mx-auto mt-1.5 max-w-sm text-sm text-gray-600 dark:text-gray-300">
-            {t('emptyDesc')}
-          </p>
-        </div>
-      )}
+        {state === "ready" && visible.length === 0 && (
+          <div className="rounded-card border border-gray-200 bg-white p-10 text-center dark:border-white/10 dark:bg-navy-900">
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 dark:bg-white/5 dark:text-gray-500">
+              <Fuel className="h-6 w-6" aria-hidden />
+            </span>
+            <h2 className="mt-4 text-subheading text-navy dark:text-white">
+              {t("emptyTitle")}
+            </h2>
+            <p className="mx-auto mt-1.5 max-w-sm text-sm text-gray-600 dark:text-gray-300">
+              {t("emptyDesc")}
+            </p>
+          </div>
+        )}
 
-      {state === 'ready' && visible.length > 0 && (
-        <ul className="space-y-3">
-          {visible.map((s) => (
-            <li
-              key={s.id}
-              className="rounded-card border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-navy-900"
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="truncate text-subheading text-navy dark:text-white">{s.name}</p>
-                    {s.online ? (
-                      <span className="shrink-0 rounded-md bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500">
-                        {t('online')}
-                      </span>
-                    ) : (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
-                        <WifiOff className="h-3 w-3" aria-hidden /> {t('offline')}
-                      </span>
-                    )}
-                    {s.status === 'PAUSED' && (
-                      <span className="shrink-0 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
-                        {t('paused')}
-                      </span>
+        {state === "ready" && visible.length > 0 && (
+          <ul className="space-y-3">
+            {visible.map((s) => (
+              <li
+                key={s.id}
+                className="rounded-card border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-navy-900"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-subheading text-navy dark:text-white">
+                        {s.name}
+                      </p>
+                      {s.online ? (
+                        <span className="shrink-0 rounded-md bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500">
+                          {t("online")}
+                        </span>
+                      ) : (
+                        <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
+                          <WifiOff className="h-3 w-3" aria-hidden />{" "}
+                          {t("offline")}
+                        </span>
+                      )}
+                      {s.status === "PAUSED" && (
+                        <span className="shrink-0 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
+                          {t("paused")}
+                        </span>
+                      )}
+                    </div>
+                    <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+                      {s.brand ? `${s.brand} · ` : ""}
+                      {s.address}
+                    </p>
+                    {s.distance !== null && (
+                      <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                        {t("kmAway", { km: s.distance.toFixed(1) })}
+                      </p>
                     )}
                   </div>
-                  <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-                    {s.brand ? `${s.brand} · ` : ''}
-                    {s.address}
-                  </p>
-                  {s.distance !== null && (
-                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                      {t('kmAway', { km: s.distance.toFixed(1) })}
-                    </p>
-                  )}
+                  <a
+                    href={`https://maps.google.com/?q=${s.lat},${s.lng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-gray-500 transition-colors hover:bg-gray-100 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
+                    aria-label={t("openInMaps")}
+                  >
+                    <Navigation className="h-5 w-5" aria-hidden />
+                  </a>
                 </div>
-                <a
-                  href={`https://maps.google.com/?q=${s.lat},${s.lng}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-gray-500 transition-colors hover:bg-gray-100 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
-                  aria-label={t('openInMaps')}
-                >
-                  <Navigation className="h-5 w-5" aria-hidden />
-                </a>
-              </div>
 
-              <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {s.stocks
-                  .filter((st) => (fuel ? st.fuelType === fuel : true))
-                  .map((st) => (
-                    <li
-                      key={st.fuelType}
-                      className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5"
-                    >
-                      <div className="flex items-baseline justify-between gap-2">
-                        <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                          {fuelLabel(st.fuelType)}
-                        </span>
-                        <span className="text-xs tabular-nums text-gray-500 dark:text-gray-400">
-                          {st.priceUzs !== null ? formatMoney(st.priceUzs, locale) : '—'}
-                        </span>
-                      </div>
-                      {/* Устаревшие данные показываются как «нет данных», а не
+                <ul className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {s.stocks
+                    .filter((st) => (fuel ? st.fuelType === fuel : true))
+                    .map((st) => (
+                      <li
+                        key={st.fuelType}
+                        className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5"
+                      >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                            {fuelLabel(st.fuelType)}
+                          </span>
+                          <span className="text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                            {st.priceUzs !== null
+                              ? formatMoney(st.priceUzs, locale)
+                              : "—"}
+                          </span>
+                        </div>
+                        {/* Устаревшие данные показываются как «нет данных», а не
                           нулём: ноль литров и молчащий датчик — разные вещи. */}
-                      {st.dataFresh && s.online ? (
-                        <>
-                          <p className="mt-1 text-sm font-semibold tabular-nums text-navy dark:text-white">
-                            {t('liters', { n: Math.round(st.litersAvailable).toLocaleString(locale) })}
-                          </p>
-                          <div
-                            className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"
-                            role="presentation"
-                          >
+                        {st.dataFresh && s.online ? (
+                          <>
+                            <p className="mt-1 text-sm font-semibold tabular-nums text-navy dark:text-white">
+                              {t("liters", {
+                                n: Math.round(
+                                  st.litersAvailable,
+                                ).toLocaleString(locale),
+                              })}
+                            </p>
                             <div
-                              className="h-full rounded-full bg-primary-600 dark:bg-primary-500"
-                              style={{
-                                width: `${Math.min(100, Math.round((st.litersAvailable / Math.max(1, st.capacityL)) * 100))}%`,
-                              }}
-                            />
-                          </div>
-                        </>
-                      ) : (
-                        <p className="mt-1 text-sm font-medium text-gray-400 dark:text-gray-500">
-                          {t('noData')}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-              </ul>
+                              className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"
+                              role="presentation"
+                            >
+                              <div
+                                className="h-full rounded-full bg-primary-600 dark:bg-primary-500"
+                                style={{
+                                  width: `${Math.min(100, Math.round((st.litersAvailable / Math.max(1, st.capacityL)) * 100))}%`,
+                                }}
+                              />
+                            </div>
+                          </>
+                        ) : (
+                          <p className="mt-1 text-sm font-medium text-gray-400 dark:text-gray-500">
+                            {t("noData")}
+                          </p>
+                        )}
+                      </li>
+                    ))}
+                </ul>
 
-              {/* Вход в сценарий заправки. Для АЗС без связи кнопки нет: резерв
+                {/* Вход в сценарий заправки. Для АЗС без связи кнопки нет: резерв
                   на молчащем объекте означал бы замороженные деньги без топлива. */}
-              {s.online && s.status === 'ACTIVE' && STATION_FUELING_WEB_ENABLED && (
-                <a
-                  href={`/${locale}/fueling/start?station=${s.id}`}
-                  className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-600 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
-                >
-                  {t('startFueling')}
-                </a>
-              )}
-              {/* Без флага вместо кнопки — честная подпись: заливка идёт из приложения. */}
-              {!STATION_FUELING_WEB_ENABLED && (
-                <p className="mt-4 rounded-control bg-canvas px-3 py-2.5 text-caption font-medium leading-snug text-gray-600 dark:bg-navy-800 dark:text-gray-400">
-                  {t('appOnly')}
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+                {s.online &&
+                  s.status === "ACTIVE" &&
+                  STATION_FUELING_WEB_ENABLED && (
+                    <a
+                      href={`/${locale}/fueling/start?station=${s.id}`}
+                      className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-600 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                    >
+                      {t("startFueling")}
+                    </a>
+                  )}
+                {/* Без флага вместо кнопки — честная подпись: заливка идёт из приложения. */}
+                {!STATION_FUELING_WEB_ENABLED && (
+                  <p className="mt-4 rounded-control bg-canvas px-3 py-2.5 text-caption font-medium leading-snug text-gray-600 dark:bg-navy-800 dark:text-gray-400">
+                    {t("appOnly")}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
     </div>
   );
@@ -345,8 +383,8 @@ function FilterChip({
       aria-pressed={active}
       className={
         active
-          ? 'shrink-0 whitespace-nowrap rounded-control bg-navy px-3 py-1.5 text-xs font-medium text-white shadow-sm dark:bg-white dark:text-navy'
-          : 'shrink-0 whitespace-nowrap rounded-control bg-white/95 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm backdrop-blur transition hover:bg-white dark:bg-navy-900/95 dark:text-gray-300 dark:hover:bg-navy-900'
+          ? "shrink-0 whitespace-nowrap rounded-control bg-primary-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm dark:bg-primary-600 dark:text-white"
+          : "shrink-0 whitespace-nowrap rounded-control bg-white/95 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm backdrop-blur transition hover:bg-white dark:bg-navy-900/95 dark:text-gray-300 dark:hover:bg-navy-900"
       }
     >
       {children}
@@ -365,17 +403,21 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
     let map: MlMap | null = null;
     let ro: ResizeObserver | null = null;
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = (await import("maplibre-gl")).default;
       if (cancelled || !containerRef.current) return;
       map = new maplibregl.Map({
         container: containerRef.current,
-        style: mapProvider.getStyle({ dark: document.documentElement.classList.contains('dark') }),
+        style: mapProvider.getStyle({
+          dark: document.documentElement.classList.contains("dark"),
+        }),
         center: TASHKENT,
         zoom: 10,
         attributionControl: { compact: true },
       });
       mapRef.current = map;
-      map.on('load', () => localizeMapLabels(map!, document.documentElement.lang || 'ru'));
+      map.on("load", () =>
+        localizeMapLabels(map!, document.documentElement.lang || "ru"),
+      );
       ro = new ResizeObserver(() => map?.resize());
       ro.observe(containerRef.current);
     })();
@@ -392,15 +434,17 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
     if (!map) return;
     let disposed = false;
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = (await import("maplibre-gl")).default;
       if (disposed || !mapRef.current) return;
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = stations.map((s) => {
-        const marker = new maplibregl.Marker({ color: s.online ? '#16a34a' : '#9ca3af' })
+        const marker = new maplibregl.Marker({
+          color: s.online ? "#2E5BFF" : "#9ca3af",
+        })
           .setLngLat([s.lng, s.lat])
           .setPopup(new maplibregl.Popup({ offset: 16 }).setText(s.name))
           .addTo(mapRef.current!);
-        marker.getElement().style.cursor = 'pointer';
+        marker.getElement().style.cursor = "pointer";
         return marker;
       });
       if (stations.length > 0) {

@@ -43,7 +43,7 @@ export function StationsNetworkMap({ stations }: { stations: readonly NetworkSta
   return (
     <section className="mt-8 overflow-hidden rounded-card border border-gray-200 bg-white dark:border-white/10 dark:bg-navy-900">
       <div className="flex flex-wrap items-baseline justify-between gap-2 p-5 pb-4">
-        <h2 className="font-display text-[20px] font-bold text-navy dark:text-white">
+        <h2 className="font-editorial text-[21px] font-semibold text-navy dark:text-white">
           {t('mapTitle')}
         </h2>
         <p className="text-caption text-gray-500 dark:text-gray-400">{t('mapHint')}</p>

@@ -195,7 +195,7 @@ export default async function AdminStationsPage({
       <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
         {t("eyebrow")}
       </p>
-      <h1 className="mt-3 font-display text-[30px] font-bold leading-[1.02] tracking-[-0.025em] text-navy dark:text-white sm:text-[38px]">
+      <h1 className="mt-3 font-editorial text-[32px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[38px]">
         {t("title")}
       </h1>
       <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
@@ -271,7 +271,7 @@ export default async function AdminStationsPage({
       {mapStations.length > 0 && <StationsNetworkMap stations={mapStations} />}
 
       <section className="mt-8 rounded-card border border-gray-200 bg-white p-5 dark:border-white/10 dark:bg-navy-900">
-        <h2 className="font-display text-[20px] font-bold text-navy dark:text-white">
+        <h2 className="font-editorial text-[21px] font-semibold text-navy dark:text-white">
           {t("exportTitle")}
         </h2>
         {/* Это не навигация, а скачивание CSV, поэтому обычная ссылка, а не Link. */}
@@ -309,7 +309,7 @@ export default async function AdminStationsPage({
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="font-display text-[20px] font-bold leading-tight text-navy dark:text-white">
+                  <p className="font-editorial text-[21px] font-semibold leading-tight text-navy dark:text-white">
                     {row.station.name}
                   </p>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">

@@ -103,7 +103,7 @@ export default async function StationPanelPage({
         <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
           {t("eyebrow")}
         </p>
-        <h1 className="mt-3 font-display text-[30px] font-bold leading-[1.02] tracking-[-0.025em] text-navy dark:text-white sm:text-[38px]">
+        <h1 className="mt-3 font-editorial text-[32px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[38px]">
           {t("title")}
         </h1>
         <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
@@ -154,7 +154,7 @@ export default async function StationPanelPage({
             >
               <header className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h2 className="font-display text-[22px] font-bold leading-tight tracking-[-0.015em] text-navy dark:text-white">
+                  <h2 className="font-editorial text-[23px] font-semibold leading-tight tracking-[-0.01em] text-navy dark:text-white">
                     {station.name}
                   </h2>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">

@@ -841,7 +841,8 @@
       "orderNote": "We hold the full-tank amount on your card and charge only for the litres actually delivered. The difference is refunded right away.",
       "stepMap": "02 / FUEL MAP",
       "stepNearby": "03 / STATIONS NEARBY",
-      "payNote": "Paying at the pump lives in the Benzeen mobile app."
+      "payNote": "Paying at the pump lives in the Benzeen mobile app.",
+      "money": "{n} UZS"
     },
     "nav": {
       "stations": "Stations nearby"
