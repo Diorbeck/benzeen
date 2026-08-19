@@ -1516,7 +1516,17 @@
     "historyEmpty": "Hozircha quyish yoʻq.",
     "back": "Shoxobchalar xaritasiga",
     "statusLabel": "Holat",
-    "manualReviewShort": "Tekshiruvda"
+    "manualReviewShort": "Tekshiruvda",
+    "bleTitle": "Ustun avtomatik aniqlanadi",
+    "bleHint": "«Ustunni topish»ni bosing — telefon ustundagi mayoqni eshitib, raqamini o'zi qo'yadi.",
+    "bleUnsupported": "Bu brauzerda ustunni avtomatik topish ishlamaydi — raqamni pastda qo'lda tanlang. Benzeen ilovasida ustun o'zi aniqlanadi.",
+    "bleScan": "Ustunni topish",
+    "bleScanning": "Qidirilmoqda…",
+    "bleFound": "Siz №{n} ustun yonidasiz",
+    "bleAmbiguous": "Yaqinda bir nechta ustun eshitilyapti — ustundagi raqamni tekshiring.",
+    "bleUse": "Bu mening ustunim",
+    "bleNotFound": "Ustun mayog'i topilmadi. Raqamni qo'lda tanlang.",
+    "bleError": "Qidirish amalga oshmadi. Raqamni qo'lda tanlang."
   },
   "homeMap": {
     "badge": "Rezervuar datchiklari",

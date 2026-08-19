@@ -1516,7 +1516,17 @@
     "historyEmpty": "No fill-ups yet.",
     "back": "Back to the map",
     "statusLabel": "Status",
-    "manualReviewShort": "Under review"
+    "manualReviewShort": "Under review",
+    "bleTitle": "The pump detects itself",
+    "bleHint": "Tap “Find pump” — your phone will hear the beacon on the pump and fill in its number.",
+    "bleUnsupported": "This browser cannot search for the pump automatically — pick the pump number below. The Benzeen app detects it for you.",
+    "bleScan": "Find pump",
+    "bleScanning": "Searching…",
+    "bleFound": "You are at pump #{n}",
+    "bleAmbiguous": "Several pumps are audible nearby — check the number on the pump.",
+    "bleUse": "This is my pump",
+    "bleNotFound": "No pump beacon found. Pick the number manually.",
+    "bleError": "Search failed. Pick the number manually."
   },
   "homeMap": {
     "badge": "Tank sensors",

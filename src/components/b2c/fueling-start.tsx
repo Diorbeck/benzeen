@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Fuel, Loader2 } from 'lucide-react';
 import { formatMoney } from '@/lib/format';
+import { BleDispenserDetect } from './ble-dispenser-detect';
 
 // Базовый сценарий заправки — Модуль 3, уровень 1 ТЗ v2: клиент вручную выбирает
 // колонку, топливо и объём. BLE-маячок и камера появятся поверх этого же экрана,
@@ -57,6 +58,9 @@ export function FuelingStart() {
   const [value, setValue] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Способ определения колонки уходит в заправку: по нему видно, работает ли BLE
+  // на объекте, и АЗС платит за идентификацию не вслепую.
+  const [identifiedBy, setIdentifiedBy] = useState<'MANUAL' | 'BLE'>('MANUAL');
 
   useEffect(() => {
     if (!stationId) {
@@ -109,6 +113,7 @@ export function FuelingStart() {
           liters: mode === 'liters' ? numeric : undefined,
           amountUzs: mode === 'amount' ? Math.round(numeric) : undefined,
           fullTank: mode === 'full' ? true : undefined,
+          identifiedBy,
           // Токен карты выдаёт эквайринг банка; до подключения Apex сюда идёт
           // отметка сохранённой карты клиента.
           cardToken: 'primary',
@@ -170,6 +175,19 @@ export function FuelingStart() {
       <section className="mt-6">
         <h2 className="text-subheading text-navy dark:text-white">{t('stepDispenser')}</h2>
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{t('stepDispenserHint')}</p>
+
+        {station.dispensers.some((d) => d.identificationMode === 'BLE') && (
+          <div className="mt-3">
+            <BleDispenserDetect
+              stationId={station.id}
+              onPick={(n) => {
+                setDispenserNumber(n);
+                setIdentifiedBy('BLE');
+              }}
+            />
+          </div>
+        )}
+
         <div className="mt-3 flex flex-wrap gap-2">
           {station.dispensers.map((d) => {
             const disabled = d.status !== 'ACTIVE';
@@ -179,7 +197,10 @@ export function FuelingStart() {
                 key={d.id}
                 type="button"
                 disabled={disabled}
-                onClick={() => setDispenserNumber(d.number)}
+                onClick={() => {
+                  setDispenserNumber(d.number);
+                  setIdentifiedBy('MANUAL');
+                }}
                 className={`h-11 rounded-control px-4 text-sm font-medium transition-colors ${
                   active
                     ? 'bg-primary-600 text-white'
