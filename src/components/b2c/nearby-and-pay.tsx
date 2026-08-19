@@ -94,15 +94,16 @@ export function NearbyAndPay({
                   </div>
                   <div className="flex shrink-0 items-center gap-4">
                     {fill !== null && (
-                      <span className="flex items-center gap-1.5 text-caption font-semibold text-success-600 dark:text-success-500">
-                        <span
-                          className="h-1.5 w-1.5 rounded-full bg-success-500"
-                          aria-hidden
-                        />
-                        {fill}%
+                      <span className="text-right">
+                        <span className="block text-sm font-semibold tabular-nums text-navy dark:text-white">
+                          {fill}%
+                        </span>
+                        <span className="block text-caption font-normal text-gray-500 dark:text-gray-400">
+                          {t("console.inTank")}
+                        </span>
                       </span>
                     )}
-                    <span className="text-right text-sm font-bold tabular-nums text-navy dark:text-white">
+                    <span className="text-right text-base font-bold tabular-nums text-navy dark:text-white">
                       {main?.priceUzs
                         ? formatMoney(main.priceUzs, locale)
                         : "—"}

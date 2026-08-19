@@ -842,7 +842,8 @@
       "stepMap": "02 / YOQILGʻI XARITASI",
       "stepNearby": "03 / YAQIN SHOXOBCHALAR",
       "payNote": "Ustunda toʻlash — Benzeen mobil ilovasida.",
-      "money": "{n} soʻm"
+      "money": "{n} soʻm",
+      "inTank": "AZS baki"
     },
     "nav": {
       "stations": "Yaqin shoxobchalar"
@@ -1426,7 +1427,11 @@
     },
     "startFueling": "Yoqilgʻi quyish",
     "appOnly": "Ustunda toʻlov — Benzeen ilovasida",
-    "listEyebrow": "SHOXOBCHALAR · DATCHIKLARDAN JONLI QOLDIQ"
+    "listEyebrow": "SHOXOBCHALAR · DATCHIKLARDAN JONLI QOLDIQ",
+    "tankLabel": "Rezervuardagi qoldiq",
+    "tankPercent": "{n}%",
+    "perLiter": "so'm/l",
+    "tankLabelShort": "Qoldiq"
   },
   "stationPanel": {
     "title": "Shoxobcha kabineti",

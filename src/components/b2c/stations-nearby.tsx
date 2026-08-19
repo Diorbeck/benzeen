@@ -302,7 +302,7 @@ export function StationsNearby() {
                           <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
                             {fuelLabel(st.fuelType)}
                           </span>
-                          <span className="text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                          <span className="text-sm font-bold tabular-nums text-navy dark:text-white">
                             {st.priceUzs !== null
                               ? formatMoney(st.priceUzs, locale)
                               : "—"}
@@ -312,12 +312,22 @@ export function StationsNearby() {
                           нулём: ноль литров и молчащий датчик — разные вещи. */}
                         {st.dataFresh && s.online ? (
                           <>
-                            <p className="mt-1 text-sm font-semibold tabular-nums text-navy dark:text-white">
-                              {t("liters", {
-                                n: Math.round(
-                                  st.litersAvailable,
-                                ).toLocaleString(locale),
-                              })}
+                            <p className="mt-1 flex items-baseline justify-between gap-2">
+                              <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
+                                {t("tankLabelShort")}
+                              </span>
+                              <span className="text-sm font-semibold tabular-nums text-navy dark:text-white">
+                                {t("tankPercent", {
+                                  n: Math.min(
+                                    100,
+                                    Math.round(
+                                      (st.litersAvailable /
+                                        Math.max(1, st.capacityL)) *
+                                        100,
+                                    ),
+                                  ),
+                                })}
+                              </span>
                             </p>
                             <div
                               className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"
