@@ -1526,7 +1526,8 @@
     "bleAmbiguous": "Yaqinda bir nechta ustun eshitilyapti — ustundagi raqamni tekshiring.",
     "bleUse": "Bu mening ustunim",
     "bleNotFound": "Ustun mayog'i topilmadi. Raqamni qo'lda tanlang.",
-    "bleError": "Qidirish amalga oshmadi. Raqamni qo'lda tanlang."
+    "bleError": "Qidirish amalga oshmadi. Raqamni qo'lda tanlang.",
+    "soliqSent": "Chek Soliqda"
   },
   "homeMap": {
     "badge": "Rezervuar datchiklari",

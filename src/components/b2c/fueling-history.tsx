@@ -16,6 +16,7 @@ type Item = {
   amountUzs: number | null;
   refundUzs: number | null;
   cashbackUzs: number | null;
+  soliqSyncedAt: string | null;
   priceUzs: number;
   status: string;
   startedAt: string;
@@ -112,6 +113,11 @@ export function FuelingHistory() {
                 <span className="inline-flex items-center gap-1 rounded-md bg-gray-100 px-2.5 py-0.5 font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
                   <Receipt className="h-3 w-3" aria-hidden /> {t('receipt')}
                 </span>
+                {s.soliqSyncedAt && (
+                  <span className="rounded-md bg-sky-100 px-2.5 py-0.5 font-medium text-sky-700 dark:bg-sky-500/15 dark:text-sky-300">
+                    {t('soliqSent')}
+                  </span>
+                )}
                 {(s.cashbackUzs ?? 0) > 0 && (
                   <span className="rounded-md bg-success-500/10 px-2.5 py-0.5 font-medium text-success-600">
                     {t('cashback')} · {formatMoney(s.cashbackUzs ?? 0, locale)}

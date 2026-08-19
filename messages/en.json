@@ -1526,7 +1526,8 @@
     "bleAmbiguous": "Several pumps are audible nearby — check the number on the pump.",
     "bleUse": "This is my pump",
     "bleNotFound": "No pump beacon found. Pick the number manually.",
-    "bleError": "Search failed. Pick the number manually."
+    "bleError": "Search failed. Pick the number manually.",
+    "soliqSent": "Receipt in Soliq"
   },
   "homeMap": {
     "badge": "Tank sensors",

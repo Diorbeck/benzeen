@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { sweepStaleFuelingSessions } from '@/lib/fueling-service';
+import { sweepStaleFuelingSessions, syncPendingSoliqReceipts } from '@/lib/fueling-service';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -22,5 +22,8 @@ export async function GET(req: Request) {
   }
 
   const result = await sweepStaleFuelingSessions();
-  return NextResponse.json({ ok: true, ...result });
+  // Тем же обходом добираем чеки, не ушедшие в Солик (Модуль 5): отдельное
+  // расписание на тарифе Hobby всё равно недоступно.
+  const receipts = await syncPendingSoliqReceipts();
+  return NextResponse.json({ ok: true, ...result, receipts });
 }

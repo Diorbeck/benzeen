@@ -15,6 +15,7 @@ import {
   type FuelingRequest,
 } from '@/lib/fueling';
 import { aggregateStocks, isStationOnline } from '@/lib/stations';
+import { buildFiscalReceipt, getSoliqProvider, SoliqError } from '@/lib/soliq';
 
 export type StartInput = FuelingRequest & {
   clientId: string;
@@ -259,7 +260,105 @@ export async function settleFuelingSession(sessionId: string) {
     },
   });
 
+  // Чек в Солик — после денег и вне транзакции: если налоговая недоступна,
+  // заправка всё равно закрыта, а чек догонит очередь.
+  await pushSoliqReceipt(session.id).catch(() => undefined);
+
   return { alreadySettled: false as const, ...updated };
+}
+
+/**
+ * Передача чека в Солик по закрытой заправке — Модуль 5 ТЗ v2.
+ *
+ * Возвращает статус вместо исключения: вызывающий код (закрытие сессии и
+ * очередь) не должен разбирать ошибки налоговой, для него важно только, ушёл
+ * чек или его надо повторить.
+ */
+export async function pushSoliqReceipt(
+  sessionId: string,
+): Promise<{ status: 'SENT' | 'ALREADY_SENT' | 'SKIPPED' | 'RETRY'; fiscalId?: string }> {
+  const provider = getSoliqProvider();
+  // Солик не подключён — заправки идут как есть, без фискального чека.
+  if (!provider) return { status: 'SKIPPED' };
+
+  const session = await prisma.fuelingSession.findUnique({
+    where: { id: sessionId },
+    select: {
+      id: true,
+      status: true,
+      soliqSyncedAt: true,
+      litersDispensed: true,
+      amountUzs: true,
+      priceUzs: true,
+      fuelType: true,
+      acquirerRef: true,
+      clientId: true,
+      endedAt: true,
+      station: { select: { id: true, name: true } },
+      dispenser: { select: { number: true } },
+    },
+  });
+
+  if (!session || session.status !== 'SETTLED') return { status: 'SKIPPED' };
+  if (session.soliqSyncedAt) return { status: 'ALREADY_SENT' };
+  // Заправка на ноль литров: денег нет, чека тоже быть не должно.
+  if ((session.amountUzs ?? 0) <= 0 || (session.litersDispensed ?? 0) <= 0) {
+    return { status: 'SKIPPED' };
+  }
+
+  try {
+    const receipt = buildFiscalReceipt({
+      sessionId: session.id,
+      stationId: session.station.id,
+      stationName: session.station.name,
+      dispenserNumber: session.dispenser.number,
+      fuelName: session.fuelType,
+      liters: session.litersDispensed ?? 0,
+      priceUzs: session.priceUzs,
+      amountUzs: session.amountUzs ?? 0,
+      acquirerRef: session.acquirerRef,
+      clientId: session.clientId,
+      settledAt: session.endedAt ?? new Date(),
+    });
+    const result = await provider.submit(receipt);
+    await prisma.fuelingSession.update({
+      where: { id: session.id },
+      data: { soliqSyncedAt: new Date() },
+    });
+    return { status: result.duplicate ? 'ALREADY_SENT' : 'SENT', fiscalId: result.fiscalId };
+  } catch (e) {
+    // Некорректный чек повторять бессмысленно — он не станет валидным сам.
+    if (e instanceof SoliqError && (e.code === 'BAD_RECEIPT' || e.code === 'REJECTED')) {
+      return { status: 'SKIPPED' };
+    }
+    return { status: 'RETRY' };
+  }
+}
+
+/**
+ * Очередь чеков: добирает закрытые заправки, по которым чек в Солик не ушёл.
+ * Вызывается тем же расписанием, что и разбор зависших сессий.
+ */
+export async function syncPendingSoliqReceipts(limit = 50) {
+  if (!getSoliqProvider()) return { checked: 0, sent: 0, pending: 0 };
+
+  const pending = await prisma.fuelingSession.findMany({
+    where: {
+      status: 'SETTLED',
+      soliqSyncedAt: null,
+      amountUzs: { gt: 0 },
+    },
+    orderBy: { endedAt: 'asc' },
+    take: limit,
+    select: { id: true },
+  });
+
+  let sent = 0;
+  for (const s of pending) {
+    const r = await pushSoliqReceipt(s.id);
+    if (r.status === 'SENT' || r.status === 'ALREADY_SENT') sent += 1;
+  }
+  return { checked: pending.length, sent, pending: pending.length - sent };
 }
 
 /** Отмена клиентом до начала заливки: резерв размораживается. */
@@ -371,6 +470,7 @@ export async function clientFuelingHistory(clientId: string, take = 50) {
       amountUzs: true,
       refundUzs: true,
       cashbackUzs: true,
+      soliqSyncedAt: true,
       priceUzs: true,
       status: true,
       startedAt: true,
