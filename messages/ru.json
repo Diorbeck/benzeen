@@ -365,7 +365,8 @@
       "bonuses": "Бонусы",
       "support": "Обращения",
       "propane": "Пропан",
-      "fuelStations": "АЗС"
+      "fuelStations": "АЗС",
+      "incidents": "Инциденты"
     },
     "logout": "Выйти",
     "subtitle": "Ключевые показатели за этот месяц",
@@ -1624,5 +1625,21 @@
     "receiptsSent": "Чеков в Солик",
     "receiptsQueued": "В очереди",
     "receiptsStuck": "Требуют разбора"
+  },
+  "incidents": {
+    "eyebrow": "Админ · Инциденты",
+    "title": "Инцидент-борд",
+    "subtitle": "Всё, что сломалось на сети: деньги клиентов в ручном разборе, чеки, не ушедшие в Солик, объекты без связи и молчащие датчики.",
+    "kindManualReview": "Ручной разбор",
+    "kindSoliqStuck": "Чеки не ушли",
+    "kindStationOffline": "АЗС без связи",
+    "kindTankStale": "Датчики молчат",
+    "listTitle": "Список инцидентов",
+    "empty": "Инцидентов нет — сеть в порядке.",
+    "retry": "Отправить снова",
+    "retrySending": "Отправляем…",
+    "retrySent": "Чек ушёл",
+    "retryFailed": "Снова не вышло",
+    "retrySkipped": "Солик не подключён"
   }
 }

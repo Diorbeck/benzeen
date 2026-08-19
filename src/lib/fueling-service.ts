@@ -338,6 +338,9 @@ export async function pushSoliqReceipt(
       data: {
         soliqSyncedAt: new Date(),
         soliqFiscalId: result.fiscalId,
+        // Кешбек 1% — обязательство перед клиентом, и оно возникает вместе с
+        // фискальным чеком: без чека в Солик начислять нечего.
+        cashbackUzs: receipt.cashbackUzs,
         soliqAttempts: session.soliqAttempts + 1,
         soliqLastAttemptAt: new Date(),
         soliqLastError: null,

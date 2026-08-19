@@ -365,7 +365,8 @@
       "bonuses": "Bonuses",
       "support": "Support",
       "propane": "Propane",
-      "fuelStations": "Stations"
+      "fuelStations": "Stations",
+      "incidents": "Incidents"
     },
     "logout": "Sign out",
     "subtitle": "Key metrics for this month",
@@ -1624,5 +1625,21 @@
     "receiptsSent": "Receipts sent to Soliq",
     "receiptsQueued": "Queued",
     "receiptsStuck": "Need manual review"
+  },
+  "incidents": {
+    "eyebrow": "Admin · Incidents",
+    "title": "Incident board",
+    "subtitle": "Everything broken across the network: customer money in manual review, receipts that never reached Soliq, stations offline and silent tank sensors.",
+    "kindManualReview": "Manual review",
+    "kindSoliqStuck": "Receipts not sent",
+    "kindStationOffline": "Stations offline",
+    "kindTankStale": "Silent sensors",
+    "listTitle": "Incident list",
+    "empty": "No incidents — the network is healthy.",
+    "retry": "Send again",
+    "retrySending": "Sending…",
+    "retrySent": "Receipt sent",
+    "retryFailed": "Failed again",
+    "retrySkipped": "Soliq not connected"
   }
 }

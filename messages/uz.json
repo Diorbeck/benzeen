@@ -365,7 +365,8 @@
       "bonuses": "Bonuslar",
       "support": "Murojaatlar",
       "propane": "Propan",
-      "fuelStations": "Shoxobchalar"
+      "fuelStations": "Shoxobchalar",
+      "incidents": "Insidentlar"
     },
     "logout": "Chiqish",
     "subtitle": "Ushbu oy uchun asosiy ko'rsatkichlar",
@@ -1624,5 +1625,21 @@
     "receiptsSent": "Soliqqa yuborilgan cheklar",
     "receiptsQueued": "Navbatda",
     "receiptsStuck": "Qo‘lda tekshirish kerak"
+  },
+  "incidents": {
+    "eyebrow": "Admin · Insidentlar",
+    "title": "Insidentlar paneli",
+    "subtitle": "Tarmoqda buzilgan hamma narsa: qo‘lda tekshiriluvchi mijoz pullari, Soliqqa ketmagan cheklar, aloqasi yo‘q obyektlar va jim datchiklar.",
+    "kindManualReview": "Qo‘lda tekshirish",
+    "kindSoliqStuck": "Cheklar yuborilmadi",
+    "kindStationOffline": "Aloqasiz shoxobchalar",
+    "kindTankStale": "Datchiklar jim",
+    "listTitle": "Insidentlar ro‘yxati",
+    "empty": "Insidentlar yo‘q — tarmoq tartibda.",
+    "retry": "Qayta yuborish",
+    "retrySending": "Yuborilmoqda…",
+    "retrySent": "Chek yuborildi",
+    "retryFailed": "Yana bo‘lmadi",
+    "retrySkipped": "Soliq ulanmagan"
   }
 }
