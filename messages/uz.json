@@ -1490,7 +1490,14 @@
       "beaconRequired": "Kolonkaga BLE-mayoq ulanmagan",
       "cameraNotAvailable": "Kamera hozircha mavjud emas: modulni Benzeen yoqadi",
       "generic": "Saqlanmadi"
-    }
+    },
+    "receipt": {
+      "sent": "Chek Soliqda",
+      "queued": "Chek navbatda",
+      "retrying": "Chek qayta yuborilmoqda",
+      "stuck": "Chek yuborilmadi"
+    },
+    "receiptCashback": "Mijozga keshbek: {sum} so‘m"
   },
   "fueling": {
     "title": "Yoqilgʻi quyish",
@@ -1613,6 +1620,9 @@
     "disable": "Uzish",
     "ratePlaceholder": "Tarif, so‘m/kun",
     "saveError": "Saqlanmadi",
-    "perDay": "so‘m/kun"
+    "perDay": "so‘m/kun",
+    "receiptsSent": "Soliqqa yuborilgan cheklar",
+    "receiptsQueued": "Navbatda",
+    "receiptsStuck": "Qo‘lda tekshirish kerak"
   }
 }

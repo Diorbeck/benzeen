@@ -16,6 +16,7 @@ import {
 } from '@/lib/fueling';
 import { aggregateStocks, isStationOnline } from '@/lib/stations';
 import { buildFiscalReceipt, getSoliqProvider, SoliqError } from '@/lib/soliq';
+import { isRetryDue, MAX_SOLIQ_ATTEMPTS, shortError } from '@/lib/soliq-retry';
 
 export type StartInput = FuelingRequest & {
   clientId: string;
@@ -276,7 +277,10 @@ export async function settleFuelingSession(sessionId: string) {
  */
 export async function pushSoliqReceipt(
   sessionId: string,
-): Promise<{ status: 'SENT' | 'ALREADY_SENT' | 'SKIPPED' | 'RETRY'; fiscalId?: string }> {
+): Promise<{
+  status: 'SENT' | 'ALREADY_SENT' | 'SKIPPED' | 'RETRY' | 'WAITING' | 'STUCK';
+  fiscalId?: string;
+}> {
   const provider = getSoliqProvider();
   // Солик не подключён — заправки идут как есть, без фискального чека.
   if (!provider) return { status: 'SKIPPED' };
@@ -287,6 +291,8 @@ export async function pushSoliqReceipt(
       id: true,
       status: true,
       soliqSyncedAt: true,
+      soliqAttempts: true,
+      soliqLastAttemptAt: true,
       litersDispensed: true,
       amountUzs: true,
       priceUzs: true,
@@ -301,6 +307,10 @@ export async function pushSoliqReceipt(
 
   if (!session || session.status !== 'SETTLED') return { status: 'SKIPPED' };
   if (session.soliqSyncedAt) return { status: 'ALREADY_SENT' };
+  // Исчерпанные попытки и невыдержанная пауза: чек ждёт своей очереди, а не
+  // долбит Солик на каждом обходе.
+  if (session.soliqAttempts >= MAX_SOLIQ_ATTEMPTS) return { status: 'STUCK' };
+  if (!isRetryDue(session, new Date())) return { status: 'WAITING' };
   // Заправка на ноль литров: денег нет, чека тоже быть не должно.
   if ((session.amountUzs ?? 0) <= 0 || (session.litersDispensed ?? 0) <= 0) {
     return { status: 'SKIPPED' };
@@ -325,15 +335,31 @@ export async function pushSoliqReceipt(
     const result = await provider.submit(receipt);
     await prisma.fuelingSession.update({
       where: { id: session.id },
-      data: { soliqSyncedAt: new Date() },
+      data: {
+        soliqSyncedAt: new Date(),
+        soliqFiscalId: result.fiscalId,
+        soliqAttempts: session.soliqAttempts + 1,
+        soliqLastAttemptAt: new Date(),
+        soliqLastError: null,
+      },
     });
     return { status: result.duplicate ? 'ALREADY_SENT' : 'SENT', fiscalId: result.fiscalId };
   } catch (e) {
-    // Некорректный чек повторять бессмысленно — он не станет валидным сам.
-    if (e instanceof SoliqError && (e.code === 'BAD_RECEIPT' || e.code === 'REJECTED')) {
-      return { status: 'SKIPPED' };
-    }
-    return { status: 'RETRY' };
+    // Некорректный чек повторять бессмысленно — он не станет валидным сам:
+    // помечаем максимумом попыток, чтобы он ушёл в ручной разбор.
+    const permanent =
+      e instanceof SoliqError && (e.code === 'BAD_RECEIPT' || e.code === 'REJECTED');
+    await prisma.fuelingSession
+      .update({
+        where: { id: session.id },
+        data: {
+          soliqAttempts: permanent ? MAX_SOLIQ_ATTEMPTS : session.soliqAttempts + 1,
+          soliqLastAttemptAt: new Date(),
+          soliqLastError: shortError(e),
+        },
+      })
+      .catch(() => undefined);
+    return permanent ? { status: 'SKIPPED' } : { status: 'RETRY' };
   }
 }
 
@@ -344,23 +370,36 @@ export async function pushSoliqReceipt(
 export async function syncPendingSoliqReceipts(limit = 50) {
   if (!getSoliqProvider()) return { checked: 0, sent: 0, pending: 0 };
 
-  const pending = await prisma.fuelingSession.findMany({
+  const candidates = await prisma.fuelingSession.findMany({
     where: {
       status: 'SETTLED',
       soliqSyncedAt: null,
       amountUzs: { gt: 0 },
+      soliqAttempts: { lt: MAX_SOLIQ_ATTEMPTS },
     },
     orderBy: { endedAt: 'asc' },
     take: limit,
-    select: { id: true },
+    select: { id: true, soliqSyncedAt: true, soliqAttempts: true, soliqLastAttemptAt: true },
   });
 
+  const now = new Date();
+  const due = candidates.filter((c) => isRetryDue(c, now));
+
   let sent = 0;
-  for (const s of pending) {
+  for (const s of due) {
     const r = await pushSoliqReceipt(s.id);
     if (r.status === 'SENT' || r.status === 'ALREADY_SENT') sent += 1;
   }
-  return { checked: pending.length, sent, pending: pending.length - sent };
+  // stuck — чеки, по которым попытки исчерпаны: их видно в админке отдельно.
+  const stuck = await prisma.fuelingSession.count({
+    where: {
+      status: 'SETTLED',
+      soliqSyncedAt: null,
+      amountUzs: { gt: 0 },
+      soliqAttempts: { gte: MAX_SOLIQ_ATTEMPTS },
+    },
+  });
+  return { checked: due.length, sent, pending: due.length - sent, stuck };
 }
 
 /** Отмена клиентом до начала заливки: резерв размораживается. */

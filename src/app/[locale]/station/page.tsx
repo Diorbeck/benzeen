@@ -7,6 +7,7 @@ import { buildInvoiceDraft, monthEnd, monthStart } from "@/lib/station-billing";
 import { isReadingFresh, isStationOnline } from "@/lib/stations";
 import { CAMERA_IDENTIFICATION_ENABLED } from "@/lib/features";
 import { identificationDailyRateUzs } from "@/lib/dispenser-identification";
+import { receiptStatus } from "@/lib/soliq-retry";
 import { DispenserIdentificationControls } from "@/components/station/dispenser-identification-controls";
 
 // Модуль 6 ТЗ v2: кабинет АЗС. Одна страница на объект: остатки по
@@ -61,6 +62,10 @@ export default async function StationPanelPage({
           status: true,
           startedAt: true,
           offlineBuffered: true,
+          soliqSyncedAt: true,
+          soliqAttempts: true,
+          soliqLastAttemptAt: true,
+          cashbackUzs: true,
           dispenser: { select: { number: true } },
         },
       },
@@ -368,6 +373,32 @@ export default async function StationPanelPage({
                         <span className="font-medium tabular-nums text-navy dark:text-white">
                           {money(s.amountUzs ?? 0)}
                         </span>
+                        {s.status === "SETTLED" &&
+                          (() => {
+                            const state = receiptStatus(s);
+                            const tone =
+                              state === "sent"
+                                ? "bg-success-500/10 text-success-600 dark:text-success-500"
+                                : state === "stuck"
+                                  ? "bg-warning-500/10 text-warning-600"
+                                  : "bg-gray-200 text-gray-700 dark:bg-white/10 dark:text-gray-200";
+                            return (
+                              <span
+                                className={`rounded-md px-2 py-0.5 text-xs font-medium ${tone}`}
+                                title={
+                                  state === "sent"
+                                    ? t("receiptCashback", {
+                                        sum: (
+                                          s.cashbackUzs ?? 0
+                                        ).toLocaleString("ru-RU"),
+                                      })
+                                    : undefined
+                                }
+                              >
+                                {t(`receipt.${state}`)}
+                              </span>
+                            );
+                          })()}
                         {s.status === "FLOWING" && (
                           <span className="rounded-md bg-primary-600/10 px-2 py-0.5 text-xs font-medium text-primary-600 dark:text-primary-500">
                             {t("fuelingFlowing")}

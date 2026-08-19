@@ -895,6 +895,15 @@ model FuelingSession {
   soliqSyncedAt DateTime?
   cashbackUzs   Int?
 
+  // Фискальный номер чека в Солик и состояние очереди отправки. Отправка чека
+  // не имеет права ломать заправку, поэтому неудача не откатывает транзакцию, а
+  // копится здесь: по attempts и lastError видно, что именно застряло, а
+  // lastAttemptAt даёт выдержку между повторами.
+  soliqFiscalId      String?
+  soliqAttempts      Int       @default(0)
+  soliqLastAttemptAt DateTime?
+  soliqLastError     String?
+
   // Заливка, пришедшая из буфера контроллера после восстановления связи.
   offlineBuffered Boolean @default(false)
 
@@ -908,6 +917,7 @@ model FuelingSession {
   @@index([stationId, startedAt])
   @@index([clientId, startedAt])
   @@index([status])
+  @@index([soliqSyncedAt, status])
 }
 
 // Подписка АЗС на инфраструктуру: не комиссия с оборота, а суточная ставка за

@@ -1490,7 +1490,14 @@
       "beaconRequired": "No BLE beacon is linked to this dispenser",
       "cameraNotAvailable": "Camera is not available yet: Benzeen enables the module",
       "generic": "Could not save"
-    }
+    },
+    "receipt": {
+      "sent": "Receipt in Soliq",
+      "queued": "Receipt queued",
+      "retrying": "Receipt retrying",
+      "stuck": "Receipt not sent"
+    },
+    "receiptCashback": "Customer cashback: {sum} UZS"
   },
   "fueling": {
     "title": "Fueling",
@@ -1613,6 +1620,9 @@
     "disable": "Disconnect",
     "ratePlaceholder": "Daily rate, UZS",
     "saveError": "Could not save",
-    "perDay": "UZS/day"
+    "perDay": "UZS/day",
+    "receiptsSent": "Receipts sent to Soliq",
+    "receiptsQueued": "Queued",
+    "receiptsStuck": "Need manual review"
   }
 }

@@ -1490,7 +1490,14 @@
       "beaconRequired": "К колонке не привязан BLE-маячок",
       "cameraNotAvailable": "Камера пока недоступна: модуль включает Benzeen",
       "generic": "Не удалось сохранить"
-    }
+    },
+    "receipt": {
+      "sent": "Чек в Солик",
+      "queued": "Чек в очереди",
+      "retrying": "Чек повторяется",
+      "stuck": "Чек не ушёл"
+    },
+    "receiptCashback": "Кешбек клиенту: {sum} сум"
   },
   "fueling": {
     "title": "Заправка",
@@ -1613,6 +1620,9 @@
     "disable": "Отключить",
     "ratePlaceholder": "Ставка, сум/сутки",
     "saveError": "Не удалось сохранить",
-    "perDay": "сум/сутки"
+    "perDay": "сум/сутки",
+    "receiptsSent": "Чеков в Солик",
+    "receiptsQueued": "В очереди",
+    "receiptsStuck": "Требуют разбора"
   }
 }
