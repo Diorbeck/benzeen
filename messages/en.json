@@ -1474,7 +1474,10 @@
     "noFuelings": "No app fill-ups yet.",
     "fuelingFlowing": "In progress",
     "fuelingReview": "Under review",
-    "fuelingBuffered": "Buffered"
+    "fuelingBuffered": "Buffered",
+    "eyebrow": "STATION CABINET · BENZEEN",
+    "tin": "TIN",
+    "tinMissing": "TIN is empty — the Soliq receipt will be sent without it"
   },
   "fueling": {
     "title": "Fueling",

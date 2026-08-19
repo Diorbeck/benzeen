@@ -294,7 +294,7 @@ export async function pushSoliqReceipt(
       acquirerRef: true,
       clientId: true,
       endedAt: true,
-      station: { select: { id: true, name: true } },
+      station: { select: { id: true, name: true, tin: true } },
       dispenser: { select: { number: true } },
     },
   });
@@ -311,6 +311,8 @@ export async function pushSoliqReceipt(
       sessionId: session.id,
       stationId: session.station.id,
       stationName: session.station.name,
+      // ИНН объекта уходит в Солик, если владелец его заполнил.
+      stationTin: session.station.tin,
       dispenserNumber: session.dispenser.number,
       fuelName: session.fuelType,
       liters: session.litersDispensed ?? 0,

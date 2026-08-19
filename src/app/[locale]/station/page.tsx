@@ -82,10 +82,19 @@ export default async function StationPanelPage({
   const money = (uzs: number) => `${uzs.toLocaleString('ru-RU')} ${t('sum')}`;
 
   return (
-    <div className="min-h-screen bg-gray-50 text-navy dark:bg-navy-950 dark:text-white">
+    <div className="min-h-screen bg-canvas text-navy dark:bg-navy-950 dark:text-white">
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        <h1 className="text-title text-navy dark:text-white">{t('title')}</h1>
-        <p className="mt-3 text-base text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
+        {/* Тот же издательский ключ, что и в клиентской части: надзаголовок
+            разрядкой, крупный акцидентный заголовок, короткое пояснение. */}
+        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+          {t('eyebrow')}
+        </p>
+        <h1 className="mt-3 font-display text-[30px] font-bold leading-[1.02] tracking-[-0.025em] text-navy dark:text-white sm:text-[38px]">
+          {t('title')}
+        </h1>
+        <p className="mt-3 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300">
+          {t('subtitle')}
+        </p>
 
         {stations.length === 0 && (
           <div className="mt-8 rounded-card border border-gray-200 bg-white p-10 text-center dark:border-white/10 dark:bg-navy-900">
@@ -127,8 +136,20 @@ export default async function StationPanelPage({
             >
               <header className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-subheading text-navy dark:text-white">{station.name}</h2>
+                  <h2 className="font-display text-[22px] font-bold leading-tight tracking-[-0.015em] text-navy dark:text-white">
+                    {station.name}
+                  </h2>
                   <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">{station.address}</p>
+                  {/* ИНН виден владельцу: по нему Солик сводит чеки с объектом. */}
+                  {station.tin ? (
+                    <p className="mt-1 text-xs tabular-nums text-gray-500 dark:text-gray-400">
+                      {t('tin')} {station.tin}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-warning-600 dark:text-warning-500">
+                      {t('tinMissing')}
+                    </p>
+                  )}
                 </div>
                 {online ? (
                   <span className="rounded-md bg-success-500/10 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:text-success-500">

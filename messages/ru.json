@@ -1474,7 +1474,10 @@
     "noFuelings": "Заправок через приложение пока не было.",
     "fuelingFlowing": "Идёт",
     "fuelingReview": "На сверке",
-    "fuelingBuffered": "Из буфера"
+    "fuelingBuffered": "Из буфера",
+    "eyebrow": "КАБИНЕТ АЗС · BENZEEN",
+    "tin": "ИНН",
+    "tinMissing": "ИНН не заполнен — чек в Солик уйдёт без ИНН"
   },
   "fueling": {
     "title": "Заправка",
