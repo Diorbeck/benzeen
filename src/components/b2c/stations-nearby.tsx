@@ -36,6 +36,7 @@ type Station = {
   lng: number;
   status: "ACTIVE" | "PAUSED";
   online: boolean;
+  isDemo?: boolean;
   lastSeenAt: string | null;
   stocks: Stock[];
 };
@@ -261,6 +262,11 @@ export function StationsNearby() {
                         <span className="inline-flex shrink-0 items-center gap-1 rounded-md bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-500 dark:bg-white/10 dark:text-gray-400">
                           <WifiOff className="h-3 w-3" aria-hidden />{" "}
                           {t("offline")}
+                        </span>
+                      )}
+                      {s.isDemo && (
+                        <span className="shrink-0 rounded-md bg-gold-500/15 px-2.5 py-0.5 text-xs font-medium text-gold-700 dark:text-gold-300">
+                          {t("demo")}
                         </span>
                       )}
                       {s.status === "PAUSED" && (

@@ -1431,7 +1431,8 @@
     "tankLabel": "Rezervuardagi qoldiq",
     "tankPercent": "{n}%",
     "perLiter": "so'm/l",
-    "tankLabelShort": "Qoldiq"
+    "tankLabelShort": "Qoldiq",
+    "demo": "Demo"
   },
   "stationPanel": {
     "title": "Shoxobcha kabineti",
