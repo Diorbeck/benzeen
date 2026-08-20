@@ -180,6 +180,11 @@ export function StationsMapScreen({ locale }: { locale: string }) {
                 <h2 className="min-w-0 truncate font-display text-lg font-semibold">
                   {selected.name}
                 </h2>
+                {selected.isDemo && (
+                  <span className="shrink-0 rounded-md bg-gold-500/15 px-2 py-0.5 text-xs font-medium text-gold-700 dark:text-gold-300">
+                    {t("demo")}
+                  </span>
+                )}
               </>
             ) : (
               <h2 className="font-display text-lg font-semibold">
@@ -217,8 +222,15 @@ export function StationsMapScreen({ locale }: { locale: string }) {
                       }`}
                     >
                       <div className="flex items-baseline justify-between gap-3">
-                        <span className="min-w-0 truncate text-sm font-semibold">
-                          {s.name}
+                        <span className="flex min-w-0 items-center gap-2">
+                          <span className="truncate text-sm font-semibold">
+                            {s.name}
+                          </span>
+                          {s.isDemo && (
+                            <span className="shrink-0 rounded-md bg-gold-500/15 px-1.5 py-0.5 text-[11px] font-medium text-gold-700 dark:text-gold-300">
+                              {t("demo")}
+                            </span>
+                          )}
                         </span>
                         <span className="shrink-0 text-xs tabular-nums text-gray-500 dark:text-gray-400">
                           {t("kmAway", { km: s.distanceKm.toFixed(1) })}

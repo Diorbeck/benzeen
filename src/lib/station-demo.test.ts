@@ -8,13 +8,14 @@ import {
 } from './station-demo';
 import { aggregateStocks } from './stations';
 
+// Базовый резервуар — как после сида: показание было, но давно устарело.
 const tank = (over: Partial<DemoTank> = {}): DemoTank => ({
   id: 'tk_1',
   fuelType: 'AI_92',
   status: 'ACTIVE',
   capacityL: 30_000,
-  currentLevelL: null,
-  lastReadingAt: null,
+  currentLevelL: 12_000,
+  lastReadingAt: new Date('2026-08-01T00:00:00Z'),
   ...over,
 });
 
@@ -57,11 +58,35 @@ describe('демо-датчики АЗС', () => {
     expect(stock.litersAvailable).toBe(simulated.currentLevelL);
   });
 
-  it('резервуар на обслуживании остаётся без данных', () => {
+  it('резервуар на обслуживании не трогается', () => {
     const now = new Date('2026-08-19T10:00:00Z');
     const [simulated] = simulateDemoTanks([tank({ status: 'MAINTENANCE' })], now);
+    expect(simulated.currentLevelL).toBe(12_000);
+    expect(simulated.lastReadingAt).toEqual(new Date('2026-08-01T00:00:00Z'));
+  });
+
+  it('свежее показание с контроллера не подменяется симуляцией', () => {
+    const now = new Date('2026-08-19T10:00:00Z');
+    const fresh = tank({
+      currentLevelL: 1_234,
+      lastReadingAt: new Date('2026-08-19T09:55:00Z'),
+    });
+    const [simulated] = simulateDemoTanks([fresh], now);
+    expect(simulated.currentLevelL).toBe(1_234);
+    expect(simulated.lastReadingAt).toEqual(fresh.lastReadingAt);
+  });
+
+  it('резервуар без единого показания остаётся «нет данных» и в демо', () => {
+    const now = new Date('2026-08-19T10:00:00Z');
+    const [simulated] = simulateDemoTanks(
+      [tank({ currentLevelL: null, lastReadingAt: null })],
+      now,
+    );
     expect(simulated.currentLevelL).toBeNull();
     expect(simulated.lastReadingAt).toBeNull();
+
+    const [stock] = aggregateStocks([simulated], now);
+    expect(stock.dataFresh).toBe(false);
   });
 
   it('не выходит за ёмкость резервуара', () => {
