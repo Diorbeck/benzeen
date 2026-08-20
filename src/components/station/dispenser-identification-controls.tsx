@@ -79,8 +79,8 @@ export function DispenserIdentificationControls({
               onClick={() => select(mode)}
               className={
                 active
-                  ? 'rounded-control bg-primary-500 px-2.5 py-1 text-xs font-semibold text-white'
-                  : 'rounded-control border border-gray-200 px-2.5 py-1 text-xs font-medium text-navy transition-colors hover:border-primary-600 hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:text-white dark:hover:border-sky-300 dark:hover:text-sky-300'
+                  ? 'rounded-control bg-primary-500 px-2.5 py-1 text-xs font-semibold text-primary-950'
+                  : 'rounded-control border border-gray-200 px-2.5 py-1 text-xs font-medium text-navy transition-colors hover:border-primary-600 hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:text-white dark:hover:border-sky-300 dark:hover:text-sky-300'
               }
             >
               {t(`identification.${mode}`)}
@@ -88,7 +88,7 @@ export function DispenserIdentificationControls({
           );
         })}
         {(busy || pending) && (
-          <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-600 dark:text-sky-300" aria-hidden />
+          <Loader2 className="h-3.5 w-3.5 animate-spin text-primary-700 dark:text-sky-300" aria-hidden />
         )}
         <span className="text-xs text-gray-500 dark:text-gray-400">
           {dispenser.mode === 'MANUAL'

@@ -91,7 +91,7 @@ export function SettingsPanel({
       >
         <div className="flex items-center gap-4">
           <div className="rounded-xl bg-primary-500/10 p-3">
-            <User className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+            <User className="h-6 w-6 text-primary-700 dark:text-primary-400" />
           </div>
           <div>
             <p className="font-semibold text-gray-900 dark:text-white">{user?.name || 'Пользователь'}</p>
@@ -110,7 +110,7 @@ export function SettingsPanel({
         >
           <div className="flex items-center gap-3">
             <div className="rounded-xl bg-primary-500/10 p-2">
-              <History className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+              <History className="h-5 w-5 text-primary-700 dark:text-primary-400" />
             </div>
             <h2 className="text-base font-semibold text-gray-900 dark:text-white">
               Исторические данные
@@ -139,7 +139,7 @@ export function SettingsPanel({
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="rounded-xl bg-primary-500/10 p-2">
-                <Building2 className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                <Building2 className="h-5 w-5 text-primary-700 dark:text-primary-400" />
               </div>
               <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                 {t('editCompany')}

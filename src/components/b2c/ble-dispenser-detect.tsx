@@ -163,7 +163,7 @@ export function BleDispenserDetect({
             type="button"
             onClick={scan}
             disabled={scanning}
-            className="flex h-9 shrink-0 items-center gap-2 rounded-control bg-navy px-3 text-xs font-semibold text-white transition-colors hover:bg-navy-800 disabled:opacity-60 dark:bg-primary-500 dark:hover:bg-primary-600"
+            className="flex h-9 shrink-0 items-center gap-2 rounded-control bg-navy px-3 text-xs font-semibold text-primary-950 transition-colors hover:bg-navy-800 disabled:opacity-60 dark:bg-primary-500 dark:hover:bg-primary-600"
           >
             {scanning ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
@@ -184,7 +184,7 @@ export function BleDispenserDetect({
           <button
             type="button"
             onClick={() => onPick(match.dispenser.number)}
-            className="mt-2 h-9 rounded-control bg-primary-500 px-3 text-xs font-semibold text-white transition-colors hover:bg-primary-600"
+            className="mt-2 h-9 rounded-control bg-primary-500 px-3 text-xs font-semibold text-primary-950 transition-colors hover:bg-primary-600"
           >
             {t("bleUse")}
           </button>

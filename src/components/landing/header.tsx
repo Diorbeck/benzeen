@@ -61,7 +61,7 @@ export function Header() {
           <ThemeToggle className="hidden sm:flex" />
           <a
             href="tel:+998970808880"
-            className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:text-primary-600 lg:inline-flex dark:text-gray-300 dark:hover:text-primary-400"
+            className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:text-primary-700 lg:inline-flex dark:text-gray-300 dark:hover:text-primary-400"
           >
             <Phone className="h-4 w-4" aria-hidden />
             +998 97 080 88 80
@@ -69,7 +69,7 @@ export function Header() {
           <Button variant="secondary" size="sm" className="hidden border-gray-200 bg-gray-100 text-gray-900 hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 sm:inline-flex" asChild>
             <Link href={`/${locale}/login`}>{t('cta.signIn')}</Link>
           </Button>
-          <Button size="sm" className="hidden bg-primary-500 font-semibold text-white hover:bg-primary-400 sm:inline-flex" asChild>
+          <Button size="sm" className="hidden bg-primary-500 font-semibold text-primary-950 hover:bg-primary-400 sm:inline-flex" asChild>
             <Link href="#contact">{t('cta.getStarted')}</Link>
           </Button>
 
@@ -122,7 +122,7 @@ export function Header() {
                   {t('cta.signIn')}
                 </Link>
               </Button>
-              <Button className="mt-2 w-full bg-primary-500 font-semibold text-white hover:bg-primary-400" asChild>
+              <Button className="mt-2 w-full bg-primary-500 font-semibold text-primary-950 hover:bg-primary-400" asChild>
                 <Link href="#contact" onClick={() => setMobileOpen(false)}>
                   {t('cta.getStarted')}
                 </Link>

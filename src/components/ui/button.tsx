@@ -10,7 +10,7 @@ const buttonVariants = cva(
       variant: {
         // Главное действие — кобальтовый блок (единственный кобальт на экране).
         primary:
-          'bg-primary-500 text-white hover:bg-primary-600 active:bg-primary-700',
+          'bg-primary-500 text-primary-950 hover:bg-primary-600 active:bg-primary-700',
         // Uber-чёрный блок; в тёмной теме инвертируется в белый.
         dark: 'bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100',
         // Серые заливки без рамок.
@@ -18,7 +18,7 @@ const buttonVariants = cva(
           'bg-gray-100 text-navy hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/15',
         ghost:
           'text-gray-600 hover:bg-gray-100 hover:text-navy dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white',
-        link: 'text-primary-600 underline-offset-4 hover:underline dark:text-primary-400',
+        link: 'text-primary-700 underline-offset-4 hover:underline dark:text-primary-400',
       },
       size: {
         sm: 'h-10 px-4',

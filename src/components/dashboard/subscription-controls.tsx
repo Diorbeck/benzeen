@@ -147,7 +147,7 @@ export function SubscriptionControls({
                       type="button"
                       disabled={busy}
                       onClick={() => send(target, 'enable')}
-                      className="inline-flex items-center gap-1 rounded-control bg-primary-500 px-2.5 py-1 text-caption font-semibold text-white transition-colors hover:bg-primary-600 disabled:opacity-50"
+                      className="inline-flex items-center gap-1 rounded-control bg-primary-500 px-2.5 py-1 text-caption font-semibold text-primary-950 transition-colors hover:bg-primary-600 disabled:opacity-50"
                     >
                       {busy ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />

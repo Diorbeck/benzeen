@@ -131,7 +131,7 @@ export async function DriverDashboard({ locale }: { locale: string }) {
             </div>
             <button
               type="submit"
-              className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary-500 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-600"
+              className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary-500 px-4 text-sm font-semibold text-primary-950 shadow-sm transition hover:bg-primary-600"
             >
               {tOrder('submit')}
             </button>

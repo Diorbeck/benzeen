@@ -151,7 +151,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
     // Ключ виден один раз: его надо унести на объект вместе с контроллером.
     return (
       <section className="mt-8 rounded-card border border-primary-200 bg-white p-5 dark:border-primary-500/30 dark:bg-navy-900 sm:p-6">
-        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-sky-300">
           {t("doneEyebrow")}
         </p>
         <h2 className="mt-3 font-editorial text-[24px] font-semibold leading-[1.1] text-navy dark:text-white">
@@ -177,7 +177,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
               void navigator.clipboard?.writeText(result.controllerKey);
               setCopied(true);
             }}
-            className="flex h-10 items-center gap-2 rounded-control bg-primary-500 px-4 text-sm font-semibold text-white transition hover:bg-primary-600"
+            className="flex h-10 items-center gap-2 rounded-control bg-primary-500 px-4 text-sm font-semibold text-primary-950 transition hover:bg-primary-600"
           >
             {copied ? (
               <Check className="h-4 w-4" aria-hidden />
@@ -204,7 +204,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
             setDispensers([]);
             setCopied(false);
           }}
-          className="mt-5 text-sm font-semibold text-primary-600 transition hover:text-primary-700 dark:text-sky-300"
+          className="mt-5 text-sm font-semibold text-primary-700 transition hover:text-primary-800 dark:text-sky-300"
         >
           {t("addAnother")}
         </button>
@@ -217,7 +217,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-card border border-dashed border-gray-300 bg-white text-sm font-semibold text-navy transition hover:border-primary-600 hover:text-primary-600 dark:border-white/15 dark:bg-navy-900 dark:text-white"
+        className="mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-card border border-dashed border-gray-300 bg-white text-sm font-semibold text-navy transition hover:border-primary-600 hover:text-primary-700 dark:border-white/15 dark:bg-navy-900 dark:text-white"
       >
         <Plus className="h-4 w-4" aria-hidden />
         {t("open")}
@@ -330,7 +330,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
           <button
             type="button"
             onClick={() => setTanks((prev) => [...prev, newTank(prev.length)])}
-            className="flex h-9 items-center gap-1.5 rounded-control border border-gray-200 px-3 text-xs font-semibold text-navy transition hover:border-primary-600 hover:text-primary-600 dark:border-white/15 dark:text-white"
+            className="flex h-9 items-center gap-1.5 rounded-control border border-gray-200 px-3 text-xs font-semibold text-navy transition hover:border-primary-600 hover:text-primary-700 dark:border-white/15 dark:text-white"
           >
             <Plus className="h-3.5 w-3.5" aria-hidden />
             {t("addTank")}
@@ -437,7 +437,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
             onClick={() =>
               setDispensers((prev) => [...prev, newDispenser(prev.length)])
             }
-            className="flex h-9 items-center gap-1.5 rounded-control border border-gray-200 px-3 text-xs font-semibold text-navy transition hover:border-primary-600 hover:text-primary-600 dark:border-white/15 dark:text-white"
+            className="flex h-9 items-center gap-1.5 rounded-control border border-gray-200 px-3 text-xs font-semibold text-navy transition hover:border-primary-600 hover:text-primary-700 dark:border-white/15 dark:text-white"
           >
             <Plus className="h-3.5 w-3.5" aria-hidden />
             {t("addDispenser")}
@@ -490,7 +490,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
                         }
                         className={
                           active
-                            ? "h-9 rounded-control bg-primary-500 px-3 text-xs font-semibold text-white"
+                            ? "h-9 rounded-control bg-primary-500 px-3 text-xs font-semibold text-primary-950"
                             : "h-9 rounded-control border border-gray-200 px-3 text-xs font-medium text-gray-600 transition hover:border-primary-600 dark:border-white/15 dark:text-gray-300"
                         }
                       >
@@ -523,7 +523,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
                       ),
                     )
                   }
-                  className="h-4 w-4 rounded border-gray-300 text-primary-600"
+                  className="h-4 w-4 rounded border-gray-300 text-primary-700"
                 />
                 {t("billedDispenser")}
               </label>
@@ -558,7 +558,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
           type="button"
           disabled={sending}
           onClick={() => void submit()}
-          className="flex h-12 items-center justify-center rounded-control bg-primary-500 px-6 text-sm font-semibold text-white transition hover:bg-primary-600 disabled:opacity-60"
+          className="flex h-12 items-center justify-center rounded-control bg-primary-500 px-6 text-sm font-semibold text-primary-950 transition hover:bg-primary-600 disabled:opacity-60"
         >
           {sending ? t("sending") : t("submit")}
         </button>

@@ -91,7 +91,7 @@ export function AccountView({
                   aria-current={active ? 'page' : undefined}
                   className={`flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-control px-5 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-950 lg:w-full ${
                     active
-                      ? 'bg-primary-500 text-white'
+                      ? 'bg-primary-500 text-primary-950'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200/70 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 lg:bg-transparent lg:dark:bg-transparent'
                   }`}
                 >

@@ -47,7 +47,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         onClick={() => setOpen(!open)}
         className={cn(
           'flex items-center gap-1 rounded-lg border border-gray-200/80 bg-white/80 px-2 py-2 text-sm font-medium sm:gap-1.5 sm:px-3',
-          'text-gray-700 transition-colors hover:border-primary-500/40 hover:bg-primary-500/5 hover:text-primary-700',
+          'text-gray-700 transition-colors hover:border-primary-500/40 hover:bg-primary-500/5 hover:text-primary-800',
           'dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:border-primary-400/30 dark:hover:bg-primary-500/10 dark:hover:text-primary-300',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900'
         )}
@@ -86,7 +86,7 @@ export function LanguageSwitcher({ className }: { className?: string }) {
                   className={cn(
                     'block px-3 py-2 text-sm transition-colors',
                     isActive
-                      ? 'bg-primary-500/10 font-medium text-primary-600 dark:text-primary-400'
+                      ? 'bg-primary-500/10 font-medium text-primary-700 dark:text-primary-400'
                       : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5'
                   )}
                 >

@@ -244,7 +244,7 @@ export function LegalPage({
       <main className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
         <Link
           href={`/${loc}`}
-          className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-400"
+          className="text-sm font-medium text-primary-700 hover:underline dark:text-primary-400"
         >
           ← Benzeen
         </Link>

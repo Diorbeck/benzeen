@@ -20,7 +20,7 @@ export function InvoicesList({
           className="card-premium flex flex-col items-center justify-center py-20 text-center"
         >
           <div className="mb-6 rounded-2xl bg-primary-500/10 p-5">
-            <FileText className="h-14 w-14 text-primary-600 dark:text-primary-400" />
+            <FileText className="h-14 w-14 text-primary-700 dark:text-primary-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             Нет счетов

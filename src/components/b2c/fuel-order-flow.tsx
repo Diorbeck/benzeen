@@ -589,7 +589,7 @@ export function FuelOrderFlow({
                 setDraftRestored(false);
                 window.location.reload();
               }}
-              className="shrink-0 font-medium text-primary-600 dark:text-primary-400 underline-offset-2 hover:underline"
+              className="shrink-0 font-medium text-primary-700 dark:text-primary-400 underline-offset-2 hover:underline"
             >
               {t("draftClear")}
             </button>
@@ -616,7 +616,7 @@ export function FuelOrderFlow({
                     {c.model ? ` · ${c.model}` : ""}
                   </span>
                   {!usingNewCar && carId === c.id && (
-                    <Check className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" />
+                    <Check className="h-4 w-4 shrink-0 text-primary-700 dark:text-primary-400" />
                   )}
                 </button>
               ))}
@@ -658,7 +658,7 @@ export function FuelOrderFlow({
                     className="mt-2 flex w-full items-center gap-2 rounded-control bg-gray-100 dark:bg-white/10 px-3 py-2.5 text-left text-sm text-navy dark:text-white transition hover:bg-gray-200/70 dark:hover:bg-white/15"
                   >
                     <Car
-                      className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400"
+                      className="h-4 w-4 shrink-0 text-primary-700 dark:text-primary-400"
                       aria-hidden
                     />
                     <span>
@@ -825,7 +825,7 @@ export function FuelOrderFlow({
                   className="inline-flex max-w-full items-center gap-1.5 rounded-control bg-gray-100 dark:bg-white/10 px-4 py-2 text-sm text-navy dark:text-white transition hover:bg-gray-200/70 dark:hover:bg-white/15"
                 >
                   <Star
-                    className={`h-3.5 w-3.5 shrink-0 text-primary-600 dark:text-primary-400 ${
+                    className={`h-3.5 w-3.5 shrink-0 text-primary-700 dark:text-primary-400 ${
                       l.id === defaultLocationId ? "fill-current" : ""
                     }`}
                     aria-hidden
@@ -887,7 +887,7 @@ export function FuelOrderFlow({
               <button
                 type="button"
                 onClick={() => setSavingAddr(true)}
-                className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700"
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary-700 dark:text-primary-400 hover:text-primary-800"
               >
                 <Star className="h-4 w-4" aria-hidden />
                 {t("saveAddress")}
@@ -1076,7 +1076,7 @@ function RepeatFork({
       >
         <span className="flex items-center gap-2 text-base font-semibold text-navy dark:text-white">
           <RotateCcw
-            className="h-5 w-5 text-primary-600 dark:text-primary-400"
+            className="h-5 w-5 text-primary-700 dark:text-primary-400"
             aria-hidden
           />
           {t("repeat.repeatTitle")}
@@ -1121,7 +1121,7 @@ function RepeatFork({
             })}
           </span>
         )}
-        <span className="mt-1 inline-flex items-center justify-center rounded-control bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-600">
+        <span className="mt-1 inline-flex items-center justify-center rounded-control bg-primary-500 px-5 py-2.5 text-sm font-semibold text-primary-950 transition group-hover:bg-primary-600">
           {t("repeat.repeatCta")}
         </span>
       </button>
@@ -1160,7 +1160,7 @@ function StepCard({
         {/* Нумерация шагов в том же издательском ключе, что и блоки на главной:
             номер акцентным синим через слеш, заголовок акцидентным начертанием. */}
         <h2 className="font-editorial text-[21px] font-semibold leading-tight tracking-[-0.01em] text-navy dark:text-white sm:text-[22px]">
-          <span className="mr-2 tabular-nums text-primary-600 dark:text-sky-300">
+          <span className="mr-2 tabular-nums text-primary-700 dark:text-sky-300">
             {String(step).padStart(2, "0")} /
           </span>
           {title}
@@ -1287,7 +1287,7 @@ function Summary({
           <span className="text-navy dark:text-white">
             <span className="flex items-center gap-1.5 font-medium">
               <Gift
-                className="h-4 w-4 text-primary-600 dark:text-primary-400"
+                className="h-4 w-4 text-primary-700 dark:text-primary-400"
                 aria-hidden
               />
               {t("bonus.use", { liters: bonusUsable })}
@@ -1331,7 +1331,7 @@ function Summary({
         ) : (
           <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
             <Fuel
-              className="h-4 w-4 text-primary-600 dark:text-primary-400"
+              className="h-4 w-4 text-primary-700 dark:text-primary-400"
               aria-hidden
             />
             {t("payCourier")}
@@ -1502,7 +1502,7 @@ function InlineLogin({
               type="button"
               onClick={onBack}
               disabled={busy}
-              className="w-full text-center text-sm text-gray-500 dark:text-gray-400 hover:text-primary-600"
+              className="w-full text-center text-sm text-gray-500 dark:text-gray-400 hover:text-primary-700"
             >
               {t("login.changePhone")}
             </button>

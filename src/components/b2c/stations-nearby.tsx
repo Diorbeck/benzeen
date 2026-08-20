@@ -188,7 +188,7 @@ export function StationsNearby() {
       {/* Раздел со списком заправок — ниже карты, отдельным блоком. */}
       <section className="mx-auto max-w-2xl space-y-4 px-4 py-8 sm:px-6 lg:py-12">
         <div>
-          <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+          <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-sky-300">
             {t("listEyebrow")}
           </p>
           <h2 className="mt-3 font-editorial text-[32px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[38px]">
@@ -363,7 +363,7 @@ export function StationsNearby() {
                   STATION_FUELING_WEB_ENABLED && (
                     <a
                       href={`/${locale}/fueling/start?station=${s.id}`}
-                      className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-500 text-sm font-semibold text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                      className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-500 text-sm font-semibold text-primary-950 transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                     >
                       {t("startFueling")}
                     </a>
@@ -399,7 +399,7 @@ function FilterChip({
       aria-pressed={active}
       className={
         active
-          ? "shrink-0 whitespace-nowrap rounded-control bg-primary-500 px-3 py-1.5 text-xs font-medium text-white shadow-sm dark:bg-primary-500 dark:text-white"
+          ? "shrink-0 whitespace-nowrap rounded-control bg-primary-500 px-3 py-1.5 text-xs font-medium text-primary-950 shadow-sm dark:bg-primary-500 dark:text-primary-950"
           : "shrink-0 whitespace-nowrap rounded-control bg-white/95 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm backdrop-blur transition hover:bg-white dark:bg-navy-900/95 dark:text-gray-300 dark:hover:bg-navy-900"
       }
     >

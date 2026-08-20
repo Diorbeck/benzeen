@@ -59,7 +59,7 @@ export function FuelingHistory() {
         </p>
         <a
           href={`/${locale}/client-login`}
-          className="mt-4 inline-flex h-11 items-center rounded-control bg-primary-500 px-5 text-sm font-semibold text-white"
+          className="mt-4 inline-flex h-11 items-center rounded-control bg-primary-500 px-5 text-sm font-semibold text-primary-950"
         >
           {t("login")}
         </a>
@@ -78,7 +78,7 @@ export function FuelingHistory() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-6 pb-24">
-      <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+      <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-sky-300">
         {t("historyEyebrow")}
       </p>
       <h1 className="mt-3 font-editorial text-[32px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[38px]">
@@ -154,7 +154,7 @@ export function FuelingHistory() {
 
       <a
         href={`/${locale}/stations`}
-        className="mt-6 inline-flex text-sm font-medium text-primary-600 hover:underline dark:text-primary-500"
+        className="mt-6 inline-flex text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
       >
         {t("back")}
       </a>

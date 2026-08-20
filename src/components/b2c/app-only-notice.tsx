@@ -24,13 +24,13 @@ export function StationFuelingAppOnly({ locale }: { locale: string }) {
 
   return (
     <div className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-      <p className="text-caption font-semibold uppercase tracking-[0.18em] text-primary-600 dark:text-sky-300">
+      <p className="text-caption font-semibold uppercase tracking-[0.18em] text-primary-700 dark:text-sky-300">
         {t("eyebrow")}
       </p>
       <h1 className="mt-4 max-w-3xl font-editorial text-[36px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[46px]">
         {t("title")}
         <br />
-        <span className="text-primary-600 dark:text-sky-300">
+        <span className="text-primary-700 dark:text-sky-300">
           {t("titleAccent")}
         </span>
       </h1>
@@ -43,7 +43,7 @@ export function StationFuelingAppOnly({ locale }: { locale: string }) {
           <ul className="mt-6 space-y-4">
             {points.map(({ icon: Icon, key }) => (
               <li key={key} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-sky-100 text-primary-600 dark:bg-white/10 dark:text-sky-300">
+                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-control bg-sky-100 text-primary-700 dark:bg-white/10 dark:text-sky-300">
                   <Icon className="h-4 w-4" aria-hidden />
                 </span>
                 <span className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
