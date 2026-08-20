@@ -73,7 +73,7 @@ export default async function MyLimitPage({
       <div className="card-premium p-8">
         <div className="mb-6 flex items-center gap-3">
           <div className="rounded-xl bg-primary-500/10 p-3">
-            <Gauge className="h-8 w-8 text-primary-700 dark:text-primary-400" />
+            <Gauge className="h-8 w-8 text-primary-800 dark:text-primary-400" />
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('used')}</p>
@@ -81,7 +81,7 @@ export default async function MyLimitPage({
           </div>
           <div className="ml-auto text-right">
             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('remaining')}</p>
-            <p className="text-2xl font-bold text-primary-700 dark:text-primary-400">
+            <p className="text-2xl font-bold text-primary-800 dark:text-primary-400">
               {totalRemaining} L
             </p>
           </div>

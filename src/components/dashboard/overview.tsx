@@ -52,7 +52,7 @@ export function DashboardOverview({
       icon: Fuel,
       label: t('kpi.remaining'),
       value: remainingLiters.toLocaleString(),
-      color: 'text-primary-700 dark:text-primary-400',
+      color: 'text-primary-800 dark:text-primary-400',
       bg: 'bg-primary-500/10',
     },
     {
@@ -236,7 +236,7 @@ export function DashboardOverview({
                         ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
                         : order.status === 'DELIVERED'
                           ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-                          : 'bg-primary-500/10 text-primary-700 dark:text-primary-400'
+                          : 'bg-primary-500/10 text-primary-800 dark:text-primary-400'
                     }`}
                   >
                     {tStatus(STATUS_KEY[order.status] || order.status)}

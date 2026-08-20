@@ -102,7 +102,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
                     type="button"
                     onClick={() => makeDefault(c.id)}
                     disabled={busyDefault === c.id}
-                    className="mt-1.5 inline-flex min-h-11 items-center gap-1 rounded-control text-xs font-medium text-primary-700 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 disabled:opacity-50"
+                    className="mt-1.5 inline-flex min-h-11 items-center gap-1 rounded-control text-xs font-medium text-primary-800 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 disabled:opacity-50"
                   >
                     <Star className="h-3.5 w-3.5" /> {t('cars.makeDefault')}
                   </button>
@@ -154,7 +154,7 @@ export function CarsSection({ cars, defaultCarId }: { cars: AccountCar[]; defaul
             setEditingId(null);
             setError('');
           }}
-          className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-dashed border-gray-300 dark:border-white/15 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 transition hover:border-primary-300 dark:hover:border-primary-500/40 hover:text-primary-700 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+          className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-control border border-dashed border-gray-300 dark:border-white/15 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 transition hover:border-primary-300 dark:hover:border-primary-500/40 hover:text-primary-800 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
         >
           <Plus className="h-4 w-4" /> {t('cars.add')}
         </button>

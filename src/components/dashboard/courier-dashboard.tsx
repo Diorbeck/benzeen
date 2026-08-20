@@ -183,7 +183,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
                   {o.client?.phone && (
                     <a
                       href={`tel:${o.client.phone}`}
-                      className="mt-1 block text-xs font-medium text-primary-700 hover:underline dark:text-primary-400"
+                      className="mt-1 block text-xs font-medium text-primary-800 hover:underline dark:text-primary-400"
                     >
                       Клиент: {o.client.phone}
                     </a>
@@ -191,7 +191,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
                 </div>
                 {o.lat != null && o.lng != null ? (
                   <a
-                    className="text-xs font-medium text-primary-700 hover:underline dark:text-primary-400"
+                    className="text-xs font-medium text-primary-800 hover:underline dark:text-primary-400"
                     href={`https://yandex.ru/maps/?pt=${o.lng},${o.lat}&z=17&l=map`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -200,7 +200,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
                   </a>
                 ) : o.address ? (
                   <a
-                    className="text-xs font-medium text-primary-700 hover:underline dark:text-primary-400"
+                    className="text-xs font-medium text-primary-800 hover:underline dark:text-primary-400"
                     href={`https://yandex.ru/maps/?text=${encodeURIComponent(o.address)}`}
                     target="_blank"
                     rel="noopener noreferrer"

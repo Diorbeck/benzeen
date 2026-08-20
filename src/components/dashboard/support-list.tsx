@@ -31,7 +31,7 @@ function normalizeStatus(status: string): TicketStatus {
 }
 
 const STATUS_BADGE: Record<TicketStatus, string> = {
-  OPEN: 'bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-400',
+  OPEN: 'bg-primary-50 text-primary-800 dark:bg-primary-500/15 dark:text-primary-400',
   ANSWERED: 'bg-success-600/10 text-success-600 dark:bg-success-500/15 dark:text-success-500',
   CLOSED: 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300',
 };
@@ -163,7 +163,7 @@ export function SupportList({ tickets }: { tickets: Ticket[] }) {
     return (
       <div key={m.id} className={`flex flex-col ${isClient ? 'items-start' : 'items-end'}`}>
         <span className="mb-0.5 flex items-center gap-1 px-1 text-xs text-gray-500 dark:text-gray-400">
-          {isAi && <Sparkles className="h-3 w-3 text-primary-700 dark:text-primary-400" aria-hidden />}
+          {isAi && <Sparkles className="h-3 w-3 text-primary-800 dark:text-primary-400" aria-hidden />}
           {isClient ? t('support2.clientName') : isAi ? t('support2.aiName') : t('support2.adminName')}
         </span>
         <div
@@ -199,7 +199,7 @@ export function SupportList({ tickets }: { tickets: Ticket[] }) {
               className="-m-1 block w-full min-h-11 rounded-lg p-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="rounded-md bg-primary-500/10 px-2 py-0.5 text-[11px] font-medium text-primary-700 dark:text-primary-400">
+                <span className="rounded-md bg-primary-500/10 px-2 py-0.5 text-[11px] font-medium text-primary-800 dark:text-primary-400">
                   {tb(`type${tk.type}`)}
                 </span>
                 <span className={`rounded-md px-2 py-0.5 text-[11px] font-medium ${STATUS_BADGE[st]}`}>
@@ -215,7 +215,7 @@ export function SupportList({ tickets }: { tickets: Ticket[] }) {
                       {t('support2.badgeUnanswered')}
                     </span>
                   ) : lastFromAi ? (
-                    <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-medium text-primary-700 dark:bg-primary-500/15 dark:text-primary-400">
+                    <span className="rounded-md bg-primary-50 px-2 py-0.5 text-[11px] font-medium text-primary-800 dark:bg-primary-500/15 dark:text-primary-400">
                       {t('support2.badgeAi')}
                     </span>
                   ) : null)}

@@ -116,7 +116,7 @@ export default async function ClientCardPage({
     <div className="space-y-6">
       <Link
         href={`/${locale}/dashboard/clients`}
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-primary-700 dark:text-gray-400"
+        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-primary-800 dark:text-gray-400"
       >
         <ArrowLeft className="h-4 w-4" /> {t('back')}
       </Link>
@@ -129,7 +129,7 @@ export default async function ClientCardPage({
           </p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-primary-700 dark:text-primary-400">
+          <p className="text-2xl font-bold text-primary-800 dark:text-primary-400">
             {balance} <span className="text-base font-medium">{t('liters')}</span>
           </p>
           <p className="text-[11px] text-gray-400 dark:text-gray-500">{t('balance')}</p>

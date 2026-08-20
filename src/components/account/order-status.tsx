@@ -97,7 +97,7 @@ export function OrderStatus({
     <div className="mx-auto max-w-2xl px-5 py-10 sm:px-8">
       <Link
         href={`/${locale}/account`}
-        className="mb-6 inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 transition-colors hover:text-primary-700"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 transition-colors hover:text-primary-800"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
         {t('back')}
@@ -110,10 +110,10 @@ export function OrderStatus({
         <div className="mt-6 space-y-3">
           <div className="flex items-center justify-between gap-3">
             <p className="flex items-center gap-2 text-sm font-medium text-navy dark:text-white">
-              <Navigation className="h-4 w-4 text-primary-700 dark:text-primary-400" aria-hidden />
+              <Navigation className="h-4 w-4 text-primary-800 dark:text-primary-400" aria-hidden />
               {t('courierComing')}
             </p>
-            <span className="text-sm font-semibold tabular-nums text-primary-700 dark:text-primary-400">
+            <span className="text-sm font-semibold tabular-nums text-primary-800 dark:text-primary-400">
               {showEta ? t('eta', { minutes: etaMinutes! }) : t('etaCalculating')}
             </span>
           </div>
@@ -146,7 +146,7 @@ export function OrderStatus({
       ) : scheduled ? (
         <div className="mt-6 space-y-3 rounded-card bg-gray-100 dark:bg-white/10 p-5">
           <p className="flex items-center gap-2 text-sm font-medium text-navy dark:text-white">
-            <CalendarClock className="h-4 w-4 text-primary-700 dark:text-primary-400" aria-hidden />
+            <CalendarClock className="h-4 w-4 text-primary-800 dark:text-primary-400" aria-hidden />
             {t('scheduledFor', {
               when: order.scheduledFor
                 ? new Date(order.scheduledFor).toLocaleString(dtTag, {

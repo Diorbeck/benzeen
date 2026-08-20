@@ -188,7 +188,7 @@ export function StationsNearby() {
       {/* Раздел со списком заправок — ниже карты, отдельным блоком. */}
       <section className="mx-auto max-w-2xl space-y-4 px-4 py-8 sm:px-6 lg:py-12">
         <div>
-          <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-sky-300">
+          <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-800 dark:text-sky-300">
             {t("listEyebrow")}
           </p>
           <h2 className="mt-3 font-editorial text-[32px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[38px]">

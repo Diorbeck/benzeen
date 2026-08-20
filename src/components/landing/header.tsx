@@ -61,7 +61,7 @@ export function Header() {
           <ThemeToggle className="hidden sm:flex" />
           <a
             href="tel:+998970808880"
-            className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:text-primary-700 lg:inline-flex dark:text-gray-300 dark:hover:text-primary-400"
+            className="hidden items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:text-primary-800 lg:inline-flex dark:text-gray-300 dark:hover:text-primary-400"
           >
             <Phone className="h-4 w-4" aria-hidden />
             +998 97 080 88 80

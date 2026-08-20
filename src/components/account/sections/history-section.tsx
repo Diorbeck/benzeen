@@ -26,7 +26,7 @@ export function HistorySection({ locale, orders }: { locale: string; orders: Acc
           href={`/${locale}/account/orders/${nextScheduled.id}`}
           className="flex min-h-11 items-center gap-2.5 rounded-card bg-gray-100 dark:bg-white/10 px-4 py-3 text-sm text-navy dark:text-white transition-colors hover:bg-gray-200/70 dark:hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
         >
-          <Clock className="h-4 w-4 shrink-0 text-primary-700 dark:text-primary-400" aria-hidden />
+          <Clock className="h-4 w-4 shrink-0 text-primary-800 dark:text-primary-400" aria-hidden />
           {t('history.scheduledBadge', {
             when: new Date(nextScheduled.scheduledFor!).toLocaleString(dtTag, {
               day: 'numeric',
@@ -83,7 +83,7 @@ export function HistorySection({ locale, orders }: { locale: string; orders: Acc
                 <div className="mt-3 flex items-center gap-4 border-t border-gray-100 dark:border-white/10 pt-3">
                   <Link
                     href={`/${locale}/account/orders/${o.id}`}
-                    className="inline-flex min-h-11 items-center gap-1.5 rounded-control text-sm font-medium text-primary-700 dark:text-primary-400 transition-colors hover:text-primary-800 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-control text-sm font-medium text-primary-800 dark:text-primary-400 transition-colors hover:text-primary-900 dark:hover:text-primary-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                   >
                     <Clock className="h-4 w-4" /> {t('history.track')}
                   </Link>

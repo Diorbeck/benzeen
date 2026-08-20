@@ -50,7 +50,7 @@ export function AdminOverview({
       icon: Fuel,
       label: 'Продано за день, л',
       value: totalLiters.toLocaleString('ru-RU'),
-      color: 'text-primary-700 dark:text-primary-400',
+      color: 'text-primary-800 dark:text-primary-400',
       bg: 'bg-primary-500/10',
     },
     {
@@ -95,7 +95,7 @@ export function AdminOverview({
           </p>
         </div>
         <label className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
-          <Calendar className="h-4 w-4 text-primary-700 dark:text-primary-400" />
+          <Calendar className="h-4 w-4 text-primary-800 dark:text-primary-400" />
           <input
             type="date"
             value={date}
@@ -156,7 +156,7 @@ export function AdminOverview({
                 <div key={c.name + i}>
                   <div className="mb-1 flex items-center justify-between gap-3 text-sm">
                     <span className="flex items-center gap-2 font-medium text-gray-800 dark:text-gray-100">
-                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/10 text-xs font-bold text-primary-700 dark:text-primary-400">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/10 text-xs font-bold text-primary-800 dark:text-primary-400">
                         {i + 1}
                       </span>
                       {c.name}

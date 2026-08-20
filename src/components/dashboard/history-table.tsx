@@ -163,7 +163,7 @@ export function HistoryTable({ rows }: { rows: Row[] }) {
       {filtered.length === 0 ? (
         <div className="card-premium flex flex-col items-center justify-center py-16 text-center">
           <div className="mb-4 rounded-2xl bg-primary-500/10 p-4">
-            <Package className="h-10 w-10 text-primary-700 dark:text-primary-400" />
+            <Package className="h-10 w-10 text-primary-800 dark:text-primary-400" />
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">Ничего не найдено.</p>
         </div>

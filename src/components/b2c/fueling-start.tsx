@@ -154,7 +154,7 @@ export function FuelingStart() {
         </p>
         <a
           href={`/${locale}/stations`}
-          className="mt-4 inline-flex text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
+          className="mt-4 inline-flex text-sm font-medium text-primary-800 hover:underline dark:text-primary-500"
         >
           {t("back")}
         </a>
@@ -351,7 +351,7 @@ export function FuelingStart() {
 
       <a
         href={`/${locale}/fueling/history`}
-        className="mt-4 inline-flex text-sm font-medium text-primary-700 hover:underline dark:text-primary-500"
+        className="mt-4 inline-flex text-sm font-medium text-primary-800 hover:underline dark:text-primary-500"
       >
         {t("history")}
       </a>

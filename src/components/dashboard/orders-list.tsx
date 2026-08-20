@@ -389,7 +389,7 @@ export function OrdersList({
           className="card-premium flex flex-col items-center justify-center py-20 text-center"
         >
           <div className="mb-6 rounded-2xl bg-primary-500/10 p-5">
-            <Package className="h-14 w-14 text-primary-700 dark:text-primary-400" />
+            <Package className="h-14 w-14 text-primary-800 dark:text-primary-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('empty.title')}</h3>
           <p className="mt-2 max-w-[280px] text-sm text-gray-500 dark:text-gray-400">{t('empty.desc')}</p>
@@ -496,7 +496,7 @@ export function OrdersList({
                             href={`https://yandex.ru/maps/?pt=${order.lng},${order.lat}&z=17&l=map`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary-700 hover:underline dark:text-primary-400"
+                            className="text-primary-800 hover:underline dark:text-primary-400"
                           >
                             {order.address ?? '📍 На карте'}
                           </a>
@@ -514,7 +514,7 @@ export function OrdersList({
                               ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
                               : order.status === 'CANCELLED'
                                 ? 'bg-gray-500/15 text-gray-600 dark:text-gray-400'
-                                : 'bg-primary-500/10 text-primary-700 dark:text-primary-400'
+                                : 'bg-primary-500/10 text-primary-800 dark:text-primary-400'
                         }`}
                       >
                         {t('status.' + (STATUS_KEYS[order.status] || order.status))}
@@ -556,7 +556,7 @@ export function OrdersList({
                             <Button
                               size="sm"
                               variant="ghost"
-                              className="text-[11px] text-primary-700 dark:text-primary-400"
+                              className="text-[11px] text-primary-800 dark:text-primary-400"
                               asChild
                             >
                               <a

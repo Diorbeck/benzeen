@@ -106,7 +106,7 @@ export default async function BonusesPage({
   const summaryCards = [
     { label: t('accrued'), value: accrued, tone: 'text-emerald-600 dark:text-emerald-400' },
     { label: t('spent'), value: spent, tone: 'text-gray-600 dark:text-gray-300' },
-    { label: t('current'), value: current, tone: 'text-primary-700 dark:text-primary-400' },
+    { label: t('current'), value: current, tone: 'text-primary-800 dark:text-primary-400' },
   ];
 
   return (
@@ -138,7 +138,7 @@ export default async function BonusesPage({
                 <li key={r.id} className="flex items-center justify-between gap-2">
                   <Link
                     href={`/${locale}/dashboard/clients/${r.id}`}
-                    className="truncate text-gray-700 hover:text-primary-700 dark:text-gray-200"
+                    className="truncate text-gray-700 hover:text-primary-800 dark:text-gray-200"
                   >
                     {i + 1}. {r.name}
                   </Link>
@@ -230,7 +230,7 @@ export default async function BonusesPage({
                       <td className="px-4 py-3">
                         <Link
                           href={`/${locale}/dashboard/clients/${row.user?.id}`}
-                          className="text-gray-700 hover:text-primary-700 dark:text-gray-200"
+                          className="text-gray-700 hover:text-primary-800 dark:text-gray-200"
                         >
                           {row.user?.name || row.user?.phone || '—'}
                         </Link>

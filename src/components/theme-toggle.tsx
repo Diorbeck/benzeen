@@ -36,7 +36,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
       className={cn(
         'flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200/80 bg-white/80 transition-colors',
-        'hover:border-primary-500/40 hover:bg-primary-500/5 hover:text-primary-700',
+        'hover:border-primary-500/40 hover:bg-primary-500/5 hover:text-primary-800',
         'dark:border-white/10 dark:bg-white/5 dark:hover:border-primary-400/30 dark:hover:bg-primary-500/10 dark:hover:text-primary-400',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-gray-900',
         className
