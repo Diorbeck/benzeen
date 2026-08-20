@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { CreditCard, Loader2, Minus, Plus } from "lucide-react";
@@ -46,8 +46,12 @@ type Station = {
 type Step = "dispenser" | "fuel" | "amount";
 type Mode = "amount" | "full";
 
-/** Шаг кнопок «+/−» по сумме, сум. */
-const AMOUNT_STEP_UZS = 10_000;
+/** Сетка значений при перетаскивании бака: без «9,2417 литра». */
+const DRAG_GRID_UZS = 1_000;
+/** Шаг кнопок «+/−» и стрелок клавиатуры — точная подгонка после жеста. */
+const FINE_STEP_UZS = 5_000;
+/** Крупный шаг PageUp/PageDown на слайдере. */
+const PAGE_STEP_UZS = 50_000;
 const DEFAULT_AMOUNT_UZS = 100_000;
 const MAX_AMOUNT_UZS = 2_000_000;
 
@@ -126,12 +130,122 @@ export function FuelingStart() {
   const holdUzs =
     mode === "full" && price ? Math.round(price * fullLiters) : amountUzs;
   const cashbackUzs = Math.round(holdUzs * 0.01);
-  const fillFraction =
-    mode === "full" ? 1 : Math.min(1, liters / FULL_TANK_LITERS_CAP);
 
+  // Потолок жеста: бак среднего авто (80 л) или остаток на АЗС — что меньше.
   const maxAmount = price
-    ? Math.min(MAX_AMOUNT_UZS, Math.round(price * FULL_TANK_LITERS_CAP))
+    ? Math.min(
+        MAX_AMOUNT_UZS,
+        Math.max(
+          MIN_HOLD_UZS,
+          Math.round((price * fullLiters) / DRAG_GRID_UZS) * DRAG_GRID_UZS,
+        ),
+      )
     : MAX_AMOUNT_UZS;
+
+  // Доля заливки бака = позиция на слайдере (низ — минимум, верх — максимум);
+  // небольшой пол, чтобы на минимуме заливка оставалась видимой.
+  const fillFraction =
+    mode === "full"
+      ? 1
+      : 0.04 +
+        0.96 *
+          Math.min(
+            1,
+            Math.max(0, (amountUzs - MIN_HOLD_UZS) / Math.max(1, maxAmount - MIN_HOLD_UZS)),
+          );
+
+  // Смена топлива меняет потолок — выбранная сумма не должна его превышать.
+  useEffect(() => {
+    setAmountUzs((v) => Math.min(v, maxAmount));
+  }, [maxAmount]);
+
+  // --- Перетаскивание бака: основной способ выбрать объём. Обновление идёт
+  // через requestAnimationFrame (не чаще кадра), а сама заливка — через
+  // transform: scaleY, чтобы жест оставался плавным даже на слабом телефоне.
+  const tankRef = useRef<HTMLDivElement | null>(null);
+  const tankRectRef = useRef<DOMRect | null>(null);
+  const pendingYRef = useRef(0);
+  const rafRef = useRef<number | null>(null);
+  const [dragging, setDragging] = useState(false);
+
+  const amountFromY = useCallback(
+    (clientY: number) => {
+      const r = tankRectRef.current;
+      if (!r || r.height === 0) return null;
+      const ratio = Math.min(1, Math.max(0, (r.bottom - clientY) / r.height));
+      const raw = MIN_HOLD_UZS + ratio * (maxAmount - MIN_HOLD_UZS);
+      const snapped = Math.round(raw / DRAG_GRID_UZS) * DRAG_GRID_UZS;
+      return Math.min(maxAmount, Math.max(MIN_HOLD_UZS, snapped));
+    },
+    [maxAmount],
+  );
+
+  const onTankPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (mode === "full") return;
+    tankRectRef.current = e.currentTarget.getBoundingClientRect();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDragging(true);
+    const v = amountFromY(e.clientY);
+    if (v !== null) setAmountUzs(v);
+  };
+
+  const onTankPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragging || mode === "full") return;
+    pendingYRef.current = e.clientY;
+    if (rafRef.current === null) {
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
+        const v = amountFromY(pendingYRef.current);
+        if (v !== null) setAmountUzs(v);
+      });
+    }
+  };
+
+  const onTankPointerUp = () => {
+    setDragging(false);
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+  };
+
+  useEffect(
+    () => () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    },
+    [],
+  );
+
+  const onTankKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (mode === "full") return;
+    const bump = (d: number) =>
+      setAmountUzs((v) => Math.min(maxAmount, Math.max(MIN_HOLD_UZS, v + d)));
+    switch (e.key) {
+      case "ArrowUp":
+      case "ArrowRight":
+        bump(FINE_STEP_UZS);
+        break;
+      case "ArrowDown":
+      case "ArrowLeft":
+        bump(-FINE_STEP_UZS);
+        break;
+      case "PageUp":
+        bump(PAGE_STEP_UZS);
+        break;
+      case "PageDown":
+        bump(-PAGE_STEP_UZS);
+        break;
+      case "Home":
+        setAmountUzs(MIN_HOLD_UZS);
+        break;
+      case "End":
+        setAmountUzs(maxAmount);
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+  };
 
   const stepValid =
     step === "dispenser"
@@ -360,7 +474,7 @@ export function FuelingStart() {
               <button
                 type="button"
                 onClick={() =>
-                  setAmountUzs((v) => Math.max(MIN_HOLD_UZS, v - AMOUNT_STEP_UZS))
+                  setAmountUzs((v) => Math.max(MIN_HOLD_UZS, v - FINE_STEP_UZS))
                 }
                 disabled={mode === "full" || amountUzs <= MIN_HOLD_UZS}
                 aria-label={t("decrease")}
@@ -370,15 +484,43 @@ export function FuelingStart() {
               </button>
             </div>
 
+            {/* Бак — вертикальный слайдер: ведёшь палец вверх — объём растёт.
+                touch-action: none обязателен, иначе Safari отдаёт жест скроллу
+                страницы. В режиме «Полный бак» слайдер погашен: объём там
+                определяется по факту заливки. */}
             <div
-              className="relative h-64 w-24 overflow-hidden rounded-card border-2 border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/5"
-              role="presentation"
+              ref={tankRef}
+              role="slider"
+              aria-label={t("stepAmount")}
+              aria-orientation="vertical"
+              aria-valuemin={MIN_HOLD_UZS}
+              aria-valuemax={maxAmount}
+              aria-valuenow={mode === "full" ? maxAmount : amountUzs}
+              aria-valuetext={`${formatMoney(holdUzs, locale)} ${t("uzsShort")} · ${
+                mode === "full"
+                  ? t("fullTankUpTo", { n: Math.round(fullLiters) })
+                  : `${liters.toFixed(1)} ${t("litersShort")}`
+              }`}
+              aria-disabled={mode === "full"}
+              tabIndex={mode === "full" ? -1 : 0}
+              onPointerDown={onTankPointerDown}
+              onPointerMove={onTankPointerMove}
+              onPointerUp={onTankPointerUp}
+              onPointerCancel={onTankPointerUp}
+              onKeyDown={onTankKeyDown}
+              className={`relative h-64 w-24 select-none overflow-hidden rounded-card border-2 border-gray-200 bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-white/10 dark:bg-white/5 ${
+                mode === "full"
+                  ? "opacity-60"
+                  : "cursor-grab touch-none active:cursor-grabbing"
+              }`}
             >
               <div
-                className="absolute inset-x-0 bottom-0 bg-primary-500 transition-[height] duration-300"
-                style={{ height: `${Math.round(fillFraction * 100)}%` }}
+                className={`pointer-events-none absolute inset-x-0 bottom-0 h-full origin-bottom bg-primary-500 ${
+                  dragging ? "" : "transition-transform duration-200"
+                }`}
+                style={{ transform: `scaleY(${fillFraction})` }}
               />
-              <span className="absolute inset-x-0 top-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300">
+              <span className="pointer-events-none absolute inset-x-0 top-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300">
                 {fuelType ? tf(fuelType) : ""}
               </span>
             </div>
@@ -395,7 +537,7 @@ export function FuelingStart() {
               <button
                 type="button"
                 onClick={() =>
-                  setAmountUzs((v) => Math.min(maxAmount, v + AMOUNT_STEP_UZS))
+                  setAmountUzs((v) => Math.min(maxAmount, v + FINE_STEP_UZS))
                 }
                 disabled={mode === "full" || amountUzs >= maxAmount}
                 aria-label={t("increase")}
