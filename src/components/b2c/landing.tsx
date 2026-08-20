@@ -247,7 +247,7 @@ function Footer({ locale }: { locale: string }) {
       <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
         <div>
           <span className="flex items-center gap-2.5 text-base font-semibold tracking-tight text-navy dark:text-white">
-            <span className="flex h-8 w-8 items-center justify-center rounded-control bg-primary-500 text-white dark:bg-primary-500">
+            <span className="flex h-8 w-8 items-center justify-center rounded-control bg-primary-500 text-primary-950 dark:bg-primary-500">
               <Fuel className="h-4 w-4" aria-hidden />
             </span>
             {siteConfig.appName}

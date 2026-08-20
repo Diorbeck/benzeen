@@ -74,7 +74,7 @@ export default async function MyVehiclePage({
           >
             <div className="mb-4 flex items-center gap-3">
               <div className="rounded-xl bg-primary-500/10 p-3">
-                <Car className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+                <Car className="h-6 w-6 text-primary-700 dark:text-primary-400" />
               </div>
               <div>
                 <p className="font-semibold text-gray-900 dark:text-white">{v.plateNumber}</p>
@@ -100,7 +100,7 @@ export default async function MyVehiclePage({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 dark:text-gray-400">{t('remaining')}</span>
-                <span className="font-semibold text-primary-600 dark:text-primary-400">
+                <span className="font-semibold text-primary-700 dark:text-primary-400">
                   {v.remaining} L
                 </span>
               </div>

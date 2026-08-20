@@ -44,7 +44,7 @@ export function SocialProof() {
               transition={{ delay: i * 0.08 }}
               className="rounded-2xl border border-gray-200 bg-white/60 px-6 py-8 text-center dark:border-white/10 dark:bg-white/5"
             >
-              <p className="text-3xl font-bold tracking-tight text-primary-600 dark:text-primary-400 sm:text-4xl">
+              <p className="text-3xl font-bold tracking-tight text-primary-700 dark:text-primary-400 sm:text-4xl">
                 {t(`metrics.${key}.value`)}
               </p>
               <p className="mt-2 text-sm font-medium text-gray-600 dark:text-gray-400">

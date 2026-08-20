@@ -48,7 +48,7 @@ export function NotificationBell() {
       >
         <Bell className="h-5 w-5" />
         {unread > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary-500 px-1 text-[10px] font-semibold text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary-500 px-1 text-[10px] font-semibold text-primary-950">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -68,7 +68,7 @@ export function NotificationBell() {
               {unread > 0 && (
                 <button
                   onClick={() => markRead()}
-                  className="text-xs font-medium text-primary-600 hover:underline dark:text-primary-400"
+                  className="text-xs font-medium text-primary-700 hover:underline dark:text-primary-400"
                 >
                   {t('markAllRead')}
                 </button>

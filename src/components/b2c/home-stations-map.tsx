@@ -95,7 +95,7 @@ export function HomeStationsMap({
                 <button
                   type="button"
                   onClick={expand}
-                  className="ml-2 font-semibold text-primary-600 underline-offset-2 hover:underline dark:text-sky-300"
+                  className="ml-2 font-semibold text-primary-700 underline-offset-2 hover:underline dark:text-sky-300"
                 >
                   {t("scopeShowAll", { n: stations.length })}
                 </button>

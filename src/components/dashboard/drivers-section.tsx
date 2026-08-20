@@ -205,7 +205,7 @@ export function DriversSection({
           className="card-premium flex flex-col items-center justify-center py-20 text-center"
         >
           <div className="mb-6 rounded-2xl bg-primary-500/10 p-5">
-            <Users className="h-14 w-14 text-primary-600 dark:text-primary-400" />
+            <Users className="h-14 w-14 text-primary-700 dark:text-primary-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {t('noDrivers')}
@@ -229,7 +229,7 @@ export function DriversSection({
                 <div className="mb-4 flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="rounded-xl bg-primary-500/10 p-2">
-                      <Users className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                      <Users className="h-5 w-5 text-primary-700 dark:text-primary-400" />
                     </div>
                     <div>
                       <p className="font-semibold text-gray-900 dark:text-white">
@@ -301,7 +301,7 @@ export function DriversSection({
                                 type="checkbox"
                                 checked={editCarIds.includes(c.id)}
                                 onChange={() => toggleCar(c.id)}
-                                className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                                className="h-4 w-4 rounded border-gray-300 text-primary-700 focus:ring-primary-500"
                               />
                               {c.plateNumber}
                             </label>
@@ -341,7 +341,7 @@ export function DriversSection({
                           return (
                             <span
                               key={carId}
-                              className="inline-flex items-center gap-1 rounded-full bg-primary-500/10 px-2 py-1 text-xs font-medium text-primary-600 dark:text-primary-400"
+                              className="inline-flex items-center gap-1 rounded-full bg-primary-500/10 px-2 py-1 text-xs font-medium text-primary-700 dark:text-primary-400"
                             >
                               <Car className="h-3 w-3" />
                               {car?.plateNumber || carId}

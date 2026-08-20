@@ -98,7 +98,7 @@ export function CarsList({ cars }: { cars: CarRow[] }) {
           className="card-premium flex flex-col items-center justify-center py-20 text-center"
         >
           <div className="mb-6 rounded-2xl bg-primary-500/10 p-5">
-            <Car className="h-14 w-14 text-primary-600 dark:text-primary-400" />
+            <Car className="h-14 w-14 text-primary-700 dark:text-primary-400" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
             {t('noCars')}
@@ -125,7 +125,7 @@ export function CarsList({ cars }: { cars: CarRow[] }) {
                 <div className="mb-4 flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div className="rounded-xl bg-primary-500/10 p-2">
-                      <Car className="h-5 w-5 text-primary-600 dark:text-primary-400" />
+                      <Car className="h-5 w-5 text-primary-700 dark:text-primary-400" />
                     </div>
                     {!isEditing && (
                       <div>
@@ -216,7 +216,7 @@ export function CarsList({ cars }: { cars: CarRow[] }) {
                           ? 'text-red-600 dark:text-red-400 font-semibold'
                           : getProgressColor(car.usedLiters, car.monthlyLimit) === 'warning'
                             ? 'text-amber-600 dark:text-amber-400'
-                            : 'text-primary-600 dark:text-primary-400'
+                            : 'text-primary-700 dark:text-primary-400'
                       }
                     >
                       {car.remainingLiters <= 0

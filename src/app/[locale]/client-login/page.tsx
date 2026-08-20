@@ -174,7 +174,7 @@ function ClientLoginForm() {
               setError('');
               setInfo('');
             }}
-            className="min-h-11 w-full rounded-control text-center text-sm font-medium text-gray-500 transition-colors hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+            className="min-h-11 w-full rounded-control text-center text-sm font-medium text-gray-500 transition-colors hover:text-primary-700 dark:text-gray-400 dark:hover:text-primary-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
             disabled={loading}
           >
             {t('changePhone')}

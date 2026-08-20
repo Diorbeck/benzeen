@@ -46,7 +46,7 @@ type TicketThread = {
 };
 
 const STATUS_BADGE: Record<TicketStatus, string> = {
-  OPEN: 'bg-primary-50 text-primary-600 dark:bg-primary-500/15 dark:text-primary-400',
+  OPEN: 'bg-primary-50 text-primary-700 dark:bg-primary-500/15 dark:text-primary-400',
   ANSWERED: 'bg-success-600/10 text-success-600 dark:bg-success-500/15 dark:text-success-500',
   CLOSED: 'bg-gray-100 text-gray-600 dark:bg-white/10 dark:text-gray-300',
 };
@@ -214,7 +214,7 @@ export function SupportSection() {
     return (
       <div key={m.id} className={`flex flex-col ${isClient ? 'items-end' : 'items-start'}`}>
         <span className="mb-0.5 flex items-center gap-1 px-1 text-xs text-gray-500 dark:text-gray-400">
-          {isAi && <Sparkles className="h-3 w-3 text-primary-600 dark:text-primary-400" aria-hidden />}
+          {isAi && <Sparkles className="h-3 w-3 text-primary-700 dark:text-primary-400" aria-hidden />}
           {isClient ? t('support2.youName') : isAi ? t('support2.aiName') : t('support2.operatorName')}
         </span>
         <div className={`max-w-[85%] rounded-card px-4 py-3 text-sm text-navy dark:text-white ${bubbleCls}`}>

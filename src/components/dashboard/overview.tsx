@@ -52,7 +52,7 @@ export function DashboardOverview({
       icon: Fuel,
       label: t('kpi.remaining'),
       value: remainingLiters.toLocaleString(),
-      color: 'text-primary-600 dark:text-primary-400',
+      color: 'text-primary-700 dark:text-primary-400',
       bg: 'bg-primary-500/10',
     },
     {
@@ -236,7 +236,7 @@ export function DashboardOverview({
                         ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
                         : order.status === 'DELIVERED'
                           ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-                          : 'bg-primary-500/10 text-primary-600 dark:text-primary-400'
+                          : 'bg-primary-500/10 text-primary-700 dark:text-primary-400'
                     }`}
                   >
                     {tStatus(STATUS_KEY[order.status] || order.status)}
@@ -257,7 +257,7 @@ export function DashboardOverview({
               </p>
               <Link
                 href={`/${locale}/dashboard/orders`}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-600"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-primary-950 transition hover:bg-primary-600"
               >
                 {t('recentOrders.viewOrders')}
               </Link>

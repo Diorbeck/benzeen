@@ -114,7 +114,7 @@ export function FuelingLive({ sessionId }: { sessionId: string }) {
             {t("litersLabel").toLowerCase()}
           </span>
         </p>
-        <p className="mt-2 text-2xl font-semibold tabular-nums text-primary-600 dark:text-primary-500">
+        <p className="mt-2 text-2xl font-semibold tabular-nums text-primary-700 dark:text-primary-500">
           {formatMoney(amount, locale)}
         </p>
 
@@ -186,7 +186,7 @@ export function FuelingLive({ sessionId }: { sessionId: string }) {
       <div className="mt-6 flex gap-4 text-sm font-medium">
         <a
           href={`/${locale}/fueling/history`}
-          className="text-primary-600 hover:underline dark:text-primary-500"
+          className="text-primary-700 hover:underline dark:text-primary-500"
         >
           {t("history")}
         </a>

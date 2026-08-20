@@ -75,7 +75,7 @@ export function Benefits() {
           </p>
           <Button
             size="lg"
-            className="rounded-xl bg-primary-500 px-8 py-6 text-base font-semibold text-white shadow-lg shadow-primary-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-400"
+            className="rounded-xl bg-primary-500 px-8 py-6 text-base font-semibold text-primary-950 shadow-lg shadow-primary-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-400"
             asChild
           >
             <Link href="#contact">{t('ctaButton')}</Link>

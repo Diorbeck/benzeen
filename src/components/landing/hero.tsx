@@ -26,7 +26,7 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-1.5 text-sm font-medium text-primary-600 dark:border-primary-500/20 dark:text-primary-400"
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/10 px-4 py-1.5 text-sm font-medium text-primary-700 dark:border-primary-500/20 dark:text-primary-400"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-70" />
@@ -61,7 +61,7 @@ export function Hero() {
             >
               <Button
                 size="lg"
-                className="rounded-xl bg-primary-500 px-8 py-6 text-base font-semibold text-white shadow-lg shadow-primary-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-400"
+                className="rounded-xl bg-primary-500 px-8 py-6 text-base font-semibold text-primary-950 shadow-lg shadow-primary-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-400"
                 asChild
               >
                 <Link href="#contact">{t('cta.primary')}</Link>

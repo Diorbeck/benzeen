@@ -157,7 +157,7 @@ export function CreateOrderForm() {
         <label className="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
           {t('quantity')}
         </label>
-        <p className="mb-2 text-2xl font-semibold text-primary-600 dark:text-primary-400">
+        <p className="mb-2 text-2xl font-semibold text-primary-700 dark:text-primary-400">
           {t('selected')}: {selected.volume} L
         </p>
         <input

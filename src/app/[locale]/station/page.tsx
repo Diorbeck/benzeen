@@ -100,7 +100,7 @@ export default async function StationPanelPage({
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
         {/* Тот же издательский ключ, что и в клиентской части: надзаголовок
             разрядкой, крупный акцидентный заголовок, короткое пояснение. */}
-        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-600 dark:text-sky-300">
+        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-primary-700 dark:text-sky-300">
           {t("eyebrow")}
         </p>
         <h1 className="mt-3 font-editorial text-[32px] font-semibold leading-[1.05] tracking-[-0.01em] text-navy dark:text-white sm:text-[38px]">
@@ -400,7 +400,7 @@ export default async function StationPanelPage({
                             );
                           })()}
                         {s.status === "FLOWING" && (
-                          <span className="rounded-md bg-primary-500/10 px-2 py-0.5 text-xs font-medium text-primary-600 dark:text-primary-500">
+                          <span className="rounded-md bg-primary-500/10 px-2 py-0.5 text-xs font-medium text-primary-700 dark:text-primary-500">
                             {t("fuelingFlowing")}
                           </span>
                         )}

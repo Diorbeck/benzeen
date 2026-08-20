@@ -82,7 +82,7 @@ export function CourierCard({
       <div className="card-premium flex flex-col gap-4 p-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
           <div className="rounded-xl bg-primary-500/10 p-3">
-            <Bike className="h-6 w-6 text-primary-600 dark:text-primary-400" />
+            <Bike className="h-6 w-6 text-primary-700 dark:text-primary-400" />
           </div>
           <div>
             <h1 className="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white">

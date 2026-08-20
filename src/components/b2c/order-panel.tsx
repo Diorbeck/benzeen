@@ -120,7 +120,7 @@ export function OrderPanel({ locale }: { locale: string }) {
                 aria-pressed={fuel === f}
                 className={`h-11 rounded-control text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 ${
                   fuel === f
-                    ? "bg-primary-500 text-white dark:bg-primary-500"
+                    ? "bg-primary-500 text-primary-950 dark:bg-primary-500"
                     : "border border-paper-300 bg-white text-gray-700 hover:border-sky-400 hover:text-navy dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200 dark:hover:border-sky-400 dark:hover:text-white"
                 }`}
               >

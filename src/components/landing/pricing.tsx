@@ -47,7 +47,7 @@ export function Pricing() {
               }`}
             >
               {plan === 'business' && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary-500 px-3 py-0.5 text-xs font-semibold text-white">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary-500 px-3 py-0.5 text-xs font-semibold text-primary-950">
                   {t('popular')}
                 </span>
               )}
