@@ -22,8 +22,8 @@ const STATUS_LABEL: Record<string, string> = {
 const STATUS_CLASS: Record<string, string> = {
   CREATED: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
   RECEIVED: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
-  COURIER_ASSIGNED: 'bg-primary-500/10 text-primary-700 dark:text-primary-400',
-  IN_DELIVERY: 'bg-primary-500/10 text-primary-700 dark:text-primary-400',
+  COURIER_ASSIGNED: 'bg-primary-500/10 text-primary-800 dark:text-primary-400',
+  IN_DELIVERY: 'bg-primary-500/10 text-primary-800 dark:text-primary-400',
 };
 
 const fmtDate = (iso: string) => {
@@ -45,7 +45,7 @@ export function RequestsTable({ rows }: { rows: Row[] }) {
     return (
       <div className="card-premium flex flex-col items-center justify-center py-16 text-center">
         <div className="mb-4 rounded-2xl bg-primary-500/10 p-4">
-          <Package className="h-10 w-10 text-primary-700 dark:text-primary-400" />
+          <Package className="h-10 w-10 text-primary-800 dark:text-primary-400" />
         </div>
         <p className="text-sm text-gray-500 dark:text-gray-400">Активных заявок нет.</p>
       </div>

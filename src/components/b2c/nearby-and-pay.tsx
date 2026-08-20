@@ -37,7 +37,7 @@ export function NearbyAndPay({
             <button
               type="button"
               onClick={expand}
-              className="inline-flex items-center gap-1 text-caption font-semibold text-primary-700 hover:gap-1.5 dark:text-sky-300"
+              className="inline-flex items-center gap-1 text-caption font-semibold text-primary-800 hover:gap-1.5 dark:text-sky-300"
             >
               {t("console.nearbyAll")}
               <ArrowRight className="h-3.5 w-3.5" aria-hidden />
@@ -45,7 +45,7 @@ export function NearbyAndPay({
           ) : (
             <Link
               href={`/${locale}/stations`}
-              className="inline-flex items-center gap-1 text-caption font-semibold text-primary-700 hover:gap-1.5 dark:text-sky-300"
+              className="inline-flex items-center gap-1 text-caption font-semibold text-primary-800 hover:gap-1.5 dark:text-sky-300"
             >
               {t("console.nearbyAll")}
               <ArrowRight className="h-3.5 w-3.5" aria-hidden />

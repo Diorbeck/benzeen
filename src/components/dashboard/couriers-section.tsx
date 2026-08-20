@@ -185,7 +185,7 @@ export function CouriersSection({
         {handoff && (
           <div className="mt-2 space-y-3 rounded-xl border border-primary-500/30 bg-primary-500/5 p-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-primary-700 dark:text-primary-300">
+              <h3 className="text-sm font-semibold text-primary-800 dark:text-primary-300">
                 {t('handoffTitle')}
               </h3>
               <button
@@ -289,7 +289,7 @@ export function CouriersSection({
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       <div className="rounded-lg bg-primary-500/10 p-2">
-                        <Bike className="h-4 w-4 text-primary-700 dark:text-primary-400" />
+                        <Bike className="h-4 w-4 text-primary-800 dark:text-primary-400" />
                       </div>
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">
@@ -334,7 +334,7 @@ export function CouriersSection({
                   <td className="px-4 py-3 text-right">
                     <Link
                       href={`/${locale}/dashboard/couriers/${c.id}`}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-primary-700 hover:underline dark:text-primary-400"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-primary-800 hover:underline dark:text-primary-400"
                     >
                       {t('open')}
                       <ChevronRight className="h-3.5 w-3.5" />

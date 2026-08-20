@@ -47,7 +47,7 @@ export function Contact() {
                 <p className="text-sm font-medium text-gray-500">{t('phone')}</p>
                 <a
                   href="tel:+998970808880"
-                  className="font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-400"
+                  className="font-medium text-gray-900 hover:text-primary-800 dark:text-white dark:hover:text-primary-400"
                 >
                   +998 97 080 88 80
                 </a>
@@ -63,7 +63,7 @@ export function Contact() {
                   href="https://t.me/benzeen"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-400"
+                  className="font-medium text-gray-900 hover:text-primary-800 dark:text-white dark:hover:text-primary-400"
                 >
                   @benzeen
                 </a>
@@ -77,7 +77,7 @@ export function Contact() {
                 <p className="text-sm font-medium text-gray-500">{t('email')}</p>
                 <a
                   href="mailto:info@benzeen.uz"
-                  className="font-medium text-gray-900 hover:text-primary-700 dark:text-white dark:hover:text-primary-400"
+                  className="font-medium text-gray-900 hover:text-primary-800 dark:text-white dark:hover:text-primary-400"
                 >
                   info@benzeen.uz
                 </a>

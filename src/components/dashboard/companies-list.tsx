@@ -131,7 +131,7 @@ export function CompaniesList({ companies }: { companies: Company[] }) {
                 className="flex flex-1 items-center gap-3 text-left"
               >
                 <div className="rounded-xl bg-primary-500/10 p-2.5">
-                  <Building2 className="h-5 w-5 text-primary-700 dark:text-primary-400" />
+                  <Building2 className="h-5 w-5 text-primary-800 dark:text-primary-400" />
                 </div>
                 <div>
                   <p className="text-base font-semibold text-gray-900 dark:text-white">

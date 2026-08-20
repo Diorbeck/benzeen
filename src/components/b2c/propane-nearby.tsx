@@ -132,7 +132,7 @@ export function PropaneNearby() {
                   ),
                 })}
               </p>
-              <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight text-primary-700 dark:text-primary-300">
+              <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight text-primary-800 dark:text-primary-300">
                 {myBooking.code}
               </p>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">

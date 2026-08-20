@@ -90,7 +90,7 @@ export default async function ClientsPage({
             >
               <div className="flex min-w-0 items-center gap-3">
                 <div className="rounded-xl bg-primary-500/10 p-2.5">
-                  <UserRound className="h-5 w-5 text-primary-700 dark:text-primary-400" />
+                  <UserRound className="h-5 w-5 text-primary-800 dark:text-primary-400" />
                 </div>
                 <div className="min-w-0">
                   <p className="flex items-center gap-2 truncate text-sm font-semibold text-gray-900 dark:text-white">
