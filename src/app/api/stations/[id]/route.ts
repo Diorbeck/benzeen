@@ -52,6 +52,17 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
 
+  // Экрану выбора колонки нужно знать, какие заняты прямо сейчас: активная
+  // сессия (резерв или заливка) делает колонку недоступной для второго клиента.
+  const activeSessions = await prisma.fuelingSession.findMany({
+    where: {
+      dispenserId: { in: station.dispensers.map((d) => d.id) },
+      status: { in: ['RESERVED', 'FLOWING'] },
+    },
+    select: { dispenserId: true },
+  });
+  const busyIds = new Set(activeSessions.map((s) => s.dispenserId));
+
   const priceOf = (fuelType: string) =>
     station.prices.find((p) => p.fuelType === fuelType)?.priceUzs ?? null;
 
@@ -73,6 +84,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         fuelTypes: d.fuelTypes,
         identificationMode: d.identificationMode,
         online: isStationOnline(d.lastSeenAt),
+        busy: busyIds.has(d.id),
       })),
     },
   });

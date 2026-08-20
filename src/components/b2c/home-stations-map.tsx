@@ -284,7 +284,7 @@ function StationCard({
   );
 }
 
-function StationsMapCanvas({
+export function StationsMapCanvas({
   stations,
   selectedId,
   onSelect,
@@ -307,6 +307,10 @@ function StationsMapCanvas({
   const dark = useHtmlDark();
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
+  // Карта создаётся асинхронно (динамический импорт maplibre): эффекты маркеров
+  // и границ должны перезапуститься, когда она наконец готова, иначе при быстрой
+  // загрузке списка АЗС точки не появятся до следующего обновления данных.
+  const [mapCreated, setMapCreated] = useState(false);
   const markersRef = useRef<Marker[]>([]);
   const selectRef = useRef(onSelect);
   selectRef.current = onSelect;
@@ -355,6 +359,7 @@ function StationsMapCanvas({
       map.on("dragstart", release);
       map.on("zoomstart", release);
       mapRef.current = map;
+      setMapCreated(true);
     })();
 
     return () => {
@@ -396,7 +401,7 @@ function StationsMapCanvas({
       ],
       { padding: 72, maxZoom: 12, duration: 700 },
     );
-  }, [showRadius, stations]);
+  }, [showRadius, stations, mapCreated]);
 
   // Смена темы меняет подложку карты: светлая карта в тёмном интерфейсе
   // выглядит как чужой вставленный кусок.
@@ -444,7 +449,7 @@ function StationsMapCanvas({
     return () => {
       cancelled = true;
     };
-  }, [stations, selectedId]);
+  }, [stations, selectedId, mapCreated]);
 
   // На растровом фолбэке (локально, без ключа MapTiler) тёмного стиля нет,
   // поэтому подложка приглушается фильтром — иначе в тёмной теме карта светит.

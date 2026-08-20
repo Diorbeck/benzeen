@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { formatMoney } from "@/lib/format";
+import { FLOW_IDLE_TIMEOUT_MS } from "@/lib/fueling";
+import { FlowShell } from "./flow-shell";
 
 // Живой экран заправки — Модуль 2 ТЗ v2: литры и сумма должны совпадать с экраном
 // колонки. Данные идут потоком SSE, поэтому цифра меняется сама, без обновления
-// страницы и без кнопки «проверить».
+// страницы и без кнопки «проверить». На терминальном статусе экран превращается
+// в итог: литры, сумма, возврат и кешбэк.
 
 type LiveState = {
   id: string;
@@ -28,9 +31,12 @@ type LiveState = {
   amountUzs: number | null;
   refundUzs: number | null;
   cashbackUzs: number | null;
+  lastTickAt: string | null;
   dispenser: { number: number } | null;
   station: { name: string } | null;
 };
+
+const ACTIVE_STATUSES = new Set(["RESERVED", "FLOWING"]);
 
 export function FuelingLive({ sessionId }: { sessionId: string }) {
   const t = useTranslations("fueling");
@@ -38,14 +44,16 @@ export function FuelingLive({ sessionId }: { sessionId: string }) {
   const pathname = usePathname() ?? "";
   const seg = pathname.split("/").filter(Boolean)[0];
   const locale = seg === "ru" || seg === "en" || seg === "uz" ? seg : "ru";
+  const router = useRouter();
 
   const [state, setState] = useState<LiveState | null>(null);
   const [cancelling, setCancelling] = useState(false);
-  const esRef = useRef<EventSource | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  // Точка отсчёта «ожидания колонки», пока не пришло ни одного тика.
+  const openedAtRef = useRef(Date.now());
 
   useEffect(() => {
     const es = new EventSource(`/api/fueling/sessions/${sessionId}/stream`);
-    esRef.current = es;
     es.addEventListener("state", (e) => {
       setState(JSON.parse((e as MessageEvent<string>).data) as LiveState);
     });
@@ -54,6 +62,13 @@ export function FuelingLive({ sessionId }: { sessionId: string }) {
     // на мобильном интернете обрыв — норма, а не ошибка.
     return () => es.close();
   }, [sessionId]);
+
+  // Таймер «ожидания колонки»: без тиков дольше минуты цифры не растут, и
+  // клиенту важно видеть, что дело в колонке, а не в зависшем экране.
+  useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 5_000);
+    return () => clearInterval(id);
+  }, []);
 
   async function cancel() {
     setCancelling(true);
@@ -68,135 +83,195 @@ export function FuelingLive({ sessionId }: { sessionId: string }) {
 
   if (!state) {
     return (
-      <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 py-10 text-sm text-gray-500 dark:text-gray-400">
-        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />{" "}
-        {t("stationLoading")}
-      </div>
+      <FlowShell
+        title={t("liveTitle")}
+        onBack={() => router.push(`/${locale}/stations`)}
+        backAria={t("backAria")}
+      >
+        <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          {t("stationLoading")}
+        </p>
+      </FlowShell>
     );
   }
 
   const liters = state.litersDispensed ?? 0;
   const amount = state.amountUzs ?? 0;
-  const finished = state.status === "SETTLED";
+  const active = ACTIVE_STATUSES.has(state.status);
+
+  const lastSignalMs = state.lastTickAt
+    ? Date.parse(state.lastTickAt)
+    : openedAtRef.current;
+  const waiting = active && now - lastSignalMs > FLOW_IDLE_TIMEOUT_MS;
+
+  // Итоговый экран: заправка закончилась (успехом, отменой или сверкой).
+  if (!active) {
+    const settled = state.status === "SETTLED";
+    return (
+      <FlowShell
+        title={
+          settled
+            ? t("settled")
+            : state.status === "MANUAL_REVIEW"
+              ? t("manualReviewShort")
+              : t("cancelled")
+        }
+        subtitle={state.station?.name ?? undefined}
+        onBack={() => router.push(`/${locale}`)}
+        backAria={t("backAria")}
+        action={
+          <button
+            type="button"
+            onClick={() => router.push(`/${locale}`)}
+            className="flex h-14 w-full items-center justify-center rounded-control bg-primary-500 text-base font-semibold text-primary-950 transition-colors hover:bg-primary-600 active:bg-primary-700"
+          >
+            {t("toHome")}
+          </button>
+        }
+      >
+        <div className="flex flex-1 flex-col items-center justify-center text-center">
+          {settled && (
+            <CheckCircle2
+              className="h-14 w-14 text-primary-700 dark:text-primary-500"
+              aria-hidden
+            />
+          )}
+          <p className="mt-4 font-display text-5xl font-bold tabular-nums">
+            {liters.toFixed(2)}
+            <span className="ml-2 text-xl font-medium text-gray-500 dark:text-gray-400">
+              {t("litersShort")}
+            </span>
+          </p>
+          <p className="mt-2 text-2xl font-semibold tabular-nums text-primary-800 dark:text-primary-500">
+            {formatMoney(amount, locale)}
+          </p>
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            {tf(state.fuelType)}
+            {state.dispenser
+              ? ` · ${t("dispenser", { n: state.dispenser.number })}`
+              : ""}
+          </p>
+
+          {state.status === "MANUAL_REVIEW" && (
+            <p className="mt-4 rounded-card bg-warning-500/10 px-4 py-3 text-sm text-warning-600">
+              {t("manualReview")}
+            </p>
+          )}
+
+          <dl className="mt-6 w-full max-w-xs space-y-2.5 text-sm">
+            {(state.refundUzs ?? 0) > 0 && (
+              <div className="flex items-center justify-between gap-3">
+                <dt className="text-gray-500 dark:text-gray-400">
+                  {t("refund")}
+                </dt>
+                <dd className="font-semibold tabular-nums">
+                  {formatMoney(state.refundUzs ?? 0, locale)}
+                </dd>
+              </div>
+            )}
+            {(state.cashbackUzs ?? 0) > 0 && (
+              <div className="flex items-center justify-between gap-3">
+                <dt className="text-success-600">{t("cashback")}</dt>
+                <dd className="font-semibold tabular-nums text-success-600">
+                  {formatMoney(state.cashbackUzs ?? 0, locale)}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </div>
+      </FlowShell>
+    );
+  }
+
+  // Прогресс к заказанному объёму: длина дуги кольца.
+  const progress =
+    state.limitLiters && state.limitLiters > 0
+      ? Math.min(1, liters / state.limitLiters)
+      : 0;
+  const R = 112;
+  const C = 2 * Math.PI * R;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-6 pb-24">
-      <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        {state.station?.name ?? t("title")}
-        {state.dispenser
+    <FlowShell
+      title={t("liveTitle")}
+      subtitle={
+        (state.station?.name ?? "") +
+        (state.dispenser
           ? ` · ${t("dispenser", { n: state.dispenser.number })}`
-          : ""}
-      </p>
-      <h1 className="mt-1 text-heading text-navy dark:text-white">
-        {finished
-          ? t("settled")
-          : state.status === "FLOWING"
-            ? t("flowing")
-            : state.status === "CANCELLED"
-              ? t("cancelled")
-              : state.status === "MANUAL_REVIEW"
-                ? t("manualReview")
-                : t("reserved")}
-      </h1>
-      {state.status === "RESERVED" && (
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-          {t("reservedHint")}
-        </p>
-      )}
-
-      <div className="mt-6 rounded-card border border-gray-200 bg-white p-6 dark:border-white/10 dark:bg-navy-900">
-        <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-          {tf(state.fuelType)} · {formatMoney(state.priceUzs, locale)}
-        </p>
-        <p className="mt-3 text-5xl font-semibold tabular-nums text-navy dark:text-white">
-          {liters.toFixed(2)}
-          <span className="ml-2 text-lg font-medium text-gray-500 dark:text-gray-400">
-            {t("litersLabel").toLowerCase()}
-          </span>
-        </p>
-        <p className="mt-2 text-2xl font-semibold tabular-nums text-primary-800 dark:text-primary-500">
-          {formatMoney(amount, locale)}
-        </p>
-
-        <dl className="mt-6 grid grid-cols-2 gap-3 text-sm">
-          <div className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5">
-            <dt className="text-xs text-gray-500 dark:text-gray-400">
-              {t("holdLabel")}
-            </dt>
-            <dd className="mt-0.5 font-medium tabular-nums text-navy dark:text-white">
-              {formatMoney(state.holdAmountUzs, locale)}
-            </dd>
-          </div>
-          {state.limitLiters !== null && (
-            <div className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5">
-              <dt className="text-xs text-gray-500 dark:text-gray-400">
-                {t("limitLabel")}
-              </dt>
-              <dd className="mt-0.5 font-medium tabular-nums text-navy dark:text-white">
-                {state.limitLiters.toFixed(1)}
-              </dd>
-            </div>
-          )}
-          {finished && (state.refundUzs ?? 0) > 0 && (
-            <div className="rounded-control bg-gray-50 px-3 py-2 dark:bg-white/5">
-              <dt className="text-xs text-gray-500 dark:text-gray-400">
-                {t("refund")}
-              </dt>
-              <dd className="mt-0.5 font-medium tabular-nums text-navy dark:text-white">
-                {formatMoney(state.refundUzs ?? 0, locale)}
-              </dd>
-            </div>
-          )}
-          {finished && (state.cashbackUzs ?? 0) > 0 && (
-            <div className="rounded-control bg-success-500/10 px-3 py-2">
-              <dt className="text-xs text-success-600">{t("cashback")}</dt>
-              <dd className="mt-0.5 font-medium tabular-nums text-success-600">
-                {formatMoney(state.cashbackUzs ?? 0, locale)}
-              </dd>
-            </div>
-          )}
-        </dl>
-
-        {state.limitLiters !== null && !finished && (
-          <div
-            className="mt-5 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"
-            role="presentation"
-          >
-            <div
-              className="h-full rounded-full bg-primary-500 transition-[width] duration-500 dark:bg-primary-500"
-              style={{
-                width: `${Math.min(100, Math.round((liters / Math.max(0.1, state.limitLiters)) * 100))}%`,
-              }}
-            />
-          </div>
-        )}
-      </div>
-
-      {state.status === "RESERVED" && liters === 0 && (
+          : "")
+      }
+      onBack={() => router.push(`/${locale}/stations`)}
+      backAria={t("backAria")}
+      action={
         <button
           type="button"
           onClick={cancel}
           disabled={cancelling}
-          className="mt-4 h-11 w-full rounded-control bg-gray-100 text-sm font-medium text-navy transition-colors hover:bg-gray-200 disabled:opacity-50 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-control bg-gray-100 text-base font-semibold text-navy transition-colors hover:bg-gray-200 disabled:opacity-50 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
         >
-          {cancelling ? t("cancelling") : t("cancel")}
+          {cancelling && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
+          {cancelling ? t("stopping") : t("stop")}
         </button>
-      )}
+      }
+    >
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <div className="relative h-64 w-64">
+          <svg viewBox="0 0 256 256" className="h-full w-full -rotate-90">
+            <circle
+              cx="128"
+              cy="128"
+              r={R}
+              fill="none"
+              strokeWidth="10"
+              className="stroke-gray-200 dark:stroke-white/10"
+            />
+            <circle
+              cx="128"
+              cy="128"
+              r={R}
+              fill="none"
+              strokeWidth="10"
+              strokeLinecap="round"
+              strokeDasharray={C}
+              strokeDashoffset={C * (1 - progress)}
+              className="stroke-primary-500 transition-[stroke-dashoffset] duration-500"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+            <p className="font-display text-5xl font-bold tabular-nums">
+              {liters.toFixed(2)}
+            </p>
+            {state.limitLiters !== null && (
+              <p className="mt-1 text-sm tabular-nums text-gray-500 dark:text-gray-400">
+                {t("ofOrdered", { n: state.limitLiters.toFixed(1) })}
+              </p>
+            )}
+            <p className="mt-2 text-xl font-semibold tabular-nums text-primary-800 dark:text-primary-500">
+              {formatMoney(amount, locale)}
+            </p>
+          </div>
+        </div>
 
-      <div className="mt-6 flex gap-4 text-sm font-medium">
-        <a
-          href={`/${locale}/fueling/history`}
-          className="text-primary-800 hover:underline dark:text-primary-500"
-        >
-          {t("history")}
-        </a>
-        <a
-          href={`/${locale}/stations`}
-          className="text-gray-500 hover:underline dark:text-gray-400"
-        >
-          {t("back")}
-        </a>
+        <p className="mt-5 text-center text-sm font-medium">
+          {waiting ? (
+            <span className="text-warning-600">{t("waitingDispenser")}</span>
+          ) : state.status === "FLOWING" ? (
+            <span className="text-primary-800 dark:text-primary-500">
+              {t("flowing")}
+            </span>
+          ) : (
+            <span className="text-gray-600 dark:text-gray-300">
+              {t("reservedHint")}
+            </span>
+          )}
+        </p>
+
+        <p className="mt-2 text-center text-xs tabular-nums text-gray-500 dark:text-gray-400">
+          {tf(state.fuelType)} · {formatMoney(state.priceUzs, locale)} ·{" "}
+          {t("holdLabel")} {formatMoney(state.holdAmountUzs, locale)}
+        </p>
       </div>
-    </div>
+    </FlowShell>
   );
 }

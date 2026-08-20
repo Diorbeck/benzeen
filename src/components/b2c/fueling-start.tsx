@@ -3,13 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Fuel, Loader2 } from "lucide-react";
+import { CreditCard, Loader2, Minus, Plus } from "lucide-react";
 import { formatMoney } from "@/lib/format";
+import { FULL_TANK_LITERS_CAP, MIN_HOLD_UZS } from "@/lib/fueling";
+import { FlowShell } from "./flow-shell";
 import { BleDispenserDetect } from "./ble-dispenser-detect";
 
-// Базовый сценарий заправки — Модуль 3, уровень 1 ТЗ v2: клиент вручную выбирает
-// колонку, топливо и объём. BLE-маячок и камера появятся поверх этого же экрана,
-// поэтому подтверждение сразу отделено от способа определения колонки.
+// Пошаговый мобильный сценарий заправки — Модуль 3, уровень 1 ТЗ v2: один шаг —
+// один экран (колонка → топливо → объём), подтверждение — шторкой поверх.
+// Клиент выбирает колонку вручную; BLE-блок остаётся надстройкой там, где
+// браузер умеет сканировать, и ничего не блокирует там, где не умеет.
 
 type Stock = {
   fuelType: string;
@@ -26,6 +29,7 @@ type Dispenser = {
   fuelTypes: string[];
   identificationMode: "MANUAL" | "BLE" | "CAMERA";
   online: boolean;
+  busy: boolean;
 };
 
 type Station = {
@@ -39,7 +43,13 @@ type Station = {
   dispensers: Dispenser[];
 };
 
-type Mode = "amount" | "liters" | "full";
+type Step = "dispenser" | "fuel" | "amount";
+type Mode = "amount" | "full";
+
+/** Шаг кнопок «+/−» по сумме, сум. */
+const AMOUNT_STEP_UZS = 10_000;
+const DEFAULT_AMOUNT_UZS = 100_000;
+const MAX_AMOUNT_UZS = 2_000_000;
 
 export function FuelingStart() {
   const t = useTranslations("fueling");
@@ -52,10 +62,12 @@ export function FuelingStart() {
 
   const [station, setStation] = useState<Station | null>(null);
   const [loadError, setLoadError] = useState(false);
+  const [step, setStep] = useState<Step>("dispenser");
   const [dispenserNumber, setDispenserNumber] = useState<number | null>(null);
   const [fuelType, setFuelType] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>("amount");
-  const [value, setValue] = useState("");
+  const [amountUzs, setAmountUzs] = useState(DEFAULT_AMOUNT_UZS);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Способ определения колонки уходит в заправку: по нему видно, работает ли BLE
@@ -71,18 +83,7 @@ export function FuelingStart() {
     fetch(`/api/stations/${stationId}`)
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error("load"))))
       .then((d: { station: Station }) => {
-        if (!alive) return;
-        setStation(d.station);
-        const firstActive = d.station.dispensers.find(
-          (x) => x.status === "ACTIVE",
-        );
-        setDispenserNumber(firstActive?.number ?? null);
-        const firstFuel = d.station.stocks.find(
-          (s) => s.dataFresh && s.litersAvailable > 0,
-        );
-        setFuelType(
-          firstFuel?.fuelType ?? d.station.stocks[0]?.fuelType ?? null,
-        );
+        if (alive) setStation(d.station);
       })
       .catch(() => alive && setLoadError(true));
     return () => {
@@ -90,23 +91,74 @@ export function FuelingStart() {
     };
   }, [stationId]);
 
-  const price = useMemo(
-    () =>
-      station?.stocks.find((s) => s.fuelType === fuelType)?.priceUzs ?? null,
-    [station, fuelType],
+  const dispenser = useMemo(
+    () => station?.dispensers.find((d) => d.number === dispenserNumber) ?? null,
+    [station, dispenserNumber],
   );
 
-  const numeric = Number(value.replace(/\s/g, "").replace(",", "."));
-  const canSubmit =
-    !!station &&
-    station.online &&
-    dispenserNumber !== null &&
-    !!fuelType &&
-    (mode === "full" || (Number.isFinite(numeric) && numeric > 0)) &&
-    !submitting;
+  // Топливо шага «Топливо»: есть на выбранной колонке И в наличии на АЗС.
+  const fuels = useMemo(() => {
+    if (!station || !dispenser) return [];
+    return station.stocks.filter(
+      (s) =>
+        dispenser.fuelTypes.includes(s.fuelType) &&
+        s.priceUzs !== null &&
+        s.litersAvailable > 0,
+    );
+  }, [station, dispenser]);
+
+  const stock = useMemo(
+    () => station?.stocks.find((s) => s.fuelType === fuelType) ?? null,
+    [station, fuelType],
+  );
+  const price = stock?.priceUzs ?? null;
+
+  // Оценка полного бака — как planHold на сервере: колпак 80 л или остаток.
+  const fullLiters = useMemo(() => {
+    if (!stock) return FULL_TANK_LITERS_CAP;
+    return Math.min(
+      FULL_TANK_LITERS_CAP,
+      stock.litersAvailable > 0 ? stock.litersAvailable : FULL_TANK_LITERS_CAP,
+    );
+  }, [stock]);
+
+  const liters = price ? amountUzs / price : 0;
+  const holdUzs =
+    mode === "full" && price ? Math.round(price * fullLiters) : amountUzs;
+  const cashbackUzs = Math.round(holdUzs * 0.01);
+  const fillFraction =
+    mode === "full" ? 1 : Math.min(1, liters / FULL_TANK_LITERS_CAP);
+
+  const maxAmount = price
+    ? Math.min(MAX_AMOUNT_UZS, Math.round(price * FULL_TANK_LITERS_CAP))
+    : MAX_AMOUNT_UZS;
+
+  const stepValid =
+    step === "dispenser"
+      ? dispenser !== null && dispenser.status === "ACTIVE" && !dispenser.busy
+      : step === "fuel"
+        ? fuelType !== null && fuels.some((f) => f.fuelType === fuelType)
+        : mode === "full" || (amountUzs >= MIN_HOLD_UZS && price !== null);
+
+  function back() {
+    if (confirmOpen) {
+      setConfirmOpen(false);
+      return;
+    }
+    if (step === "fuel") setStep("dispenser");
+    else if (step === "amount") setStep("fuel");
+    else router.push(`/${locale}/stations`);
+  }
+
+  function next() {
+    if (!stepValid) return;
+    if (step === "dispenser") setStep("fuel");
+    else if (step === "fuel") setStep("amount");
+    else setConfirmOpen(true);
+  }
 
   async function submit() {
-    if (!canSubmit || !station || !fuelType || dispenserNumber === null) return;
+    if (!station || !fuelType || dispenserNumber === null || submitting) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -117,8 +169,7 @@ export function FuelingStart() {
           stationId: station.id,
           dispenserNumber,
           fuelType,
-          liters: mode === "liters" ? numeric : undefined,
-          amountUzs: mode === "amount" ? Math.round(numeric) : undefined,
+          amountUzs: mode === "amount" ? amountUzs : undefined,
           fullTank: mode === "full" ? true : undefined,
           identifiedBy,
           // Токен карты выдаёт эквайринг банка; до подключения Apex сюда идёт
@@ -148,213 +199,322 @@ export function FuelingStart() {
 
   if (loadError) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-10">
+      <FlowShell
+        title={t("title")}
+        onBack={() => router.push(`/${locale}/stations`)}
+        backAria={t("backAria")}
+      >
         <p className="text-sm text-gray-600 dark:text-gray-300">
           {t("stationError")}
         </p>
-        <a
-          href={`/${locale}/stations`}
-          className="mt-4 inline-flex text-sm font-medium text-primary-800 hover:underline dark:text-primary-500"
-        >
-          {t("back")}
-        </a>
-      </div>
+      </FlowShell>
     );
   }
 
   if (!station) {
     return (
-      <div className="mx-auto flex max-w-2xl items-center gap-2 px-4 py-10 text-sm text-gray-500 dark:text-gray-400">
-        <Loader2 className="h-4 w-4 animate-spin" aria-hidden />{" "}
-        {t("stationLoading")}
-      </div>
+      <FlowShell
+        title={t("title")}
+        onBack={() => router.push(`/${locale}/stations`)}
+        backAria={t("backAria")}
+      >
+        <p className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+          {t("stationLoading")}
+        </p>
+      </FlowShell>
     );
   }
 
-  return (
-    <div className="mx-auto max-w-2xl px-4 py-6 pb-24">
-      <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">
-        {t("title")}
-      </p>
-      <h1 className="mt-1 text-heading text-navy dark:text-white">
-        {station.name}
-      </h1>
-      <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-        {station.address}
-      </p>
+  const stepTitle =
+    step === "dispenser"
+      ? t("stepDispenser")
+      : step === "fuel"
+        ? t("stepFuel")
+        : t("stepAmount");
 
+  return (
+    <FlowShell
+      title={stepTitle}
+      subtitle={station.name}
+      onBack={back}
+      backAria={t("backAria")}
+      action={
+        <button
+          type="button"
+          onClick={next}
+          disabled={!stepValid || !station.online}
+          className="flex h-14 w-full items-center justify-center rounded-control bg-primary-500 text-base font-semibold text-primary-950 transition-colors hover:bg-primary-600 active:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {t("next")}
+        </button>
+      }
+    >
       {!station.online && (
-        <p className="mt-4 rounded-card bg-warning-500/10 px-4 py-3 text-sm text-warning-600">
+        <p className="mb-4 rounded-card bg-warning-500/10 px-4 py-3 text-sm text-warning-600">
           {t("offline")}
         </p>
       )}
 
-      <section className="mt-6">
-        <h2 className="text-subheading text-navy dark:text-white">
-          {t("stepDispenser")}
-        </h2>
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          {t("stepDispenserHint")}
-        </p>
-
-        {station.dispensers.some((d) => d.identificationMode === "BLE") && (
-          <div className="mt-3">
-            <BleDispenserDetect
-              stationId={station.id}
-              onPick={(n) => {
-                setDispenserNumber(n);
-                setIdentifiedBy("BLE");
-              }}
-            />
-          </div>
-        )}
-
-        <div className="mt-3 flex flex-wrap gap-2">
-          {station.dispensers.map((d) => {
-            const disabled = d.status !== "ACTIVE";
-            const active = d.number === dispenserNumber;
-            return (
-              <button
-                key={d.id}
-                type="button"
-                disabled={disabled}
-                onClick={() => {
-                  setDispenserNumber(d.number);
-                  setIdentifiedBy("MANUAL");
-                }}
-                className={`h-11 rounded-control px-4 text-sm font-medium transition-colors ${
-                  active
-                    ? "bg-primary-500 text-primary-950"
-                    : "bg-gray-100 text-navy hover:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-                } ${disabled ? "cursor-not-allowed opacity-40" : ""}`}
-              >
-                {t("dispenser", { n: d.number })}
-                {d.identificationMode === "BLE" && (
-                  <span className="ml-2 text-xs opacity-70">BLE</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-6">
-        <h2 className="text-subheading text-navy dark:text-white">
-          {t("stepFuel")}
-        </h2>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {station.stocks.map((s) => {
-            const active = s.fuelType === fuelType;
-            const empty = !s.dataFresh || s.litersAvailable <= 0;
-            return (
-              <button
-                key={s.fuelType}
-                type="button"
-                disabled={empty}
-                onClick={() => setFuelType(s.fuelType)}
-                className={`rounded-control px-3 py-2.5 text-left transition-colors ${
-                  active
-                    ? "bg-primary-500 text-primary-950"
-                    : "bg-gray-100 text-navy hover:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-                } ${empty ? "cursor-not-allowed opacity-40" : ""}`}
-              >
-                <span className="block text-sm font-semibold">
-                  {tf(s.fuelType)}
-                </span>
-                <span className="mt-0.5 block text-xs tabular-nums opacity-80">
-                  {s.priceUzs !== null ? formatMoney(s.priceUzs, locale) : "—"}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-6">
-        <h2 className="text-subheading text-navy dark:text-white">
-          {t("stepAmount")}
-        </h2>
-        <div className="mt-3 flex gap-2">
-          {(["amount", "liters", "full"] as Mode[]).map((m) => (
-            <button
-              key={m}
-              type="button"
-              onClick={() => setMode(m)}
-              className={`h-11 flex-1 rounded-control text-sm font-medium transition-colors ${
-                mode === m
-                  ? "bg-navy-900 text-white dark:bg-white dark:text-navy-950"
-                  : "bg-gray-100 text-navy hover:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
-              }`}
-            >
-              {m === "amount"
-                ? t("modeAmount")
-                : m === "liters"
-                  ? t("modeLiters")
-                  : t("modeFull")}
-            </button>
-          ))}
-        </div>
-
-        {mode === "full" ? (
-          <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
-            {t("fullTankNote")}
+      {step === "dispenser" && (
+        <>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            {t("stepDispenserHint")}
           </p>
-        ) : (
-          <input
-            inputMode="numeric"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder={
-              mode === "amount"
-                ? t("amountPlaceholder")
-                : t("litersPlaceholder")
-            }
-            className="mt-3 h-12 w-full rounded-control border border-gray-200 bg-white px-4 text-base tabular-nums text-navy outline-none focus:border-primary-600 dark:border-white/10 dark:bg-navy-900 dark:text-white"
-          />
-        )}
 
-        {price !== null &&
-          mode !== "full" &&
-          Number.isFinite(numeric) &&
-          numeric > 0 && (
-            <p className="mt-2 text-sm tabular-nums text-gray-600 dark:text-gray-300">
-              {mode === "amount"
-                ? `≈ ${(numeric / price).toFixed(1)} л`
-                : `≈ ${formatMoney(Math.round(numeric * price), locale)}`}
+          {station.dispensers.some((d) => d.identificationMode === "BLE") && (
+            <div className="mt-3">
+              <BleDispenserDetect
+                stationId={station.id}
+                onPick={(n) => {
+                  setDispenserNumber(n);
+                  setIdentifiedBy("BLE");
+                }}
+              />
+            </div>
+          )}
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {station.dispensers.map((d) => {
+              const unavailable = d.status !== "ACTIVE" || d.busy;
+              const active = d.number === dispenserNumber;
+              return (
+                <button
+                  key={d.id}
+                  type="button"
+                  disabled={unavailable}
+                  onClick={() => {
+                    setDispenserNumber(d.number);
+                    setIdentifiedBy("MANUAL");
+                  }}
+                  className={`min-h-[7rem] rounded-card border-2 bg-white p-4 text-left transition-colors dark:bg-navy-900 ${
+                    active
+                      ? "border-primary-500"
+                      : "border-gray-200 dark:border-white/10"
+                  } ${
+                    unavailable
+                      ? "cursor-not-allowed opacity-40"
+                      : "hover:border-primary-500/60"
+                  }`}
+                >
+                  <span className="block font-display text-4xl font-bold tabular-nums">
+                    {d.number}
+                  </span>
+                  <span className="mt-2 block text-xs leading-snug text-gray-600 dark:text-gray-300">
+                    {d.fuelTypes.map((f) => tf(f)).join(" · ")}
+                  </span>
+                  {(d.busy || d.status !== "ACTIVE") && (
+                    <span className="mt-1.5 block text-xs font-medium text-warning-600">
+                      {d.busy ? t("dispenserBusy") : t("dispenserDisabled")}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {step === "fuel" && (
+        <ul className="space-y-3">
+          {fuels.map((s) => {
+            const active = s.fuelType === fuelType;
+            return (
+              <li key={s.fuelType}>
+                <button
+                  type="button"
+                  onClick={() => setFuelType(s.fuelType)}
+                  className={`flex w-full items-center justify-between gap-3 rounded-card border-2 bg-white px-4 py-4 text-left transition-colors dark:bg-navy-900 ${
+                    active
+                      ? "border-primary-500"
+                      : "border-gray-200 hover:border-primary-500/60 dark:border-white/10"
+                  }`}
+                >
+                  <span className="font-display text-xl font-semibold">
+                    {tf(s.fuelType)}
+                  </span>
+                  <span className="text-base font-bold tabular-nums">
+                    {formatMoney(s.priceUzs ?? 0, locale)}
+                    <span className="ml-1 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      {t("uzsShort")}/{t("litersShort")}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      {step === "amount" && price !== null && (
+        <div className="flex flex-1 flex-col">
+          {/* Главный элемент — вертикальный «бак», заполняющийся снизу вверх. */}
+          <div className="flex flex-1 items-center justify-center gap-3 py-4">
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
+              <p className="font-display text-2xl font-bold leading-none tabular-nums">
+                {formatMoney(holdUzs, locale)}
+              </p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                {t("uzsShort")}
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  setAmountUzs((v) => Math.max(MIN_HOLD_UZS, v - AMOUNT_STEP_UZS))
+                }
+                disabled={mode === "full" || amountUzs <= MIN_HOLD_UZS}
+                aria-label={t("decrease")}
+                className="mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-navy transition-colors hover:bg-gray-200 disabled:opacity-40 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+              >
+                <Minus className="h-5 w-5" aria-hidden />
+              </button>
+            </div>
+
+            <div
+              className="relative h-64 w-24 overflow-hidden rounded-card border-2 border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/5"
+              role="presentation"
+            >
+              <div
+                className="absolute inset-x-0 bottom-0 bg-primary-500 transition-[height] duration-300"
+                style={{ height: `${Math.round(fillFraction * 100)}%` }}
+              />
+              <span className="absolute inset-x-0 top-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300">
+                {fuelType ? tf(fuelType) : ""}
+              </span>
+            </div>
+
+            <div className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
+              <p className="font-display text-2xl font-bold leading-none tabular-nums">
+                {mode === "full"
+                  ? t("fullTankUpTo", { n: Math.round(fullLiters) })
+                  : liters.toFixed(1)}
+              </p>
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                {t("litersShort")}
+              </p>
+              <button
+                type="button"
+                onClick={() =>
+                  setAmountUzs((v) => Math.min(maxAmount, v + AMOUNT_STEP_UZS))
+                }
+                disabled={mode === "full" || amountUzs >= maxAmount}
+                aria-label={t("increase")}
+                className="mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-navy transition-colors hover:bg-gray-200 disabled:opacity-40 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+              >
+                <Plus className="h-5 w-5" aria-hidden />
+              </button>
+            </div>
+          </div>
+
+          {mode === "full" && (
+            <p className="mb-3 text-center text-sm text-gray-600 dark:text-gray-300">
+              {t("fullTankNote")}
             </p>
           )}
-      </section>
 
-      <p className="mt-6 rounded-card bg-gray-50 px-4 py-3 text-xs leading-relaxed text-gray-600 dark:bg-white/5 dark:text-gray-300">
-        {t("holdNote")}
-      </p>
+          {/* Переключатель режима — внизу, над главной кнопкой. */}
+          <div className="mb-2 flex gap-2 rounded-control bg-gray-100 p-1 dark:bg-white/10">
+            {(["amount", "full"] as Mode[]).map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMode(m)}
+                className={`h-11 flex-1 rounded-control text-sm font-semibold transition-colors ${
+                  mode === m
+                    ? "bg-white text-navy shadow-sm dark:bg-navy-900 dark:text-white"
+                    : "text-gray-600 dark:text-gray-300"
+                }`}
+              >
+                {m === "amount" ? t("modeSum") : t("modeFull")}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {error && <p className="mt-3 text-sm text-warning-600">{error}</p>}
+      {/* Шторка «Подтверждение и оплата» поверх притемнённого экрана. */}
+      {confirmOpen && (
+        <div className="fixed inset-0 z-40">
+          <button
+            type="button"
+            aria-label={t("backAria")}
+            onClick={() => setConfirmOpen(false)}
+            className="absolute inset-0 bg-navy-950/60"
+          />
+          <div className="absolute inset-x-0 bottom-0 rounded-t-card bg-white p-5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-xl dark:bg-navy-900">
+            <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-300 dark:bg-white/20" />
+            <h2 className="mt-4 font-display text-xl font-semibold">
+              {t("confirmTitle")}
+            </h2>
 
-      <button
-        type="button"
-        onClick={submit}
-        disabled={!canSubmit}
-        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-control bg-primary-500 text-sm font-semibold text-primary-950 transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {submitting ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />{" "}
-            {t("submitting")}
-          </>
-        ) : (
-          <>
-            <Fuel className="h-4 w-4" aria-hidden /> {t("confirm")}
-          </>
-        )}
-      </button>
+            <dl className="mt-4 space-y-2.5 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <dt className="text-gray-500 dark:text-gray-400">
+                  {t("litersLabel")}
+                </dt>
+                <dd className="font-semibold tabular-nums">
+                  {mode === "full"
+                    ? t("fullTankUpTo", { n: Math.round(fullLiters) })
+                    : `${liters.toFixed(1)} ${t("litersShort")}`}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="text-gray-500 dark:text-gray-400">
+                  {t("stepFuel")}
+                </dt>
+                <dd className="font-semibold">{fuelType ? tf(fuelType) : "—"}</dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="text-gray-500 dark:text-gray-400">
+                  {t("stepDispenser")}
+                </dt>
+                <dd className="font-semibold">
+                  {dispenserNumber !== null
+                    ? t("dispenser", { n: dispenserNumber })
+                    : "—"}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-3 border-t border-gray-100 pt-2.5 dark:border-white/10">
+                <dt className="text-gray-500 dark:text-gray-400">
+                  {t("payCard")}
+                </dt>
+                <dd className="flex items-center gap-1.5 font-semibold">
+                  <CreditCard className="h-4 w-4 text-gray-400" aria-hidden />
+                  {t("payCardPrimary")}
+                </dd>
+              </div>
+            </dl>
 
-      <a
-        href={`/${locale}/fueling/history`}
-        className="mt-4 inline-flex text-sm font-medium text-primary-800 hover:underline dark:text-primary-500"
-      >
-        {t("history")}
-      </a>
-    </div>
+            <p className="mt-3 text-sm font-medium text-success-600">
+              {t("cashbackReturn", { sum: formatMoney(cashbackUzs, locale) })}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
+              {t("holdNote")}
+            </p>
+
+            {error && (
+              <p className="mt-3 text-sm text-warning-600">{error}</p>
+            )}
+
+            <button
+              type="button"
+              onClick={submit}
+              disabled={submitting}
+              className="mt-4 flex h-14 w-full items-center justify-between rounded-control bg-primary-500 px-5 text-base font-semibold text-primary-950 transition-colors hover:bg-primary-600 active:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <span className="flex items-center gap-2">
+                {submitting && (
+                  <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                )}
+                {submitting ? t("submitting") : t("confirmPay")}
+              </span>
+              <span className="tabular-nums">
+                {formatMoney(holdUzs, locale)}
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+    </FlowShell>
   );
 }
