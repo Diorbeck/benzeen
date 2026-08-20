@@ -177,7 +177,7 @@ function PushToggle() {
         >
           <span
             className={`relative h-7 w-12 rounded-full transition-colors duration-200 ${
-              enabled ? 'bg-primary-600' : 'bg-gray-300 dark:bg-white/20'
+              enabled ? 'bg-primary-500' : 'bg-gray-300 dark:bg-white/20'
             }`}
             aria-hidden
           >

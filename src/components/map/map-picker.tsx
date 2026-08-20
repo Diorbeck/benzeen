@@ -97,7 +97,7 @@ export function MapPicker({
         }
       });
 
-      const marker = new maplibregl.Marker({ color: '#2563eb', draggable: true })
+      const marker = new maplibregl.Marker({ color: '#0ABAB5', draggable: true })
         .setLngLat([start.lng, start.lat])
         .addTo(map);
       markerRef.current = marker;

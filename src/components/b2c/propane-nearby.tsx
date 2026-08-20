@@ -331,7 +331,7 @@ function PointsMap({
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = points.map((p) => {
         const marker = new maplibregl.Marker({
-          color: p.status === "ACTIVE" ? "#2E5BFF" : "#9ca3af",
+          color: p.status === "ACTIVE" ? "#0ABAB5" : "#9ca3af",
         })
           .setLngLat([p.lng, p.lat])
           .addTo(mapRef.current!);

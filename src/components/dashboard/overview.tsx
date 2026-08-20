@@ -257,7 +257,7 @@ export function DashboardOverview({
               </p>
               <Link
                 href={`/${locale}/dashboard/orders`}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-500"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-primary-600"
               >
                 {t('recentOrders.viewOrders')}
               </Link>

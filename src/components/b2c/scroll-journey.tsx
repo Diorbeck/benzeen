@@ -152,7 +152,7 @@ function FuelGauge({ value }: { value: number }) {
       </span>
       <div className="relative h-44 w-2 overflow-hidden rounded-full bg-navy/[0.08] dark:bg-white/[0.08]">
         <div
-          className="absolute inset-x-0 bottom-0 rounded-full bg-primary-600/70 dark:bg-primary-400/70"
+          className="absolute inset-x-0 bottom-0 rounded-full bg-primary-500/70 dark:bg-primary-400/70"
           style={{ height: `${pct}%`, transition: "height 140ms linear" }}
         />
       </div>

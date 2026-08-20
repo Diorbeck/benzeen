@@ -59,7 +59,7 @@ export function FuelingHistory() {
         </p>
         <a
           href={`/${locale}/client-login`}
-          className="mt-4 inline-flex h-11 items-center rounded-control bg-primary-600 px-5 text-sm font-semibold text-white"
+          className="mt-4 inline-flex h-11 items-center rounded-control bg-primary-500 px-5 text-sm font-semibold text-white"
         >
           {t("login")}
         </a>

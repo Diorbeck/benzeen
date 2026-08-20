@@ -79,7 +79,7 @@ export function DispenserIdentificationControls({
               onClick={() => select(mode)}
               className={
                 active
-                  ? 'rounded-control bg-primary-600 px-2.5 py-1 text-xs font-semibold text-white'
+                  ? 'rounded-control bg-primary-500 px-2.5 py-1 text-xs font-semibold text-white'
                   : 'rounded-control border border-gray-200 px-2.5 py-1 text-xs font-medium text-navy transition-colors hover:border-primary-600 hover:text-primary-600 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:text-white dark:hover:border-sky-300 dark:hover:text-sky-300'
               }
             >

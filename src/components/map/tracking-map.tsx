@@ -69,7 +69,7 @@ export function TrackingMap({
       });
 
       // Destination (client) — cobalt pin.
-      destMarkerRef.current = new maplibregl.Marker({ color: '#2E5BFF' })
+      destMarkerRef.current = new maplibregl.Marker({ color: '#0ABAB5' })
         .setLngLat([destination.lng, destination.lat])
         .addTo(map);
 

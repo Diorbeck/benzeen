@@ -234,7 +234,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
                     <input type="hidden" name="orderId" value={o.id} />
                     <button
                       type="submit"
-                      className="inline-flex h-9 items-center justify-center rounded-lg bg-primary-600 px-4 text-xs font-semibold text-white transition hover:bg-primary-700"
+                      className="inline-flex h-9 items-center justify-center rounded-lg bg-primary-500 px-4 text-xs font-semibold text-white transition hover:bg-primary-600"
                     >
                       В пути
                     </button>
@@ -259,7 +259,7 @@ export async function CourierDashboard({ locale }: { locale: string }) {
                     </div>
                     <button
                       type="submit"
-                      className="inline-flex h-9 items-center justify-center rounded-lg bg-primary-600 px-4 text-xs font-semibold text-white transition hover:bg-primary-700"
+                      className="inline-flex h-9 items-center justify-center rounded-lg bg-primary-500 px-4 text-xs font-semibold text-white transition hover:bg-primary-600"
                     >
                       Доставлено
                     </button>

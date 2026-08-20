@@ -5,7 +5,7 @@
   pointer-events: none;
 }
 #nprogress .bar {
-  background: rgb(37 99 235);
+  background: rgb(10 186 181);
   position: fixed;
   z-index: 9999;
   top: 0;
@@ -19,7 +19,7 @@
   right: 0;
   width: 100px;
   height: 100%;
-  box-shadow: 0 0 10px rgb(37 99 235), 0 0 5px rgb(37 99 235);
+  box-shadow: 0 0 10px rgb(10 186 181), 0 0 5px rgb(10 186 181);
   opacity: 1;
   transform: rotate(3deg) translate(0px, -4px);
 }
@@ -29,8 +29,8 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
-    --primary: 221 83% 53%;
+    --foreground: 170 47% 10%;
+    --primary: 178 92% 38%;
     --primary-foreground: 210 40% 98%;
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
@@ -39,13 +39,13 @@
   }
 
   .dark {
-    --background: 224 60% 12%;
+    --background: 170 55% 6%;
     --foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11%;
-    --muted: 224 45% 18%;
+    --primary: 178 76% 44%;
+    --primary-foreground: 170 47% 8%;
+    --muted: 170 40% 14%;
     --muted-foreground: 215 20% 65%;
-    --border: 224 35% 27%;
+    --border: 170 30% 22%;
   }
 
   * {
@@ -60,12 +60,13 @@
     @apply bg-canvas text-gray-900 antialiased transition-colors duration-200 dark:bg-navy-950 dark:text-gray-100;
   }
 
-  /* Заголовки по умолчанию — издательская антиква. Числа и показатели остаются
-     на витринном сан-серифе: у них своя утилита font-display, а класс
+  /* Заголовки по умолчанию — витринный гротеск Unbounded. Числа и показатели
+     остаются на витринном сан-серифе: у них своя утилита font-display, а класс
      перебивает это правило. */
   h1,
   h2 {
-    font-family: var(--font-editorial), Georgia, serif;
+    font-family: var(--font-editorial), var(--font-inter), sans-serif;
+    letter-spacing: -0.02em;
   }
 }
 
@@ -78,15 +79,15 @@
 /* Subtle grid */
 .bg-grid {
   background-image: 
-    linear-gradient(rgba(37, 99, 235, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(10, 186, 181, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 186, 181, 0.04) 1px, transparent 1px);
   background-size: 60px 60px;
 }
 
 .dark .bg-grid {
   background-image: 
-    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
+    linear-gradient(rgba(10, 186, 181, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(10, 186, 181, 0.07) 1px, transparent 1px);
 }
 
 /* Glass panel */
@@ -197,16 +198,16 @@ body {
   width: 18px;
   height: 18px;
   border-radius: 9999px;
-  background: #2e5bff;
+  background: #0abab5;
   border: 3px solid #fff;
-  box-shadow: 0 0 0 2px rgba(46, 91, 255, 0.35);
+  box-shadow: 0 0 0 2px rgba(10, 186, 181, 0.35);
 }
 .courier-marker::before {
   content: '';
   position: absolute;
   inset: -8px;
   border-radius: 9999px;
-  background: rgba(46, 91, 255, 0.25);
+  background: rgba(10, 186, 181, 0.25);
   animation: courier-pulse 2s ease-out infinite;
 }
 @keyframes courier-pulse {
@@ -250,7 +251,7 @@ body {
 }
 .benzeen-pin[data-active='true'] {
   transform: scale(1.45);
-  box-shadow: 0 0 0 6px rgba(46, 91, 255, 0.25);
+  box-shadow: 0 0 0 6px rgba(10, 186, 181, 0.25);
 }
 .benzeen-pin:hover {
   transform: scale(1.25);
@@ -280,8 +281,8 @@ input[type="range"].benzeen-range {
   cursor: pointer;
   background-image: linear-gradient(
     to right,
-    #2e5bff 0%,
-    #1e96f0 var(--range-fill, 50%),
+    #0abab5 0%,
+    #17b2ad var(--range-fill, 50%),
     #d6dded var(--range-fill, 50%),
     #d6dded 100%
   );
@@ -293,8 +294,8 @@ input[type="range"].benzeen-range {
 .dark input[type="range"].benzeen-range {
   background-image: linear-gradient(
     to right,
-    #2e5bff 0%,
-    #4fb2ff var(--range-fill, 50%),
+    #0abab5 0%,
+    #43cbc6 var(--range-fill, 50%),
     rgba(255, 255, 255, 0.18) var(--range-fill, 50%),
     rgba(255, 255, 255, 0.18) 100%
   );
@@ -311,7 +312,7 @@ input[type="range"].benzeen-range::-webkit-slider-thumb {
   width: 18px;
   border-radius: 999px;
   background: #fff;
-  border: 2px solid #2e5bff;
+  border: 2px solid #0abab5;
   box-shadow: 0 1px 3px rgba(12, 20, 48, 0.25);
 }
 input[type="range"].benzeen-range::-moz-range-track {
@@ -321,12 +322,12 @@ input[type="range"].benzeen-range::-moz-range-track {
 input[type="range"].benzeen-range::-moz-range-thumb {
   height: 18px;
   width: 18px;
-  border: 2px solid #2e5bff;
+  border: 2px solid #0abab5;
   border-radius: 999px;
   background: #fff;
 }
 input[type="range"].benzeen-range:focus-visible {
-  outline: 2px solid #2e5bff;
+  outline: 2px solid #0abab5;
   outline-offset: 4px;
 }
 

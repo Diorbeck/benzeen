@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#2E5BFF"/>
+  <rect width="512" height="512" fill="#0ABAB5"/>
   <text x="50%" y="50%" dy="0.04em" text-anchor="middle" dominant-baseline="central"
         font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
         font-size="300" font-weight="700" fill="#ffffff">B</text>

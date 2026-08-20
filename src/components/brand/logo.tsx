@@ -26,7 +26,7 @@ export function BenzeenLogo({
     >
       <span
         className={cn(
-          "flex shrink-0 items-center justify-center rounded-control bg-primary-600 text-white",
+          "flex shrink-0 items-center justify-center rounded-control bg-primary-500 text-white",
           "dark:bg-primary-500 dark:text-white",
           box,
         )}

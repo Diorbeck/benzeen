@@ -163,7 +163,7 @@ export function FuelingLive({ sessionId }: { sessionId: string }) {
             role="presentation"
           >
             <div
-              className="h-full rounded-full bg-primary-600 transition-[width] duration-500 dark:bg-primary-500"
+              className="h-full rounded-full bg-primary-500 transition-[width] duration-500 dark:bg-primary-500"
               style={{
                 width: `${Math.min(100, Math.round((liters / Math.max(0.1, state.limitLiters)) * 100))}%`,
               }}

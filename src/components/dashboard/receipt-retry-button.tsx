@@ -57,7 +57,7 @@ export function ReceiptRetryButton({ sessionId, labels }: Props) {
         type="button"
         onClick={run}
         disabled={state === "sending"}
-        className="inline-flex items-center gap-1.5 rounded-control bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+        className="inline-flex items-center gap-1.5 rounded-control bg-primary-500 px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
       >
         <RefreshCw
           className={

@@ -1121,7 +1121,7 @@ function RepeatFork({
             })}
           </span>
         )}
-        <span className="mt-1 inline-flex items-center justify-center rounded-control bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-700">
+        <span className="mt-1 inline-flex items-center justify-center rounded-control bg-primary-500 px-5 py-2.5 text-sm font-semibold text-white transition group-hover:bg-primary-600">
           {t("repeat.repeatCta")}
         </span>
       </button>

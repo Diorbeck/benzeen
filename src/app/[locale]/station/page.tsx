@@ -250,7 +250,7 @@ export default async function StationPanelPage({
                           className={
                             tank.minLevelL !== null && level <= tank.minLevelL
                               ? "h-full rounded-full bg-red-500"
-                              : "h-full rounded-full bg-primary-600 dark:bg-primary-500"
+                              : "h-full rounded-full bg-primary-500 dark:bg-primary-500"
                           }
                           style={{ width: `${fresh ? percent : 0}%` }}
                         />
@@ -400,7 +400,7 @@ export default async function StationPanelPage({
                             );
                           })()}
                         {s.status === "FLOWING" && (
-                          <span className="rounded-md bg-primary-600/10 px-2 py-0.5 text-xs font-medium text-primary-600 dark:text-primary-500">
+                          <span className="rounded-md bg-primary-500/10 px-2 py-0.5 text-xs font-medium text-primary-600 dark:text-primary-500">
                             {t("fuelingFlowing")}
                           </span>
                         )}

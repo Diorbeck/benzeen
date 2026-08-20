@@ -240,7 +240,7 @@ function StationCard({
                     role="presentation"
                   >
                     <div
-                      className="h-full rounded-full bg-primary-600 dark:bg-primary-500"
+                      className="h-full rounded-full bg-primary-500 dark:bg-primary-500"
                       style={{ width: `${fill}%` }}
                     />
                   </div>
@@ -513,14 +513,14 @@ function drawRadius(map: MlMap, center: LatLng, radiusKm: number): void {
       id: RADIUS_FILL,
       type: "fill",
       source: RADIUS_SOURCE,
-      paint: { "fill-color": "#2E5BFF", "fill-opacity": 0.08 },
+      paint: { "fill-color": "#0ABAB5", "fill-opacity": 0.08 },
     });
     map.addLayer({
       id: RADIUS_LINE,
       type: "line",
       source: RADIUS_SOURCE,
       paint: {
-        "line-color": "#2E5BFF",
+        "line-color": "#0ABAB5",
         "line-width": 1.5,
         "line-dasharray": [2, 2],
         "line-opacity": 0.6,
