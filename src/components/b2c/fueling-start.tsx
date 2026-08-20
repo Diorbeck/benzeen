@@ -441,7 +441,7 @@ export function FuelingStart() {
             onClick={() => setConfirmOpen(false)}
             className="absolute inset-0 bg-navy-950/60"
           />
-          <div className="absolute inset-x-0 bottom-0 rounded-t-card bg-white p-5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-xl dark:bg-navy-900">
+          <div className="absolute inset-x-0 bottom-0 max-h-[88dvh] overflow-y-auto overscroll-contain rounded-t-card bg-white p-5 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-xl dark:bg-navy-900">
             <div className="mx-auto h-1.5 w-10 rounded-full bg-gray-300 dark:bg-white/20" />
             <h2 className="mt-4 font-display text-xl font-semibold">
               {t("confirmTitle")}

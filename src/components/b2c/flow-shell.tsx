@@ -5,6 +5,11 @@ import { ArrowLeft } from "lucide-react";
 // Каркас мобильного шага заправки: кнопка «назад» сверху, контент, одна главная
 // кнопка, прижатая к низу с учётом safe-area iPhone. Все экраны сценария
 // «заправка на АЗС» собраны из этого каркаса, чтобы жесты и отступы совпадали.
+//
+// Высота — ровно 100dvh (динамическая: в мобильном Safari вьюпорт плавает при
+// показе/скрытии адресной строки, и на vh низ уезжал бы под панель). Скроллится
+// только средняя часть: шапка с названием АЗС и нижняя кнопка стоят на месте,
+// поэтому заголовок не срезается, а «Далее» всегда доступна без скролла.
 export function FlowShell({
   title,
   subtitle,
@@ -22,8 +27,8 @@ export function FlowShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-[100dvh] flex-col bg-canvas text-navy dark:bg-navy-950 dark:text-white">
-      <header className="sticky top-0 z-20 flex items-center gap-1 border-b border-paper-300 bg-canvas/95 px-2 py-2 backdrop-blur dark:border-navy-700 dark:bg-navy-950/95">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-canvas text-navy dark:bg-navy-950 dark:text-white">
+      <header className="flex shrink-0 items-center gap-1 border-b border-paper-300 bg-canvas px-2 pb-2 pt-[max(0.5rem,env(safe-area-inset-top))] dark:border-navy-700 dark:bg-navy-950">
         <button
           type="button"
           onClick={onBack}
@@ -44,12 +49,14 @@ export function FlowShell({
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 py-4">
-        {children}
+      <main className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <div className="mx-auto flex min-h-full w-full max-w-md flex-col px-4 py-4">
+          {children}
+        </div>
       </main>
 
       {action && (
-        <div className="sticky bottom-0 z-20 border-t border-paper-300 bg-canvas/95 backdrop-blur dark:border-navy-700 dark:bg-navy-950/95">
+        <div className="shrink-0 border-t border-paper-300 bg-canvas dark:border-navy-700 dark:bg-navy-950">
           <div className="mx-auto w-full max-w-md px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
             {action}
           </div>
