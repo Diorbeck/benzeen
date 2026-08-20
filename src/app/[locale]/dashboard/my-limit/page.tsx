@@ -92,7 +92,7 @@ export default async function MyLimitPage({
         </div>
         <div className="h-4 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
           <div
-            className="h-full rounded-full bg-primary-600 transition-all duration-500"
+            className="h-full rounded-full bg-primary-500 transition-all duration-500"
             style={{ width: `${pct}%` }}
           />
         </div>
@@ -113,7 +113,7 @@ export default async function MyLimitPage({
                   </div>
                   <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
                     <div
-                      className="h-full rounded-full bg-primary-600"
+                      className="h-full rounded-full bg-primary-500"
                       style={{ width: `${lpct}%` }}
                     />
                   </div>

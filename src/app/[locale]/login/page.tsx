@@ -28,7 +28,7 @@ function LoginRoleSelection() {
             href={`/${locale}`}
             className="mb-8 flex items-center justify-center gap-2 transition-opacity hover:opacity-90"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-500">
               <Fuel className="h-5 w-5 text-white" aria-hidden />
             </div>
             <span className="text-lg font-semibold text-gray-900 dark:text-white">

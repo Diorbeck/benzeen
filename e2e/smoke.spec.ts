@@ -14,20 +14,33 @@ test.describe('Главная', () => {
     await page.goto('/ru');
     await page.waitForLoadState('networkidle');
     const html = page.locator('html');
-    const wasDark = (await html.getAttribute('class'))?.includes('dark') ?? false;
-    const toggle = page.getByRole('button', { name: 'Тема' }).first();
+    // v2: тристейт-переключатель (светлая/тёмная/системная) — три кнопки в
+    // группе «Тема» с явными подписями.
+    const group = page.getByRole('group', { name: 'Тема' }).first();
+    const darkBtn = group.getByRole('button', { name: 'Тёмная тема' });
+    const lightBtn = group.getByRole('button', { name: 'Светлая тема' });
     // Клик внутри poll: первый клик может прийтись до гидрации React и
     // пройти в никуда — повторяем, пока класс не переключится.
     await expect
       .poll(
         async () => {
-          await toggle.click();
+          await darkBtn.click();
           await page.waitForTimeout(300);
           return ((await html.getAttribute('class')) ?? '').includes('dark');
         },
         { timeout: 10_000 },
       )
-      .toBe(!wasDark);
+      .toBe(true);
+    await expect
+      .poll(
+        async () => {
+          await lightBtn.click();
+          await page.waitForTimeout(300);
+          return ((await html.getAttribute('class')) ?? '').includes('dark');
+        },
+        { timeout: 10_000 },
+      )
+      .toBe(false);
   });
 });
 

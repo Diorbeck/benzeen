@@ -15,7 +15,7 @@ export default function OgImage() {
           flexDirection: 'column',
           justifyContent: 'center',
           padding: 80,
-          background: 'linear-gradient(135deg, #0A1F44 0%, #2563eb 100%)',
+          background: 'linear-gradient(135deg, #0C2420 0%, #0ABAB5 100%)',
           color: 'white',
           fontFamily: 'sans-serif',
         }}

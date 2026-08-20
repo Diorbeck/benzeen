@@ -1,31 +1,33 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display, Space_Grotesk } from "next/font/google";
+import { Golos_Text, Unbounded } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { PwaRegister } from "@/components/pwa-register";
 import "./globals.css";
 
-const inter = Inter({
+// Основной текст — Golos Text. Кириллица включена: интерфейс идёт на ru/uz.
+const inter = Golos_Text({
   subsets: ["latin", "cyrillic"],
   variable: "--font-inter",
   display: "swap",
 });
 
-// Витринный шрифт только для логотипа и крупных заголовков: латиница, поэтому
-// кириллица остаётся на Inter и не ломается.
-const displayFont = Space_Grotesk({
-  subsets: ["latin"],
+// Витринный шрифт для логотипа и крупных цифр — Unbounded. Кириллица включена:
+// в отличие от Space Grotesk он её покрывает, поэтому русские витринные надписи
+// не падают на основной шрифт.
+const displayFont = Unbounded({
+  subsets: ["latin", "cyrillic"],
   variable: "--font-display",
-  weight: ["500", "700"],
+  weight: ["500", "700", "800"],
   display: "swap",
 });
 
-// Издательская антиква для заголовков. Кириллица включена специально: витринный
-// Space Grotesk её не покрывает, из-за чего русские заголовки падали на Inter и
-// выглядели как обычный интерфейсный текст.
-const editorialFont = Playfair_Display({
+// Шрифт заголовков (h1/h2) — Unbounded. Кириллица включена специально: без неё
+// русские заголовки падали бы на основной шрифт и выглядели как обычный
+// интерфейсный текст.
+const editorialFont = Unbounded({
   subsets: ["latin", "cyrillic"],
   variable: "--font-editorial",
-  weight: ["500", "600", "700"],
+  weight: ["700", "800"],
   display: "swap",
 });
 
@@ -54,7 +56,7 @@ export const viewport: Viewport = {
   // PR-C: theme-color обеих тем (Uber-restraint: белый / уголь).
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
-    { media: "(prefers-color-scheme: dark)", color: "#0B0E14" },
+    { media: "(prefers-color-scheme: dark)", color: "#071815" },
   ],
 };
 

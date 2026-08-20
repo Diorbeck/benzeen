@@ -340,7 +340,7 @@ export function StationsNearby() {
                               role="presentation"
                             >
                               <div
-                                className="h-full rounded-full bg-primary-600 dark:bg-primary-500"
+                                className="h-full rounded-full bg-primary-500 dark:bg-primary-500"
                                 style={{
                                   width: `${Math.min(100, Math.round((st.litersAvailable / Math.max(1, st.capacityL)) * 100))}%`,
                                 }}
@@ -363,7 +363,7 @@ export function StationsNearby() {
                   STATION_FUELING_WEB_ENABLED && (
                     <a
                       href={`/${locale}/fueling/start?station=${s.id}`}
-                      className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-600 text-sm font-semibold text-white transition-colors hover:bg-primary-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
+                      className="mt-4 flex h-11 w-full items-center justify-center rounded-control bg-primary-500 text-sm font-semibold text-white transition-colors hover:bg-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60"
                     >
                       {t("startFueling")}
                     </a>
@@ -399,7 +399,7 @@ function FilterChip({
       aria-pressed={active}
       className={
         active
-          ? "shrink-0 whitespace-nowrap rounded-control bg-primary-600 px-3 py-1.5 text-xs font-medium text-white shadow-sm dark:bg-primary-600 dark:text-white"
+          ? "shrink-0 whitespace-nowrap rounded-control bg-primary-500 px-3 py-1.5 text-xs font-medium text-white shadow-sm dark:bg-primary-500 dark:text-white"
           : "shrink-0 whitespace-nowrap rounded-control bg-white/95 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm backdrop-blur transition hover:bg-white dark:bg-navy-900/95 dark:text-gray-300 dark:hover:bg-navy-900"
       }
     >
@@ -455,7 +455,7 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = stations.map((s) => {
         const marker = new maplibregl.Marker({
-          color: s.online ? "#2E5BFF" : "#9ca3af",
+          color: s.online ? "#0ABAB5" : "#9ca3af",
         })
           .setLngLat([s.lng, s.lat])
           .setPopup(new maplibregl.Popup({ offset: 16 }).setText(s.name))

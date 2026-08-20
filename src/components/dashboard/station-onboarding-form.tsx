@@ -177,7 +177,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
               void navigator.clipboard?.writeText(result.controllerKey);
               setCopied(true);
             }}
-            className="flex h-10 items-center gap-2 rounded-control bg-primary-600 px-4 text-sm font-semibold text-white transition hover:bg-primary-700"
+            className="flex h-10 items-center gap-2 rounded-control bg-primary-500 px-4 text-sm font-semibold text-white transition hover:bg-primary-600"
           >
             {copied ? (
               <Check className="h-4 w-4" aria-hidden />
@@ -490,7 +490,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
                         }
                         className={
                           active
-                            ? "h-9 rounded-control bg-primary-600 px-3 text-xs font-semibold text-white"
+                            ? "h-9 rounded-control bg-primary-500 px-3 text-xs font-semibold text-white"
                             : "h-9 rounded-control border border-gray-200 px-3 text-xs font-medium text-gray-600 transition hover:border-primary-600 dark:border-white/15 dark:text-gray-300"
                         }
                       >
@@ -558,7 +558,7 @@ export function StationOnboardingForm({ locale }: { locale: string }) {
           type="button"
           disabled={sending}
           onClick={() => void submit()}
-          className="flex h-12 items-center justify-center rounded-control bg-primary-600 px-6 text-sm font-semibold text-white transition hover:bg-primary-700 disabled:opacity-60"
+          className="flex h-12 items-center justify-center rounded-control bg-primary-500 px-6 text-sm font-semibold text-white transition hover:bg-primary-600 disabled:opacity-60"
         >
           {sending ? t("sending") : t("submit")}
         </button>

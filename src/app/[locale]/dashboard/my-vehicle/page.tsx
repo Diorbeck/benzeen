@@ -108,7 +108,7 @@ export default async function MyVehiclePage({
             <div className="mt-4">
               <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
                 <div
-                  className="h-full rounded-full bg-primary-600 transition-all"
+                  className="h-full rounded-full bg-primary-500 transition-all"
                   style={{
                     width: `${Math.min(100, (v.used / v.monthlyLimit) * 100)}%`,
                   }}

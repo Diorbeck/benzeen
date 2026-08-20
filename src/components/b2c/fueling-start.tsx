@@ -224,7 +224,7 @@ export function FuelingStart() {
                 }}
                 className={`h-11 rounded-control px-4 text-sm font-medium transition-colors ${
                   active
-                    ? "bg-primary-600 text-white"
+                    ? "bg-primary-500 text-white"
                     : "bg-gray-100 text-navy hover:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                 } ${disabled ? "cursor-not-allowed opacity-40" : ""}`}
               >
@@ -254,7 +254,7 @@ export function FuelingStart() {
                 onClick={() => setFuelType(s.fuelType)}
                 className={`rounded-control px-3 py-2.5 text-left transition-colors ${
                   active
-                    ? "bg-primary-600 text-white"
+                    ? "bg-primary-500 text-white"
                     : "bg-gray-100 text-navy hover:bg-gray-200 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
                 } ${empty ? "cursor-not-allowed opacity-40" : ""}`}
               >
@@ -335,7 +335,7 @@ export function FuelingStart() {
         type="button"
         onClick={submit}
         disabled={!canSubmit}
-        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-control bg-primary-600 text-sm font-semibold text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-control bg-primary-500 text-sm font-semibold text-white transition-colors hover:bg-primary-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting ? (
           <>

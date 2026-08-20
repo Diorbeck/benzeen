@@ -15,7 +15,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#0A1F44',
+  themeColor: '#0C2420',
 };
 
 export default function TgLayout({ children }: { children: React.ReactNode }) {

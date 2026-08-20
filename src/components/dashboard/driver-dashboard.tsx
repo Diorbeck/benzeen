@@ -131,7 +131,7 @@ export async function DriverDashboard({ locale }: { locale: string }) {
             </div>
             <button
               type="submit"
-              className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-700"
+              className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-primary-500 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-600"
             >
               {tOrder('submit')}
             </button>
@@ -162,7 +162,7 @@ export async function DriverDashboard({ locale }: { locale: string }) {
                     </div>
                     <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
                       <div
-                        className="h-full rounded-full bg-primary-600"
+                        className="h-full rounded-full bg-primary-500"
                         style={{ width: `${pct}%` }}
                       />
                     </div>

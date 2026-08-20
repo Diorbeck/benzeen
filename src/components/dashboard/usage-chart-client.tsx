@@ -40,7 +40,7 @@ export default function UsageChartClient({
               tickLine={false}
             />
             <YAxis hide />
-            <Bar dataKey="used" fill="rgb(37 99 235 / 0.8)" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="used" fill="rgb(10 186 181 / 0.8)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

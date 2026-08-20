@@ -62,7 +62,7 @@ export function AccountView({
       <header className="sticky top-0 z-header border-b border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href={`/${locale}`} className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary-600">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-primary-500">
               <Fuel className="h-5 w-5 text-white" aria-hidden />
             </span>
             <span className="truncate text-lg font-semibold tracking-tight text-navy dark:text-white">{t('title')}</span>
@@ -91,7 +91,7 @@ export function AccountView({
                   aria-current={active ? 'page' : undefined}
                   className={`flex min-h-11 shrink-0 items-center gap-2.5 whitespace-nowrap rounded-control px-5 py-2.5 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-navy-950 lg:w-full ${
                     active
-                      ? 'bg-primary-600 text-white'
+                      ? 'bg-primary-500 text-white'
                       : 'bg-gray-100 text-gray-600 hover:bg-gray-200/70 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 lg:bg-transparent lg:dark:bg-transparent'
                   }`}
                 >
