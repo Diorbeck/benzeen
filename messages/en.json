@@ -1413,6 +1413,8 @@
     "liters": "{n} L",
     "noData": "No data",
     "kmAway": "{km} km away",
+    "kmShort": "{km} km",
+    "driveTime": "~{n} min",
     "openInMaps": "Open in maps",
     "emptyTitle": "No stations found",
     "emptyDesc": "Try clearing the fuel filter or changing your search.",
@@ -1522,6 +1524,7 @@
     "dispenserDisabled": "Out of service",
     "stepFuel": "Fuel",
     "stepAmount": "How much",
+    "stepOf": "Step {n} of {total}",
     "backAria": "Back",
     "next": "Next",
     "dispenserBusy": "Busy",
@@ -1715,5 +1718,20 @@
     "retrySent": "Receipt sent",
     "retryFailed": "Failed again",
     "retrySkipped": "Soliq not connected"
+  },
+  "tabbar": {
+    "home": "Home",
+    "map": "Map",
+    "orders": "Orders",
+    "profile": "Profile"
+  },
+  "homeApp": {
+    "fuelAtStation": "Fuel at a station",
+    "fuelAtStationDesc": "Pay at the pump from your phone",
+    "delivery": "Fuel delivery",
+    "deliveryDesc": "We bring it to your car",
+    "myCar": "My car",
+    "lastOrder": "Last order",
+    "mapTitle": "Stations nearby"
   }
 }

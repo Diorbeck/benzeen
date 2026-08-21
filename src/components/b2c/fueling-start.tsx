@@ -55,6 +55,17 @@ const PAGE_STEP_UZS = 50_000;
 const DEFAULT_AMOUNT_UZS = 100_000;
 const MAX_AMOUNT_UZS = 2_000_000;
 
+const STEP_ORDER: Step[] = ["dispenser", "fuel", "amount"];
+
+/** Лёгкий тактильный отклик там, где браузер умеет (iOS Safari — нет, и ок). */
+function buzz(ms: number) {
+  try {
+    navigator.vibrate?.(ms);
+  } catch {
+    /* нет поддержки — тихо пропускаем */
+  }
+}
+
 export function FuelingStart() {
   const t = useTranslations("fueling");
   const tf = useTranslations("stations.fuel");
@@ -180,13 +191,19 @@ export function FuelingStart() {
     [maxAmount],
   );
 
+  const buzzBucketRef = useRef(0);
+
   const onTankPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (mode === "full") return;
     tankRectRef.current = e.currentTarget.getBoundingClientRect();
     e.currentTarget.setPointerCapture(e.pointerId);
     setDragging(true);
+    buzz(8);
     const v = amountFromY(e.clientY);
-    if (v !== null) setAmountUzs(v);
+    if (v !== null) {
+      buzzBucketRef.current = Math.floor(v / 10_000);
+      setAmountUzs(v);
+    }
   };
 
   const onTankPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -196,7 +213,15 @@ export function FuelingStart() {
       rafRef.current = requestAnimationFrame(() => {
         rafRef.current = null;
         const v = amountFromY(pendingYRef.current);
-        if (v !== null) setAmountUzs(v);
+        if (v !== null) {
+          // Тактильный «щелчок» на каждые 10 000 сум — палец чувствует шкалу.
+          const bucket = Math.floor(v / 10_000);
+          if (bucket !== buzzBucketRef.current) {
+            buzzBucketRef.current = bucket;
+            buzz(4);
+          }
+          setAmountUzs(v);
+        }
       });
     }
   };
@@ -273,6 +298,7 @@ export function FuelingStart() {
 
   async function submit() {
     if (!station || !fuelType || dispenserNumber === null || submitting) return;
+    buzz(20);
     setSubmitting(true);
     setError(null);
     try {
@@ -292,7 +318,11 @@ export function FuelingStart() {
         }),
       });
       if (res.status === 401) {
-        router.push(`/${locale}/client-login`);
+        // После входа человек должен вернуться на этот же экран заправки.
+        const back = encodeURIComponent(
+          `/${locale}/fueling/start?station=${station.id}`,
+        );
+        router.push(`/${locale}/client-login?callbackUrl=${back}`);
         return;
       }
       const body = (await res.json()) as {
@@ -347,12 +377,19 @@ export function FuelingStart() {
         ? t("stepFuel")
         : t("stepAmount");
 
+  const stepIndex = STEP_ORDER.indexOf(step) + 1;
+
   return (
     <FlowShell
       title={stepTitle}
       subtitle={station.name}
       onBack={back}
       backAria={t("backAria")}
+      step={{
+        current: stepIndex,
+        total: STEP_ORDER.length,
+        label: t("stepOf", { n: stepIndex, total: STEP_ORDER.length }),
+      }}
       action={
         <button
           type="button"
@@ -371,7 +408,7 @@ export function FuelingStart() {
       )}
 
       {step === "dispenser" && (
-        <>
+        <div key="dispenser" className="benzeen-step-in">
           <p className="text-sm text-gray-600 dark:text-gray-300">
             {t("stepDispenserHint")}
           </p>
@@ -401,7 +438,7 @@ export function FuelingStart() {
                     setDispenserNumber(d.number);
                     setIdentifiedBy("MANUAL");
                   }}
-                  className={`min-h-[7rem] rounded-card border-2 bg-white p-4 text-left transition-colors dark:bg-navy-900 ${
+                  className={`min-h-[7rem] rounded-card border-2 bg-white p-4 text-left transition-[transform,border-color] active:scale-[0.98] dark:bg-navy-900 ${
                     active
                       ? "border-primary-500"
                       : "border-gray-200 dark:border-white/10"
@@ -426,11 +463,11 @@ export function FuelingStart() {
               );
             })}
           </div>
-        </>
+        </div>
       )}
 
       {step === "fuel" && (
-        <ul className="space-y-3">
+        <ul key="fuel" className="benzeen-step-in space-y-3">
           {fuels.map((s) => {
             const active = s.fuelType === fuelType;
             return (
@@ -438,7 +475,7 @@ export function FuelingStart() {
                 <button
                   type="button"
                   onClick={() => setFuelType(s.fuelType)}
-                  className={`flex w-full items-center justify-between gap-3 rounded-card border-2 bg-white px-4 py-4 text-left transition-colors dark:bg-navy-900 ${
+                  className={`flex w-full items-center justify-between gap-3 rounded-card border-2 bg-white px-4 py-4 text-left transition-[transform,border-color] active:scale-[0.98] dark:bg-navy-900 ${
                     active
                       ? "border-primary-500"
                       : "border-gray-200 hover:border-primary-500/60 dark:border-white/10"
@@ -461,16 +498,32 @@ export function FuelingStart() {
       )}
 
       {step === "amount" && price !== null && (
-        <div className="flex flex-1 flex-col">
-          {/* Главный элемент — вертикальный «бак», заполняющийся снизу вверх. */}
-          <div className="flex flex-1 items-center justify-center gap-3 py-4">
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
-              <p className="font-display text-2xl font-bold leading-none tabular-nums">
-                {formatMoney(holdUzs, locale)}
-              </p>
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {t("uzsShort")}
-              </p>
+        <div key="amount" className="benzeen-step-in flex flex-1 flex-col">
+          {/* Главный экран заказа: крупные цифры над баком, бак — герой по
+              центру, кнопки точной подгонки по бокам. */}
+          <div className="flex flex-1 flex-col items-center justify-center gap-7 py-4">
+            <div className="flex w-full items-end justify-center gap-10">
+              <div className="min-w-0 text-center">
+                <p className="font-display text-[30px] font-bold leading-none tabular-nums">
+                  {formatMoney(holdUzs, locale)}
+                </p>
+                <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {t("uzsShort")}
+                </p>
+              </div>
+              <div className="min-w-0 text-center">
+                <p className="font-display text-[30px] font-bold leading-none tabular-nums">
+                  {mode === "full"
+                    ? t("fullTankUpTo", { n: Math.round(fullLiters) })
+                    : liters.toFixed(1)}
+                </p>
+                <p className="mt-2 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {t("litersShort")}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-5">
               <button
                 type="button"
                 onClick={() =>
@@ -478,62 +531,52 @@ export function FuelingStart() {
                 }
                 disabled={mode === "full" || amountUzs <= MIN_HOLD_UZS}
                 aria-label={t("decrease")}
-                className="mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-navy transition-colors hover:bg-gray-200 disabled:opacity-40 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-500/10 text-primary-800 transition-[transform,background-color] hover:bg-primary-500/20 active:scale-90 disabled:opacity-40 dark:bg-primary-500/15 dark:text-primary-500"
               >
-                <Minus className="h-5 w-5" aria-hidden />
+                <Minus className="h-6 w-6" aria-hidden />
               </button>
-            </div>
 
-            {/* Бак — вертикальный слайдер: ведёшь палец вверх — объём растёт.
-                touch-action: none обязателен, иначе Safari отдаёт жест скроллу
-                страницы. В режиме «Полный бак» слайдер погашен: объём там
-                определяется по факту заливки. */}
-            <div
-              ref={tankRef}
-              role="slider"
-              aria-label={t("stepAmount")}
-              aria-orientation="vertical"
-              aria-valuemin={MIN_HOLD_UZS}
-              aria-valuemax={maxAmount}
-              aria-valuenow={mode === "full" ? maxAmount : amountUzs}
-              aria-valuetext={`${formatMoney(holdUzs, locale)} ${t("uzsShort")} · ${
-                mode === "full"
-                  ? t("fullTankUpTo", { n: Math.round(fullLiters) })
-                  : `${liters.toFixed(1)} ${t("litersShort")}`
-              }`}
-              aria-disabled={mode === "full"}
-              tabIndex={mode === "full" ? -1 : 0}
-              onPointerDown={onTankPointerDown}
-              onPointerMove={onTankPointerMove}
-              onPointerUp={onTankPointerUp}
-              onPointerCancel={onTankPointerUp}
-              onKeyDown={onTankKeyDown}
-              className={`relative h-64 w-24 select-none overflow-hidden rounded-card border-2 border-gray-200 bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-white/10 dark:bg-white/5 ${
-                mode === "full"
-                  ? "opacity-60"
-                  : "cursor-grab touch-none active:cursor-grabbing"
-              }`}
-            >
+              {/* Бак — вертикальный слайдер: ведёшь палец вверх — объём растёт.
+                  touch-action: none обязателен, иначе Safari отдаёт жест скроллу
+                  страницы. В режиме «Полный бак» слайдер погашен: объём там
+                  определяется по факту заливки. */}
               <div
-                className={`pointer-events-none absolute inset-x-0 bottom-0 h-full origin-bottom bg-primary-500 ${
-                  dragging ? "" : "transition-transform duration-200"
+                ref={tankRef}
+                role="slider"
+                aria-label={t("stepAmount")}
+                aria-orientation="vertical"
+                aria-valuemin={MIN_HOLD_UZS}
+                aria-valuemax={maxAmount}
+                aria-valuenow={mode === "full" ? maxAmount : amountUzs}
+                aria-valuetext={`${formatMoney(holdUzs, locale)} ${t("uzsShort")} · ${
+                  mode === "full"
+                    ? t("fullTankUpTo", { n: Math.round(fullLiters) })
+                    : `${liters.toFixed(1)} ${t("litersShort")}`
                 }`}
-                style={{ transform: `scaleY(${fillFraction})` }}
-              />
-              <span className="pointer-events-none absolute inset-x-0 top-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300">
-                {fuelType ? tf(fuelType) : ""}
-              </span>
-            </div>
+                aria-disabled={mode === "full"}
+                tabIndex={mode === "full" ? -1 : 0}
+                onPointerDown={onTankPointerDown}
+                onPointerMove={onTankPointerMove}
+                onPointerUp={onTankPointerUp}
+                onPointerCancel={onTankPointerUp}
+                onKeyDown={onTankKeyDown}
+                className={`relative h-[clamp(15rem,40dvh,24rem)] w-36 select-none overflow-hidden rounded-card border-2 border-gray-200 bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-white/10 dark:bg-white/5 ${
+                  mode === "full"
+                    ? "opacity-60"
+                    : "cursor-grab touch-none active:cursor-grabbing"
+                }`}
+              >
+                <div
+                  className={`pointer-events-none absolute inset-x-0 bottom-0 h-full origin-bottom bg-primary-500 ${
+                    dragging ? "" : "transition-transform duration-200"
+                  }`}
+                  style={{ transform: `scaleY(${fillFraction})` }}
+                />
+                <span className="pointer-events-none absolute inset-x-0 top-3 text-center text-sm font-semibold text-gray-600 dark:text-gray-300">
+                  {fuelType ? tf(fuelType) : ""}
+                </span>
+              </div>
 
-            <div className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
-              <p className="font-display text-2xl font-bold leading-none tabular-nums">
-                {mode === "full"
-                  ? t("fullTankUpTo", { n: Math.round(fullLiters) })
-                  : liters.toFixed(1)}
-              </p>
-              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-                {t("litersShort")}
-              </p>
               <button
                 type="button"
                 onClick={() =>
@@ -541,9 +584,9 @@ export function FuelingStart() {
                 }
                 disabled={mode === "full" || amountUzs >= maxAmount}
                 aria-label={t("increase")}
-                className="mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-navy transition-colors hover:bg-gray-200 disabled:opacity-40 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                className="flex h-14 w-14 items-center justify-center rounded-full bg-primary-500/10 text-primary-800 transition-[transform,background-color] hover:bg-primary-500/20 active:scale-90 disabled:opacity-40 dark:bg-primary-500/15 dark:text-primary-500"
               >
-                <Plus className="h-5 w-5" aria-hidden />
+                <Plus className="h-6 w-6" aria-hidden />
               </button>
             </div>
           </div>

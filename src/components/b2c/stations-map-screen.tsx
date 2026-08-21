@@ -4,11 +4,12 @@ import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, ChevronLeft, Crosshair, WifiOff } from "lucide-react";
+import { ArrowLeft, ChevronLeft, Crosshair, Fuel, WifiOff } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { haversineKm } from "@/lib/geo";
 import { STATION_FUELING_WEB_ENABLED } from "@/lib/features";
 import { StationsMapCanvas } from "./home-stations-map";
+import { Tabbar } from "./tabbar";
 import {
   DEFAULT_RADIUS_KM,
   fillPercent,
@@ -132,7 +133,10 @@ export function StationsMapScreen({ locale }: { locale: string }) {
       </div>
 
       {!open && (
-      <div className="absolute right-3 z-20" style={{ bottom: PEEK_PX + 12 }}>
+      <div
+        className="absolute right-3 z-20"
+        style={{ bottom: `calc(${PEEK_PX + 12}px + 3.5rem + env(safe-area-inset-bottom))` }}
+      >
         <button
           type="button"
           onClick={locate}
@@ -147,7 +151,7 @@ export function StationsMapScreen({ locale }: { locale: string }) {
       {/* Нижняя шторка: список ближайших или карточка выбранной АЗС. */}
       <section
         aria-label={t("sheetAria")}
-        className={`absolute inset-x-0 bottom-0 z-30 flex h-[86dvh] flex-col rounded-t-card border-t border-paper-300 bg-white shadow-[0_-8px_30px_rgba(11,14,20,0.15)] dark:border-navy-700 dark:bg-navy-900 ${
+        className={`absolute inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-30 flex h-[80dvh] flex-col rounded-t-card border-t border-paper-300 bg-white shadow-[0_-8px_30px_rgba(11,14,20,0.15)] dark:border-navy-700 dark:bg-navy-900 ${
           dragging ? "" : "transition-transform duration-300 ease-out"
         }`}
         style={{ transform: sheetTransform }}
@@ -217,7 +221,7 @@ export function StationsMapScreen({ locale }: { locale: string }) {
                     <button
                       type="button"
                       onClick={() => pick(s.id)}
-                      className={`w-full rounded-card border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:border-primary-500 dark:border-white/10 dark:bg-navy-900 dark:hover:border-primary-500 ${
+                      className={`w-full rounded-card border border-gray-200 bg-white px-4 py-3 text-left transition-[transform,border-color] hover:border-primary-500 active:scale-[0.99] dark:border-white/10 dark:bg-navy-900 dark:hover:border-primary-500 ${
                         dim ? "opacity-50" : ""
                       }`}
                     >
@@ -290,6 +294,8 @@ export function StationsMapScreen({ locale }: { locale: string }) {
           </div>
         )}
       </section>
+
+      <Tabbar locale={locale} />
     </div>
   );
 }
@@ -302,14 +308,24 @@ function StationSheetCard({
   locale: string;
 }) {
   const t = useTranslations("stations");
+  // Время в пути — грубая оценка по городской скорости ~28 км/ч: клиенту нужен
+  // порядок величины «ехать 5 минут или 25», а не навигация.
+  const driveMinutes = Math.max(1, Math.round((station.distanceKm / 28) * 60));
 
   return (
     <div>
-      <p className="text-sm text-gray-600 dark:text-gray-300">
-        {station.address}
+      {/* Место под фото заправки: появится вместе с фотографиями объектов. */}
+      <div className="flex h-36 items-center justify-center rounded-card bg-gray-100 dark:bg-white/5">
+        <Fuel className="h-10 w-10 text-gray-300 dark:text-white/15" aria-hidden />
+      </div>
+
+      <p className="mt-3 font-display text-lg font-bold tabular-nums">
+        {t("kmShort", { km: station.distanceKm.toFixed(1) })}
+        <span className="mx-2 text-gray-300 dark:text-gray-600">·</span>
+        {t("driveTime", { n: driveMinutes })}
       </p>
-      <p className="mt-1 text-xs tabular-nums text-gray-500 dark:text-gray-400">
-        {t("kmAway", { km: station.distanceKm.toFixed(1) })}
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+        {station.address}
       </p>
 
       {!station.online && (

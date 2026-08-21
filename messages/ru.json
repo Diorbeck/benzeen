@@ -1413,6 +1413,8 @@
     "liters": "{n} л",
     "noData": "Нет данных",
     "kmAway": "{km} км от вас",
+    "kmShort": "{km} км",
+    "driveTime": "~{n} мин",
     "openInMaps": "Открыть в картах",
     "emptyTitle": "АЗС не найдены",
     "emptyDesc": "Попробуйте убрать фильтр по виду топлива или изменить запрос.",
@@ -1522,6 +1524,7 @@
     "dispenserDisabled": "Не работает",
     "stepFuel": "Топливо",
     "stepAmount": "Сколько заправить",
+    "stepOf": "Шаг {n} из {total}",
     "backAria": "Назад",
     "next": "Далее",
     "dispenserBusy": "Занята",
@@ -1715,5 +1718,20 @@
     "retrySent": "Чек ушёл",
     "retryFailed": "Снова не вышло",
     "retrySkipped": "Солик не подключён"
+  },
+  "tabbar": {
+    "home": "Главная",
+    "map": "Карта",
+    "orders": "Заказы",
+    "profile": "Профиль"
+  },
+  "homeApp": {
+    "fuelAtStation": "Заправиться на АЗС",
+    "fuelAtStationDesc": "Оплата у колонки с телефона",
+    "delivery": "Доставка топлива",
+    "deliveryDesc": "Привезём к машине",
+    "myCar": "Моя машина",
+    "lastOrder": "Последний заказ",
+    "mapTitle": "АЗС рядом"
   }
 }

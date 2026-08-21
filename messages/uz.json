@@ -1413,6 +1413,8 @@
     "liters": "{n} l",
     "noData": "Ma'lumot yo'q",
     "kmAway": "Sizdan {km} km",
+    "kmShort": "{km} km",
+    "driveTime": "~{n} daq",
     "openInMaps": "Xaritada ochish",
     "emptyTitle": "Shoxobcha topilmadi",
     "emptyDesc": "Yoqilg'i turi bo'yicha filtrni olib tashlab ko'ring yoki so'rovni o'zgartiring.",
@@ -1522,6 +1524,7 @@
     "dispenserDisabled": "Ishlamaydi",
     "stepFuel": "Yoqilgʻi",
     "stepAmount": "Qancha quyiladi",
+    "stepOf": "Qadam {n} / {total}",
     "backAria": "Orqaga",
     "next": "Keyingisi",
     "dispenserBusy": "Band",
@@ -1715,5 +1718,20 @@
     "retrySent": "Chek yuborildi",
     "retryFailed": "Yana bo‘lmadi",
     "retrySkipped": "Soliq ulanmagan"
+  },
+  "tabbar": {
+    "home": "Asosiy",
+    "map": "Xarita",
+    "orders": "Buyurtmalar",
+    "profile": "Profil"
+  },
+  "homeApp": {
+    "fuelAtStation": "AYOQSHda yoqilg'i quyish",
+    "fuelAtStationDesc": "Kolonkada telefondan toʻlov",
+    "delivery": "Yoqilg'i yetkazib berish",
+    "deliveryDesc": "Mashinangizgacha olib kelamiz",
+    "myCar": "Mening mashinam",
+    "lastOrder": "Oxirgi buyurtma",
+    "mapTitle": "Yaqin-atrofdagi shoxobchalar"
   }
 }
