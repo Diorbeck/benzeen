@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { FuelingStart } from '@/components/b2c/fueling-start';
 import { StationFuelingAppOnly } from '@/components/b2c/app-only-notice';
 import { STATION_FUELING_WEB_ENABLED } from '@/lib/features';
@@ -10,8 +11,12 @@ export default async function FuelingStartPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  // Suspense обязателен: FuelingStart читает useSearchParams, а страница
+  // статически пререндерится — без границы прод-сборка падает.
   return STATION_FUELING_WEB_ENABLED ? (
-    <FuelingStart />
+    <Suspense fallback={null}>
+      <FuelingStart />
+    </Suspense>
   ) : (
     <div className="min-h-screen bg-canvas text-navy dark:bg-navy-950 dark:text-white">
       <StationFuelingAppOnly locale={locale} />

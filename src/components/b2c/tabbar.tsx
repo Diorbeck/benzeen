@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -9,7 +10,18 @@ import { Clock, Home, Map, User } from "lucide-react";
 // Стоит на всех основных экранах; шаги оформления заказа идут без него, чтобы
 // ничто не уводило из сценария. «Заказы» и «Профиль» ведут в один кабинет, но
 // на разные вкладки — активная подсвечивается по параметру tab.
+// useSearchParams() требует Suspense-границы при статическом пререндере
+// (Next 15), иначе прод-сборка падает. Обёртка здесь — чтобы каждый экран,
+// подключающий таббар, не помнил об этом сам.
 export function Tabbar({ locale }: { locale: string }) {
+  return (
+    <Suspense fallback={null}>
+      <TabbarInner locale={locale} />
+    </Suspense>
+  );
+}
+
+function TabbarInner({ locale }: { locale: string }) {
   const t = useTranslations("tabbar");
   const pathname = usePathname() ?? "";
   const tab = useSearchParams()?.get("tab");
