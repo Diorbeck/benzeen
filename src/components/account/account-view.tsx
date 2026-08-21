@@ -1,11 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Fuel, User, Car, CreditCard, MapPin, Clock, LifeBuoy, type LucideIcon } from 'lucide-react';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { B2CThemeToggle } from '@/components/b2c/theme-toggle';
+import { Tabbar, TABBAR_SPACE } from '@/components/b2c/tabbar';
 import {
   type AccountOrder,
   type AccountCar,
@@ -57,8 +59,15 @@ export function AccountView({
   const t = useTranslations('account');
   const [tab, setTab] = useState<AccountTab>('profile');
 
+  // Вкладку можно открыть по ссылке (?tab=history — «Заказы» из таббара);
+  // повторный тап по таббару на этой же странице тоже должен переключить её.
+  const qsTab = useSearchParams()?.get('tab');
+  useEffect(() => {
+    if (qsTab && TABS.some((x) => x.key === qsTab)) setTab(qsTab as AccountTab);
+  }, [qsTab]);
+
   return (
-    <div className="min-h-screen bg-canvas dark:bg-navy-950 text-navy dark:text-white">
+    <div className={`min-h-screen bg-canvas text-navy dark:bg-navy-950 dark:text-white ${TABBAR_SPACE}`}>
       <header className="sticky top-0 z-header border-b border-gray-200/60 dark:border-white/10 bg-white dark:bg-navy-900">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6">
           <Link href={`/${locale}`} className="flex min-w-0 items-center gap-2.5">
@@ -114,6 +123,8 @@ export function AccountView({
           </div>
         </div>
       </main>
+
+      <Tabbar locale={locale} />
     </div>
   );
 }

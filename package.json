@@ -31,6 +31,7 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:prod": "prisma migrate deploy",
     "db:seed": "prisma generate && prisma db seed",
+    "demo:stations": "npx tsx prisma/seed-stations.ts && node demo-telemetry.mjs",
     "db:studio": "prisma studio",
     "db:up": "docker compose up -d",
     "test": "vitest run",

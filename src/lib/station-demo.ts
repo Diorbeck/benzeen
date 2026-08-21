@@ -1,4 +1,4 @@
-import type { TankLike } from './stations';
+import { isReadingFresh, type TankLike } from './stations';
 
 // Симулятор датчиков для демонстрационных АЗС.
 //
@@ -53,6 +53,15 @@ export type DemoTank = TankLike & { id: string };
 export function simulateDemoTanks<T extends DemoTank>(tanks: readonly T[], now: Date = new Date()): T[] {
   return tanks.map((tank) => {
     if (tank.status === 'MAINTENANCE') return tank;
+    // Резервуар, который ни разу не отчитался, — это «датчик ещё не подключён»:
+    // он должен честно показывать «нет данных» и на демо-АЗС, иначе состояние
+    // не проверить нигде. Симулируются только резервуары с историей показаний.
+    if (tank.lastReadingAt === null && tank.currentLevelL === null) return tank;
+    // Свежее показание важнее симуляции: локальный имитатор (и будущий реальный
+    // контроллер) пишет настоящие уровни, и подменять их нельзя — иначе карточка
+    // на карте и экран заправки показывают разные цифры. Симуляция — фолбэк на
+    // случай, когда телеметрии нет и данные устарели.
+    if (isReadingFresh(tank.lastReadingAt, now) && tank.currentLevelL !== null) return tank;
     const level = Math.round(tank.capacityL * demoFillRatio(`${tank.id}:${tank.fuelType}`, now));
     return { ...tank, currentLevelL: level, lastReadingAt: now };
   });

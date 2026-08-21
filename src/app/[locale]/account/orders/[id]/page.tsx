@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { B2CHeader } from '@/components/b2c/header';
 import { OrderStatus } from '@/components/account/order-status';
+import { Tabbar } from '@/components/b2c/tabbar';
 
 export default async function ClientOrderPage({
   params,
@@ -24,7 +25,7 @@ export default async function ClientOrderPage({
   if (!order) notFound();
 
   return (
-    <div className="min-h-screen bg-white dark:bg-navy-900 text-gray-900">
+    <div className="min-h-screen bg-white pb-[calc(3.5rem+env(safe-area-inset-bottom))] text-gray-900 dark:bg-navy-900">
       <B2CHeader />
       <OrderStatus
         locale={locale}
@@ -46,6 +47,7 @@ export default async function ClientOrderPage({
           rating: order.rating,
         }}
       />
+      <Tabbar locale={locale} />
     </div>
   );
 }
