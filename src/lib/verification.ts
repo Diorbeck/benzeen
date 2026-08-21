@@ -201,6 +201,19 @@ export async function verifyCode(params: {
     return { ok: false, error: 'invalid_code' };
   }
 
+  // Тестовый мастер-код для локальной разработки: SMS на реальный телефон не
+  // уходит (коды печатаются в лог dev-сервера), а проверять вход с устройства
+  // нужно. Двойной предохранитель: работает только вне production И только
+  // если код явно задан в окружении. На проде NODE_ENV=production — ветка
+  // мертва даже при случайно установленной переменной.
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    process.env.DEV_MASTER_OTP &&
+    code === process.env.DEV_MASTER_OTP
+  ) {
+    return { ok: true };
+  }
+
   const normalized = identifier.includes('@')
     ? identifier.trim().toLowerCase()
     : identifier.trim();
