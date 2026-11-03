@@ -7,7 +7,7 @@ import { STATION_FUELING_WEB_ENABLED } from "@/lib/features";
 import type { Map as MlMap, Marker } from "maplibre-gl";
 import { Fuel, Navigation, RefreshCw, Search, WifiOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { mapProvider, localizeMapLabels } from "@/components/map/provider";
+import { mapProvider, localizeMapLabels, loadMapLibre } from "@/components/map/provider";
 import { formatMoney } from "@/lib/format";
 import { distanceKm, STATION_FUEL_TYPES } from "@/lib/stations";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -413,13 +413,16 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  // Карта создаётся асинхронно: маркеры ждут её, иначе ранний ответ API
+  // проскакивает мимо и точки не появляются.
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     let map: MlMap | null = null;
     let ro: ResizeObserver | null = null;
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await loadMapLibre();
       if (cancelled || !containerRef.current) return;
       map = new maplibregl.Map({
         container: containerRef.current,
@@ -431,6 +434,7 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
         attributionControl: { compact: true },
       });
       mapRef.current = map;
+      setReady(true);
       map.on("load", () =>
         localizeMapLabels(map!, document.documentElement.lang || "ru"),
       );
@@ -450,7 +454,7 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
     if (!map) return;
     let disposed = false;
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await loadMapLibre();
       if (disposed || !mapRef.current) return;
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = stations.map((s) => {
@@ -478,7 +482,7 @@ function StationsMap({ stations }: { stations: readonly Station[] }) {
     return () => {
       disposed = true;
     };
-  }, [stations]);
+  }, [stations, ready]);
 
   return (
     <div className="absolute inset-0 h-full w-full">

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { useTheme } from 'next-themes';
-import { mapProvider, localizeMapLabels } from './provider';
+import { mapProvider, localizeMapLabels, loadMapLibre } from './provider';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 type LatLng = { lat: number; lng: number };
@@ -37,7 +37,7 @@ export function TrackingMap({
     let ro: ResizeObserver | null = null;
 
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = await loadMapLibre();
       if (cancelled || !containerRef.current) return;
 
       map = new maplibregl.Map({

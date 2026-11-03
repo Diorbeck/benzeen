@@ -18,6 +18,7 @@ import {
   mapProvider,
   localizeMapLabels,
   TASHKENT_CENTER,
+  loadMapLibre,
 } from "@/components/map/provider";
 import { useHtmlDark } from "@/components/map/use-html-dark";
 import { formatMoney } from "@/lib/format";
@@ -325,7 +326,7 @@ function StationsMapCanvas({
     let ro: ResizeObserver | null = null;
 
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await loadMapLibre();
       if (cancelled || !ref.current) return;
 
       map = new maplibregl.Map({
@@ -416,7 +417,7 @@ function StationsMapCanvas({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await loadMapLibre();
       const map = mapRef.current;
       if (cancelled || !map) return;
 

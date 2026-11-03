@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { LocateFixed } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { mapProvider, TASHKENT_CENTER, localizeMapLabels } from './provider';
+import { mapProvider, TASHKENT_CENTER, localizeMapLabels, loadMapLibre } from './provider';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 export type LatLng = { lat: number; lng: number };
@@ -64,7 +64,7 @@ export function MapPicker({
       }
       if (cancelled) return;
 
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = await loadMapLibre();
       if (cancelled || !containerRef.current) return;
 
       const start = value ?? TASHKENT_CENTER;
