@@ -541,7 +541,7 @@ function StationsMapCanvas({
     }
     let cancelled = false;
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await loadMapLibre();
       if (cancelled) return;
       if (!carRef.current) {
         const el = document.createElement("div");
@@ -699,7 +699,8 @@ function routeArc(route: Route, steps = 48): number[][] {
 
 function routeGradient(progress: number): unknown[] {
   const p = Math.max(0.001, Math.min(1, progress));
-  if (p >= 1) {
+  // Стопы interpolate должны строго возрастать: у самого конца рисуем целиком.
+  if (p >= 0.999) {
     return ["interpolate", ["linear"], ["line-progress"], 0, ROUTE_COLOR, 1, ROUTE_COLOR];
   }
   return [
@@ -710,7 +711,7 @@ function routeGradient(progress: number): unknown[] {
     ROUTE_COLOR,
     p,
     ROUTE_COLOR,
-    Math.min(1, p + 0.0001),
+    p + 0.0001,
     "rgba(10,186,181,0)",
     1,
     "rgba(10,186,181,0)",
