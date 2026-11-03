@@ -821,6 +821,7 @@
       "orderTitle": "Куда привезти топливо",
       "couriersOnline": "курьеры онлайн",
       "addressLabel": "Куда доставить",
+      "addressHere": "Ваше местоположение — уточним дальше",
       "fuelLabel": "Вид топлива",
       "volumeLabel": "Объём",
       "liters": "{n} л",

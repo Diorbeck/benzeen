@@ -821,6 +821,7 @@
       "orderTitle": "Where to bring the fuel",
       "couriersOnline": "couriers online",
       "addressLabel": "Delivery address",
+      "addressHere": "Your location — fine-tune next",
       "fuelLabel": "Fuel type",
       "volumeLabel": "Volume",
       "liters": "{n} L",

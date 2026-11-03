@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { ArrowRight, ShieldCheck, Smartphone, Wallet } from "lucide-react";
 import { formatMoney } from "@/lib/format";
+import { Ticker } from "@/components/motion/ticker";
 import { fillPercent, type HomeStations } from "./use-home-stations";
 
 // Ряд под первым экраном: слева — ближайшие АЗС списком (то же, что на карте,
@@ -11,6 +12,7 @@ import { fillPercent, type HomeStations } from "./use-home-stations";
 // приложения: это то, чем Benzeen отличается от QR-оплаты с комиссией 3%.
 
 const NEARBY_LIMIT = 4;
+const pct = (n: number) => `${n}%`;
 
 export function NearbyAndPay({
   locale,
@@ -58,7 +60,7 @@ export function NearbyAndPay({
             {[0, 1, 2].map((i) => (
               <li
                 key={i}
-                className="h-12 animate-pulse rounded-control bg-gray-100 dark:bg-navy-800"
+                className="h-12 animate-pulse rounded-control bg-mist-100 dark:bg-navy-800"
               />
             ))}
           </ul>
@@ -71,7 +73,7 @@ export function NearbyAndPay({
         )}
 
         {rows.length > 0 && (
-          <ul className="mt-2 divide-y divide-gray-100 dark:divide-navy-700">
+          <ul className="mt-2 divide-y divide-mist-100 dark:divide-navy-700">
             {rows.map((s) => {
               const main = s.stocks[0];
               const fill = main ? fillPercent(main) : null;
@@ -95,18 +97,25 @@ export function NearbyAndPay({
                   <div className="flex shrink-0 items-center gap-4">
                     {fill !== null && (
                       <span className="text-right">
-                        <span className="block text-sm font-semibold tabular-nums text-navy dark:text-white">
-                          {fill}%
-                        </span>
+                        <Ticker
+                          value={fill}
+                          format={pct}
+                          className="block text-sm font-semibold tabular-nums text-navy dark:text-white"
+                        />
                         <span className="block text-caption font-normal text-gray-500 dark:text-gray-400">
                           {t("console.inTank")}
                         </span>
                       </span>
                     )}
                     <span className="text-right text-base font-bold tabular-nums text-navy dark:text-white">
-                      {main?.priceUzs
-                        ? formatMoney(main.priceUzs, locale)
-                        : "—"}
+                      {main?.priceUzs ? (
+                        <Ticker
+                          value={main.priceUzs}
+                          format={(n) => formatMoney(n, locale)}
+                        />
+                      ) : (
+                        "—"
+                      )}
                       <span className="block text-caption font-normal text-gray-500 dark:text-gray-400">
                         {t("console.perLiter")}
                       </span>

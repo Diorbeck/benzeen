@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { ArrowRight, MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { asGasoline, calcOrderPrice, type FuelType } from "@/lib/pricing";
 import { B2C_MIN_ORDER_LITERS } from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
 import { track } from "@/lib/analytics";
+import { spring } from "@/lib/motion";
+import { Ticker } from "@/components/motion/ticker";
+import { Magnetic } from "@/components/motion/magnetic";
 
 // Левая карточка первого экрана — главное действие: доставить топливо к машине.
 // Цена считается по тем же ценам из таблицы Price, что и в полном флоу заказа,
@@ -22,7 +26,14 @@ const FUEL_LABEL: Record<FuelType, string> = {
 };
 const MAX_LITERS = 100;
 
-export function OrderPanel({ locale }: { locale: string }) {
+export function OrderPanel({
+  locale,
+  located = false,
+}: {
+  locale: string;
+  /** Адрес известен по геолокации — на карте рядом рисуется маршрут. */
+  located?: boolean;
+}) {
   const t = useTranslations("b2c");
   const router = useRouter();
   const [fuel, setFuel] = useState<FuelType>("AI_92");
@@ -65,6 +76,11 @@ export function OrderPanel({ locale }: { locale: string }) {
     router.push(`/${locale}/benzin?fuel=${fuel}&volume=${liters}`);
   };
 
+  const formatTotal = useCallback(
+    (n: number) => t("console.money", { n: formatMoney(n, locale) }),
+    [t, locale],
+  );
+
   const fillRatio =
     (liters - B2C_MIN_ORDER_LITERS) / (MAX_LITERS - B2C_MIN_ORDER_LITERS);
 
@@ -97,13 +113,19 @@ export function OrderPanel({ locale }: { locale: string }) {
             id="order-address"
             type="button"
             onClick={() => startOrder("console_address")}
-            className="mt-1.5 flex h-12 w-full items-center gap-2.5 rounded-control border border-paper-300 bg-paper-100 px-3.5 text-left text-body text-gray-500 transition-colors hover:border-sky-400 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-navy-700 dark:bg-navy-800 dark:text-gray-400 dark:hover:border-sky-400 dark:hover:text-white"
+            className={`mt-1.5 flex h-12 w-full items-center gap-2.5 rounded-control border bg-mist-50 px-3.5 text-left text-body transition-[color,border-color,transform] duration-150 hover:border-sky-400 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 active:scale-[0.99] motion-reduce:active:scale-100 dark:bg-navy-800 dark:hover:border-sky-400 dark:hover:text-white ${
+              located
+                ? "border-primary-500 text-navy dark:border-primary-400 dark:text-white"
+                : "border-paper-300 text-gray-600 dark:border-navy-700 dark:text-gray-400"
+            }`}
           >
             <MapPin
-              className="h-4 w-4 shrink-0 text-sky-600 dark:text-sky-300"
+              className="h-4 w-4 shrink-0 text-primary-700 dark:text-primary-300"
               aria-hidden
             />
-            {t("widgetWhere")}
+            <span className="truncate">
+              {located ? t("console.addressHere") : t("widgetWhere")}
+            </span>
           </button>
         </div>
 
@@ -118,13 +140,22 @@ export function OrderPanel({ locale }: { locale: string }) {
                 type="button"
                 onClick={() => setFuel(f)}
                 aria-pressed={fuel === f}
-                className={`h-11 rounded-control text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 ${
+                className={`relative h-11 rounded-control border text-sm font-semibold transition-[color,border-color,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 active:scale-[0.97] motion-reduce:active:scale-100 ${
                   fuel === f
-                    ? "bg-primary-500 text-primary-950 dark:bg-primary-500"
-                    : "border border-paper-300 bg-white text-gray-700 hover:border-sky-400 hover:text-navy dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200 dark:hover:border-sky-400 dark:hover:text-white"
+                    ? "border-transparent text-primary-950"
+                    : "border-paper-300 bg-white text-gray-700 hover:border-sky-400 hover:text-navy dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200 dark:hover:border-sky-400 dark:hover:text-white"
                 }`}
               >
-                {FUEL_LABEL[f]}
+                {/* Заливка выбранного чипа перетекает к новому выбору. */}
+                {fuel === f && (
+                  <motion.span
+                    layoutId="order-fuel-chip"
+                    className="absolute -inset-px rounded-control bg-primary-500"
+                    transition={spring.chip}
+                    aria-hidden
+                  />
+                )}
+                <span className="relative">{FUEL_LABEL[f]}</span>
               </button>
             ))}
           </div>
@@ -170,9 +201,11 @@ export function OrderPanel({ locale }: { locale: string }) {
               {t("console.costLabel")}
             </dt>
             <dd className="font-display text-[26px] font-bold leading-none tabular-nums tracking-[-0.02em] text-navy dark:text-white">
-              {total === null
-                ? "—"
-                : t("console.money", { n: formatMoney(total, locale) })}
+              {total === null ? (
+                "—"
+              ) : (
+                <Ticker value={total} format={formatTotal} />
+              )}
             </dd>
           </div>
           <div className="flex items-baseline justify-between gap-3">
@@ -189,14 +222,16 @@ export function OrderPanel({ locale }: { locale: string }) {
       <p className="mt-5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
         {t("console.orderNote")}
       </p>
-      <Button
-        size="lg"
-        className="mt-3 w-full"
-        onClick={() => startOrder("console_cta")}
-      >
-        {t("console.cta")}
-        <ArrowRight className="h-4 w-4" aria-hidden />
-      </Button>
+      <Magnetic className="mt-3">
+        <Button
+          size="lg"
+          className="w-full"
+          onClick={() => startOrder("console_cta")}
+        >
+          {t("console.cta")}
+          <ArrowRight className="h-4 w-4" aria-hidden />
+        </Button>
+      </Magnetic>
     </section>
   );
 }

@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -23,6 +29,7 @@ import { ScrollJourney } from "./scroll-journey";
 import { track } from "@/lib/analytics";
 import { siteConfig } from "@/lib/site-config";
 import { captureRefFromUrl } from "@/lib/referral-client";
+import { Reveal } from "@/components/motion/reveal";
 
 export function B2CLanding() {
   const t = useTranslations("b2c");
@@ -99,13 +106,13 @@ function Console({ locale }: { locale: string }) {
       </div>
 
       <div className="mt-9 grid gap-4 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-        <OrderPanel locale={locale} />
+        <OrderPanel locale={locale} located={data.located} />
         <HomeStationsMap locale={locale} data={data} />
       </div>
 
-      <div className="mt-4">
+      <Reveal className="mt-4">
         <NearbyAndPay locale={locale} data={data} />
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -141,7 +148,7 @@ function Services({ locale }: { locale: string }) {
   ];
   return (
     <section className="mx-auto max-w-[1200px] px-4 pb-12 sm:px-6 lg:px-8 lg:pb-16">
-      <div className="grid gap-3 sm:grid-cols-3">
+      <Reveal className="grid gap-3 sm:grid-cols-3">
         {cards.map((c) => {
           const Icon = c.icon;
           return (
@@ -172,29 +179,69 @@ function Services({ locale }: { locale: string }) {
             </Link>
           );
         })}
-      </div>
+      </Reveal>
     </section>
   );
 }
 
-/** Компактный «как это работает»: три шага текстом, без карточек-декораций. */
+/**
+ * Компактный «как это работает»: три шага текстом, соединённые линией, которая
+ * прорисовывается по мере скролла (на телефоне — вертикально слева). Секция
+ * лежит на тонированной поверхности — отделяется тоном, а не рамкой.
+ */
 function HowItWorks() {
   const t = useTranslations("b2c");
   const steps = ["step1", "step2", "step3"] as const;
+  const listRef = useRef<HTMLOListElement | null>(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: listRef,
+    offset: ["start 85%", "end 55%"],
+  });
+  const draw = useTransform(scrollYProgress, (p) => (reduce ? 1 : p));
   return (
     <section
       id="how"
-      className="scroll-mt-20 border-t border-paper-300 py-12 dark:border-white/10 lg:py-16"
+      className="scroll-mt-20 border-t border-mist-200 bg-mist-50 py-12 dark:border-white/10 dark:bg-navy-900 lg:py-16"
     >
-      <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
+      <Reveal className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8">
         <h2 className="font-editorial text-[26px] font-semibold leading-tight text-navy dark:text-white">
           {t("how.title")}
         </h2>
-        <ol className="mt-6 grid gap-6 sm:grid-cols-3">
+        <ol
+          ref={listRef}
+          className="relative mt-6 grid gap-6 pl-6 sm:grid-cols-3 sm:pl-0"
+        >
+          {/* Линия-путь: дорожка + прорисованная часть (transform: scale). */}
+          <span
+            aria-hidden
+            className="absolute bottom-2 left-[5px] top-2 w-px bg-mist-200 dark:bg-white/10 sm:bottom-auto sm:left-0 sm:right-[calc((100%-3rem)/3)] sm:top-[10px] sm:h-px sm:w-auto"
+          />
+          <motion.span
+            aria-hidden
+            className="absolute bottom-2 left-[5px] top-2 hidden w-px origin-top bg-primary-600 dark:bg-primary-400 max-sm:block"
+            style={{ scaleY: draw }}
+          />
+          <motion.span
+            aria-hidden
+            className="absolute left-0 right-[calc((100%-3rem)/3)] top-[10px] hidden h-px origin-left bg-primary-600 dark:bg-primary-400 sm:block"
+            style={{ scaleX: draw }}
+          />
           {steps.map((key, i) => (
-            <li key={key}>
-              <p className="text-sm font-semibold tabular-nums text-gray-400 dark:text-gray-500">
-                0{i + 1}
+            <li key={key} className="relative">
+              <span
+                aria-hidden
+                className="absolute -left-6 top-[6px] h-[9px] w-[9px] rounded-full border-2 border-primary-600 bg-mist-50 dark:border-primary-400 dark:bg-navy-900 sm:hidden"
+              />
+              <p className="text-sm font-semibold tabular-nums text-primary-800 dark:text-primary-300">
+                {/* Подложка цвета секции «вырезает» линию под номером. */}
+                <span
+                  className={`relative bg-mist-50 pr-3 dark:bg-navy-900 ${
+                    i > 0 ? "sm:-ml-3 sm:pl-3" : ""
+                  }`}
+                >
+                  0{i + 1}
+                </span>
               </p>
               <h3 className="mt-1 text-sm font-semibold text-navy dark:text-white">
                 {t(`how.${key}.title`)}
@@ -205,7 +252,7 @@ function HowItWorks() {
             </li>
           ))}
         </ol>
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -215,7 +262,7 @@ function Faq() {
   const qs = ["q1", "q2", "q3", "q4"] as const;
   return (
     <section className="border-t border-paper-300 py-12 dark:border-white/10 lg:py-16">
-      <div className="mx-auto grid max-w-[1200px] gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)] lg:gap-12 lg:px-8">
+      <Reveal className="mx-auto grid max-w-[1200px] gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)] lg:gap-12 lg:px-8">
         <h2 className="font-editorial text-[26px] font-semibold leading-tight text-navy dark:text-white">
           {t("faq.title")}
         </h2>
@@ -235,7 +282,7 @@ function Faq() {
             </details>
           ))}
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -243,7 +290,7 @@ function Faq() {
 function Footer({ locale }: { locale: string }) {
   const t = useTranslations("b2c");
   return (
-    <footer className="border-t border-gray-100 dark:border-white/10">
+    <footer className="border-t border-mist-200 dark:border-white/10">
       <div className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 sm:px-6 lg:grid-cols-3 lg:px-8">
         <div>
           <span className="flex items-center gap-2.5 text-base font-semibold tracking-tight text-navy dark:text-white">
@@ -289,7 +336,7 @@ function Footer({ locale }: { locale: string }) {
           <LanguageSwitcher />
         </div>
       </div>
-      <div className="border-t border-gray-100 py-4 dark:border-white/10">
+      <div className="border-t border-mist-200 py-4 dark:border-white/10">
         <p className="mx-auto max-w-[1200px] px-4 text-caption text-gray-400 dark:text-gray-500 sm:px-6 lg:px-8">
           © {siteConfig.appName}. {t("footer.rights")}
         </p>

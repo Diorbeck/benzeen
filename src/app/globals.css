@@ -234,35 +234,134 @@ body {
   }
 }
 
-/* Точка АЗС на карте главной. Кружок с «дыркой» читается на любом фоне карты,
-   активная точка увеличивается — видно, какая карточка открыта. */
+/* Точка АЗС на карте главной. Кнопка — зона нажатия 32px; внутри точка с
+   «дыханием» (только у АЗС на связи) и мини-шкала остатка, которая при
+   наведении/тапе наливается до реального уровня (--fill, 0..1). Только
+   transform/opacity — анимации живут на композиторе. */
 .benzeen-pin {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.benzeen-pin:focus-visible {
+  outline: 2px solid #0e2723;
+  outline-offset: 0;
+  border-radius: 9999px;
+}
+.dark .benzeen-pin:focus-visible {
+  outline-color: #ffffff;
+}
+.benzeen-pin-dot {
+  position: absolute;
+  left: 7px;
+  top: 7px;
   width: 18px;
   height: 18px;
   border-radius: 9999px;
   border: 3px solid #ffffff;
-  background: #059669;
-  box-shadow: 0 2px 6px rgba(11, 14, 20, 0.35);
-  cursor: pointer;
-  transition: transform 150ms ease, box-shadow 150ms ease;
+  background: #0abab5;
+  box-shadow: 0 2px 6px rgba(7, 24, 21, 0.35);
+  transition: transform 180ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.benzeen-pin[data-online='false'] {
+.benzeen-pin[data-online='false'] .benzeen-pin-dot {
   background: #9ca3af;
 }
-.benzeen-pin[data-active='true'] {
-  transform: scale(1.45);
-  box-shadow: 0 0 0 6px rgba(10, 186, 181, 0.25);
+/* Дыхание: мягкое кольцо расходится от точки. Фаза у каждой точки своя
+   (--pulse-delay), чтобы карта не мигала в такт. */
+.benzeen-pin[data-online='true'] .benzeen-pin-dot::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  background: rgba(10, 186, 181, 0.45);
+  z-index: -1;
+  animation: benzeen-breathe 2.6s ease-out infinite;
+  animation-delay: var(--pulse-delay, 0s);
 }
-.benzeen-pin:hover {
-  transform: scale(1.25);
+@keyframes benzeen-breathe {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(2.3);
+    opacity: 0;
+  }
 }
-.dark .benzeen-pin {
-  border-color: #12161f;
+.benzeen-pin:hover .benzeen-pin-dot {
+  transform: scale(1.15);
+}
+.benzeen-pin[data-active='true'] .benzeen-pin-dot {
+  transform: scale(1.35);
+}
+/* Мини-шкала остатка справа от точки. */
+.benzeen-pin-gauge {
+  position: absolute;
+  left: 27px;
+  top: 7px;
+  width: 5px;
+  height: 18px;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 0 0 1px rgba(7, 24, 21, 0.25);
+}
+.dark .benzeen-pin-gauge {
+  background: rgba(12, 36, 32, 0.92);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+.benzeen-pin-gauge::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #0abab5;
+  transform-origin: bottom;
+  transform: scaleY(0.12);
+  transition: transform 520ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.benzeen-pin:hover .benzeen-pin-gauge::after,
+.benzeen-pin:focus-visible .benzeen-pin-gauge::after,
+.benzeen-pin[data-active='true'] .benzeen-pin-gauge::after {
+  transform: scaleY(var(--fill, 0));
+}
+.dark .benzeen-pin-dot {
+  border-color: #0c2420;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
 }
+
+/* Машина клиента на карте — конец линии маршрута. */
+.benzeen-car {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #0e2723;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 2px #0abab5, 0 2px 8px rgba(7, 24, 21, 0.35);
+  pointer-events: none;
+}
+.dark .benzeen-car {
+  background: #ffffff;
+  border-color: #0c2420;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .benzeen-pin {
+  .benzeen-pin-dot {
     transition: none;
+  }
+  .benzeen-pin[data-online='true'] .benzeen-pin-dot::before {
+    animation: none;
+    opacity: 0;
+  }
+  /* Без анимации шкала сразу показывает реальный уровень. */
+  .benzeen-pin-gauge::after {
+    transition: none;
+    transform: scaleY(var(--fill, 0));
   }
 }
 
@@ -334,8 +433,8 @@ input[type="range"].benzeen-range:focus-visible {
 /* Цвет «вырезов» в силуэте машины скролл-анимации: совпадает с фоном страницы,
    чтобы стёкла читались, а силуэт оставался плоским фоновым пятном. */
 :root {
-  --journey-cut: #f2f6fe;
+  --journey-cut: #f7f3ea;
 }
 .dark {
-  --journey-cut: #0d1531;
+  --journey-cut: #071815;
 }
