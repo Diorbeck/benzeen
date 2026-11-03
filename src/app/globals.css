@@ -382,8 +382,8 @@ input[type="range"].benzeen-range {
     to right,
     #0abab5 0%,
     #17b2ad var(--range-fill, 50%),
-    #d6dded var(--range-fill, 50%),
-    #d6dded 100%
+    #d8e3dd var(--range-fill, 50%),
+    #d8e3dd 100%
   );
   background-repeat: no-repeat;
   background-position: center;

@@ -7,7 +7,6 @@ import type { Map as MlMap, Marker } from "maplibre-gl";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Crosshair,
-  Gauge,
   MapPin,
   Navigation,
   RefreshCw,
@@ -90,18 +89,14 @@ export function HomeStationsMap({
   return (
     <section
       id="map"
-      className="flex scroll-mt-24 flex-col overflow-hidden rounded-card border border-paper-300 bg-white dark:border-navy-700 dark:bg-navy-900"
+      className="flex scroll-mt-20 flex-col overflow-hidden rounded-[28px] bg-white dark:bg-navy-800"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-4 sm:p-6 sm:pb-4">
+      <div className="flex flex-wrap items-start justify-between gap-4 p-6 pb-5 sm:p-8 sm:pb-6">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.2em] text-gold-600 dark:text-gold-300">
-            <Gauge className="h-3.5 w-3.5" aria-hidden />
-            {t("badge")}
-          </p>
-          <h2 className="mt-2.5 font-editorial text-[24px] font-semibold leading-[1.1] tracking-[-0.01em] text-navy dark:text-white sm:text-[28px]">
+          <h2 className="max-w-[20ch] font-sans text-[26px] font-semibold leading-tight tracking-[-0.025em] text-navy dark:text-white sm:text-[30px]">
             {t("title")}
           </h2>
-          <p className="mt-1.5 max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          <p className="mt-2 max-w-md text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
             {t("subtitle")}
           </p>
         </div>
@@ -109,13 +104,13 @@ export function HomeStationsMap({
           <button
             type="button"
             onClick={locate}
-            className="inline-flex items-center gap-1.5 rounded-control border border-paper-300 bg-white px-3 py-1.5 text-caption font-medium text-navy transition-colors hover:border-sky-400 hover:text-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-navy-700 dark:bg-navy-800 dark:text-white dark:hover:border-sky-400 dark:hover:text-sky-200"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-mist-100 px-4 text-[13px] font-medium text-navy transition-[background-color,transform] duration-150 hover:bg-mist-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 active:scale-[0.97] dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
           >
             <Crosshair className="h-3.5 w-3.5" aria-hidden />
             {t("myLocation")}
           </button>
           {state === "ready" && (
-            <p className="text-right text-caption text-gray-500 dark:text-gray-400">
+            <p className="text-right text-[12px] text-gray-500 dark:text-gray-400">
               {t("counter", { online, total: visible.length })}
               <span className="mx-1.5 text-gray-300 dark:text-gray-600">·</span>
               {expanded
@@ -135,8 +130,8 @@ export function HomeStationsMap({
         </div>
       </div>
 
-      <div className="relative flex-1 border-t border-paper-200 bg-sky-50 dark:border-navy-700 dark:bg-navy-950">
-        <div className="h-[320px] sm:h-[380px] lg:h-[430px]">
+      <div className="relative flex-1 bg-mist-100 dark:bg-navy-950">
+        <div className="h-[340px] sm:h-[400px] lg:h-[460px]">
           <StationsMapCanvas
             stations={visible}
             selectedId={selectedId}
@@ -172,7 +167,7 @@ export function HomeStationsMap({
         )}
 
         {!selected && state === "ready" && (
-          <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-control bg-white/90 px-3 py-1.5 text-caption font-medium text-navy shadow-sm backdrop-blur dark:bg-navy-900/90 dark:text-white">
+          <p className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/75 px-4 py-2 text-[13px] font-medium text-navy shadow-[0_2px_12px_rgba(7,24,21,0.12)] backdrop-blur-xl backdrop-saturate-150 dark:bg-navy-900/75 dark:text-white">
             {t("hint")}
           </p>
         )}
@@ -195,7 +190,7 @@ function StationCard({
   const reduce = useReducedMotion();
 
   return (
-    <div className="rounded-card border border-paper-300 bg-white p-4 shadow-xl dark:border-navy-700 dark:bg-navy-900">
+    <div className="rounded-3xl bg-white/90 p-5 shadow-[0_12px_40px_-8px_rgba(7,24,21,0.28)] backdrop-blur-xl backdrop-saturate-150 dark:bg-navy-900/90">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">

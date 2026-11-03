@@ -10,8 +10,8 @@
 export const duration = {
   fast: 0.15,
   base: 0.2,
-  /** Появление секции: едва заметно, ≤250мс. */
-  reveal: 0.22,
+  /** Появление блока при скролле — спокойно, как на apple.com. */
+  reveal: 0.6,
   /** Тикер цифр с датчиков и сумма заказа. */
   ticker: 0.6,
   /** Прорисовка линии маршрута на карте. */
@@ -39,12 +39,12 @@ export const tankSpring = { stiffness: 320, damping: 40, mass: 0.35 } as const;
 /** Доля страницы, после которой бак мягко «доливается» до полного. */
 export const tankRefillAt = 0.985;
 
-/** Появление секций: сдвиг 10px + прозрачность, один раз. */
+/** Появление блоков: сдвиг 24px + прозрачность, один раз. */
 export const reveal = {
-  initial: { opacity: 0, y: 10 },
+  initial: { opacity: 0, y: 24 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "0px 0px -10% 0px" },
-  transition: { duration: duration.reveal, ease: easeOut },
+  transition: { duration: duration.reveal, ease: [0.22, 1, 0.36, 1] },
 } as const;
 
 /** Максимальный сдвиг магнитной кнопки, px. */

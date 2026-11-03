@@ -3,8 +3,13 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { reveal } from "@/lib/motion";
 
-// Едва заметное появление блока при первом входе в кадр: 10px + прозрачность,
-// 220мс, один раз и без каскадов. При reduced-motion блок просто на месте.
+// Спокойное появление блока при первом входе в кадр: 24px + прозрачность,
+// один раз и без каскадов.
+//
+// Элемент всегда один и тот же motion.div: сервер не знает о reduced-motion и
+// отдаёт стартовый opacity:0, а React при гидрации не чинит атрибуты — если
+// подменить его обычным div, блок так и останется невидимым. Поэтому при
+// reduced-motion меняется только переход: мгновенно и без сдвига.
 
 export function Reveal({
   children,
@@ -14,9 +19,14 @@ export function Reveal({
   className?: string;
 }) {
   const reduce = useReducedMotion();
-  if (reduce) return <div className={className}>{children}</div>;
   return (
-    <motion.div className={className} {...reveal}>
+    <motion.div
+      className={className}
+      initial={reveal.initial}
+      whileInView={reveal.whileInView}
+      viewport={reveal.viewport}
+      transition={reduce ? { duration: 0 } : reveal.transition}
+    >
       {children}
     </motion.div>
   );

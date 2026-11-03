@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { ArrowRight, ShieldCheck, Smartphone, Wallet } from "lucide-react";
+import { ChevronRight, ShieldCheck, Smartphone, Wallet } from "lucide-react";
 import { formatMoney } from "@/lib/format";
 import { Ticker } from "@/components/motion/ticker";
 import { fillPercent, type HomeStations } from "./use-home-stations";
@@ -26,31 +26,28 @@ export function NearbyAndPay({
   const rows = (visible.length > 0 ? visible : []).slice(0, NEARBY_LIMIT);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
-      <section className="rounded-card border border-paper-300 bg-white p-5 dark:border-navy-700 dark:bg-navy-900 sm:p-6">
-        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-gold-600 dark:text-gold-300">
-          {t("console.stepNearby")}
-        </p>
-        <div className="mt-2.5 flex items-baseline justify-between gap-3">
-          <h2 className="font-editorial text-[24px] font-semibold leading-[1.1] tracking-[-0.01em] text-navy dark:text-white sm:text-[28px]">
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-5">
+      <section className="rounded-[28px] bg-white p-6 dark:bg-navy-800 sm:p-8">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="font-sans text-[26px] font-semibold leading-tight tracking-[-0.025em] text-navy dark:text-white sm:text-[30px]">
             {t("console.nearbyTitle")}
           </h2>
           {!expanded && stations.length > visible.length ? (
             <button
               type="button"
               onClick={expand}
-              className="inline-flex items-center gap-1 text-caption font-semibold text-primary-800 hover:gap-1.5 dark:text-sky-300"
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-primary-800 hover:underline dark:text-primary-300"
             >
               {t("console.nearbyAll")}
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
             </button>
           ) : (
             <Link
               href={`/${locale}/stations`}
-              className="inline-flex items-center gap-1 text-caption font-semibold text-primary-800 hover:gap-1.5 dark:text-sky-300"
+              className="inline-flex items-center gap-1 text-[13px] font-medium text-primary-800 hover:underline dark:text-primary-300"
             >
               {t("console.nearbyAll")}
-              <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
             </Link>
           )}
         </div>
@@ -60,7 +57,7 @@ export function NearbyAndPay({
             {[0, 1, 2].map((i) => (
               <li
                 key={i}
-                className="h-12 animate-pulse rounded-control bg-mist-100 dark:bg-navy-800"
+                className="h-12 animate-pulse rounded-2xl bg-mist-100 dark:bg-white/5"
               />
             ))}
           </ul>
@@ -73,17 +70,17 @@ export function NearbyAndPay({
         )}
 
         {rows.length > 0 && (
-          <ul className="mt-2 divide-y divide-mist-100 dark:divide-navy-700">
+          <ul className="mt-4 divide-y divide-black/[0.06] dark:divide-white/10">
             {rows.map((s) => {
               const main = s.stocks[0];
               const fill = main ? fillPercent(main) : null;
               return (
                 <li
                   key={s.id}
-                  className="flex items-center justify-between gap-3 py-3"
+                  className="flex items-center justify-between gap-3 py-3.5"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-navy dark:text-white">
+                    <p className="truncate text-[15px] font-semibold text-navy dark:text-white">
                       {s.name}
                     </p>
                     <p className="truncate text-caption text-gray-500 dark:text-gray-400">
@@ -128,24 +125,21 @@ export function NearbyAndPay({
         )}
       </section>
 
-      <section className="rounded-card bg-navy p-5 text-white dark:bg-navy-800 sm:p-6">
-        <p className="text-caption font-semibold uppercase tracking-[0.2em] text-gold-300">
-          {t("console.payEyebrow")}
-        </p>
-        <h2 className="mt-2.5 font-editorial text-[24px] font-semibold leading-[1.1] tracking-[-0.01em] text-white sm:text-[28px]">
+      <section className="rounded-[28px] bg-navy p-6 text-white dark:bg-[#0F2B26] sm:p-8">
+        <h2 className="font-sans text-[26px] font-semibold leading-tight tracking-[-0.025em] text-white sm:text-[30px]">
           {t("console.payTitle")}
         </h2>
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-6 space-y-4">
           {[
             { icon: Smartphone, key: "payStep1" as const },
             { icon: Wallet, key: "payStep2" as const },
             { icon: ShieldCheck, key: "payStep3" as const },
           ].map(({ icon: Icon, key }) => (
             <li key={key} className="flex items-start gap-3">
-              <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-control bg-white/10 text-sky-300">
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-primary-300">
                 <Icon className="h-4 w-4" aria-hidden />
               </span>
-              <span className="text-sm leading-relaxed text-gray-200">
+              <span className="text-[15px] leading-relaxed text-gray-200">
                 {t(`console.${key}`)}
               </span>
             </li>
@@ -153,7 +147,7 @@ export function NearbyAndPay({
         </ul>
         {/* Отдельно говорим, что сценарий у колонки живёт в приложении: в вебе
             заливка на АЗС выключена, и лучше сказать это до клика. */}
-        <p className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-sky-200">
+        <p className="mt-6 border-t border-white/10 pt-4 text-[13px] leading-relaxed text-gray-300">
           {t("console.payNote")}
         </p>
       </section>
