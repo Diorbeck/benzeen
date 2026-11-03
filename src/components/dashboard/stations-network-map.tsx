@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Map as MlMap, Marker } from 'maplibre-gl';
 import { MapPin, WifiOff, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { mapProvider, localizeMapLabels, TASHKENT_CENTER } from '@/components/map/provider';
+import { mapProvider, localizeMapLabels, TASHKENT_CENTER, loadMapLibre } from '@/components/map/provider';
 import { useHtmlDark } from '@/components/map/use-html-dark';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -133,6 +133,8 @@ function NetworkMapCanvas({
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  // Карта создаётся асинхронно — маркеры и кадр ждут её готовности.
+  const [ready, setReady] = useState(false);
   const selectRef = useRef(onSelect);
   selectRef.current = onSelect;
 
@@ -142,7 +144,7 @@ function NetworkMapCanvas({
     let ro: ResizeObserver | null = null;
 
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = await loadMapLibre();
       if (cancelled || !ref.current) return;
 
       map = new maplibregl.Map({
@@ -158,6 +160,7 @@ function NetworkMapCanvas({
       ro.observe(ref.current);
       map.on('load', () => localizeMapLabels(map!, document.documentElement.lang || 'ru'));
       mapRef.current = map;
+      setReady(true);
     })();
 
     return () => {
@@ -194,12 +197,12 @@ function NetworkMapCanvas({
       ],
       { padding: 72, maxZoom: 11, duration: 700 },
     );
-  }, [stations]);
+  }, [stations, ready]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const maplibregl = (await import('maplibre-gl')).default;
+      const maplibregl = await loadMapLibre();
       const map = mapRef.current;
       if (cancelled || !map) return;
 
@@ -223,7 +226,7 @@ function NetworkMapCanvas({
     return () => {
       cancelled = true;
     };
-  }, [stations, selectedId]);
+  }, [stations, selectedId, ready]);
 
   const fallbackDamp = dark && mapProvider.id === 'osm' ? 'benzeen-map-damp' : '';
   return <div ref={ref} className={`h-full w-full ${fallbackDamp}`} />;

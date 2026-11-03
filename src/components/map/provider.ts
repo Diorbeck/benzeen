@@ -1,3 +1,4 @@
+import type { Map as MlMap } from 'maplibre-gl';
 // Map provider abstraction (M2). The rest of the app depends only on this
 // module, so switching from OSM/MapLibre to another provider (Yandex, Mapbox,
 // a self-hosted tile server, …) is a single-file change — see TZ §12.
@@ -87,7 +88,7 @@ export const TASHKENT_CENTER = { lat: 41.3111, lng: 69.2797 };
  * тихо не делает ничего. Вызывать на событии map 'load'.
  */
 export function localizeMapLabels(
-  map: { getStyle: () => { layers?: { id: string; type: string }[] } | undefined; getLayoutProperty: (id: string, prop: string) => unknown; setLayoutProperty: (id: string, prop: string, value: unknown) => void },
+  map: Pick<MlMap, 'getStyle' | 'getLayoutProperty' | 'setLayoutProperty'>,
   locale: string,
 ): void {
   const lang = locale === 'uz' ? 'uz' : locale === 'en' ? 'en' : 'ru';
@@ -105,4 +106,22 @@ export function localizeMapLabels(
   } catch {
     /* растровый фолбэк или чужой стиль — подписи остаются дефолтными */
   }
+}
+
+let workerUrlSet = false;
+
+/**
+ * Единая точка загрузки MapLibre. С v5+ библиотека ищет воркер
+ * `maplibre-gl-worker.mjs` рядом со своим бандлом, а в чанках Next его нет —
+ * отдаём файл ассетом webpack и явно указываем URL до создания первой карты.
+ */
+export async function loadMapLibre(): Promise<typeof import('maplibre-gl')> {
+  const maplibregl = await import('maplibre-gl');
+  if (!workerUrlSet) {
+    maplibregl.setWorkerUrl(
+      new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).href,
+    );
+    workerUrlSet = true;
+  }
+  return maplibregl;
 }

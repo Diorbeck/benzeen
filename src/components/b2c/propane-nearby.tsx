@@ -9,7 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import type { Map as MlMap, Marker } from "maplibre-gl";
 import { Flame, Search, RefreshCw, X, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { mapProvider, localizeMapLabels } from "@/components/map/provider";
+import { mapProvider, localizeMapLabels, loadMapLibre } from "@/components/map/provider";
 import { formatMoney } from "@/lib/format";
 import { spring } from "@/lib/motion";
 import { track } from "@/lib/analytics";
@@ -286,6 +286,9 @@ function PointsMap({
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const markersRef = useRef<Marker[]>([]);
+  // Карта создаётся асинхронно: маркеры ждут её, иначе ранний ответ API
+  // проскакивает мимо и точки не появляются.
+  const [ready, setReady] = useState(false);
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
 
@@ -294,7 +297,7 @@ function PointsMap({
     let map: MlMap | null = null;
     let ro: ResizeObserver | null = null;
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await loadMapLibre();
       if (cancelled || !containerRef.current) return;
       map = new maplibregl.Map({
         container: containerRef.current,
@@ -306,6 +309,7 @@ function PointsMap({
         attributionControl: { compact: true },
       });
       mapRef.current = map;
+      setReady(true);
       map.on("load", () =>
         localizeMapLabels(map!, document.documentElement.lang || "ru"),
       );
@@ -326,7 +330,7 @@ function PointsMap({
     if (!map) return;
     let disposed = false;
     (async () => {
-      const maplibregl = (await import("maplibre-gl")).default;
+      const maplibregl = await loadMapLibre();
       if (disposed || !mapRef.current) return;
       markersRef.current.forEach((m) => m.remove());
       markersRef.current = points.map((p) => {
@@ -356,7 +360,7 @@ function PointsMap({
     return () => {
       disposed = true;
     };
-  }, [points]);
+  }, [points, ready]);
 
   return (
     <div className="relative h-56 w-full overflow-hidden rounded-card border border-gray-200/60 dark:border-white/10 sm:h-72">
