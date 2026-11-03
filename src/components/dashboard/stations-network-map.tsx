@@ -212,6 +212,9 @@ function NetworkMapCanvas({
         el.type = 'button';
         el.setAttribute('aria-label', s.name);
         el.className = 'benzeen-pin';
+        // Разметка точки общая с картой главной (globals.css): кнопка — зона
+        // нажатия, внутри точка с «дыханием» у АЗС на связи.
+        el.innerHTML = '<span class="benzeen-pin-dot"></span>';
         el.dataset.online = String(s.online);
         el.dataset.active = String(s.id === selectedId);
         el.addEventListener('click', (event) => {

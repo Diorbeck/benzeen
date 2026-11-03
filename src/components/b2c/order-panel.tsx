@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { ArrowRight, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { asGasoline, calcOrderPrice, type FuelType } from "@/lib/pricing";
 import { B2C_MIN_ORDER_LITERS } from "@/lib/constants";
 import { formatMoney } from "@/lib/format";
 import { track } from "@/lib/analytics";
+import { spring } from "@/lib/motion";
+import { Ticker } from "@/components/motion/ticker";
+import { Magnetic } from "@/components/motion/magnetic";
 
 // Левая карточка первого экрана — главное действие: доставить топливо к машине.
 // Цена считается по тем же ценам из таблицы Price, что и в полном флоу заказа,
@@ -22,7 +26,14 @@ const FUEL_LABEL: Record<FuelType, string> = {
 };
 const MAX_LITERS = 100;
 
-export function OrderPanel({ locale }: { locale: string }) {
+export function OrderPanel({
+  locale,
+  located = false,
+}: {
+  locale: string;
+  /** Адрес известен по геолокации — на карте рядом рисуется маршрут. */
+  located?: boolean;
+}) {
   const t = useTranslations("b2c");
   const router = useRouter();
   const [fuel, setFuel] = useState<FuelType>("AI_92");
@@ -65,30 +76,30 @@ export function OrderPanel({ locale }: { locale: string }) {
     router.push(`/${locale}/benzin?fuel=${fuel}&volume=${liters}`);
   };
 
+  const formatTotal = useCallback(
+    (n: number) => t("console.money", { n: formatMoney(n, locale) }),
+    [t, locale],
+  );
+
   const fillRatio =
     (liters - B2C_MIN_ORDER_LITERS) / (MAX_LITERS - B2C_MIN_ORDER_LITERS);
 
   return (
-    <section className="flex flex-col rounded-card border border-paper-300 bg-white p-5 dark:border-navy-700 dark:bg-navy-900 sm:p-6">
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div>
-          <p className="text-caption font-semibold uppercase tracking-[0.2em] text-gold-600 dark:text-gold-300">
-            {t("console.orderEyebrow")}
-          </p>
-          <h2 className="mt-2.5 font-editorial text-[24px] font-semibold leading-[1.1] tracking-[-0.01em] text-navy dark:text-white sm:text-[28px]">
-            {t("console.orderTitle")}
-          </h2>
-        </div>
-        <p className="flex items-center gap-1.5 text-caption font-medium text-success-600 dark:text-success-500">
-          <span className="h-2 w-2 rounded-full bg-success-500" aria-hidden />
+    <section className="flex flex-col rounded-[28px] bg-white p-6 dark:bg-navy-800 sm:p-8">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <h2 className="font-sans text-[26px] font-semibold leading-tight tracking-[-0.025em] text-navy dark:text-white sm:text-[30px]">
+          {t("console.orderTitle")}
+        </h2>
+        <p className="flex items-center gap-1.5 text-[13px] font-medium text-success-600 dark:text-success-500">
+          <span className="h-1.5 w-1.5 rounded-full bg-success-500" aria-hidden />
           {t("console.couriersOnline")}
         </p>
       </div>
 
-      <div className="mt-5 flex-1 space-y-5">
+      <div className="mt-7 flex-1 space-y-6">
         <div>
           <label
-            className="text-caption font-medium text-gray-500 dark:text-gray-400"
+            className="text-[13px] font-medium text-gray-600 dark:text-gray-400"
             htmlFor="order-address"
           >
             {t("console.addressLabel")}
@@ -97,34 +108,50 @@ export function OrderPanel({ locale }: { locale: string }) {
             id="order-address"
             type="button"
             onClick={() => startOrder("console_address")}
-            className="mt-1.5 flex h-12 w-full items-center gap-2.5 rounded-control border border-paper-300 bg-paper-100 px-3.5 text-left text-body text-gray-500 transition-colors hover:border-sky-400 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-navy-700 dark:bg-navy-800 dark:text-gray-400 dark:hover:border-sky-400 dark:hover:text-white"
+            className={`mt-2 flex h-14 w-full items-center gap-3 rounded-2xl px-4 text-left text-[17px] ring-inset transition-[color,box-shadow,transform] duration-150 hover:text-navy focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 active:scale-[0.99] motion-reduce:active:scale-100 dark:hover:text-white ${
+              located
+                ? "bg-mist-50 text-navy ring-2 ring-primary-500 dark:bg-white/[0.06] dark:text-white dark:ring-primary-400"
+                : "bg-mist-50 text-gray-600 dark:bg-white/[0.06] dark:text-gray-400"
+            }`}
           >
             <MapPin
-              className="h-4 w-4 shrink-0 text-sky-600 dark:text-sky-300"
+              className="h-5 w-5 shrink-0 text-primary-700 dark:text-primary-300"
+              strokeWidth={1.75}
               aria-hidden
             />
-            {t("widgetWhere")}
+            <span className="truncate">
+              {located ? t("console.addressHere") : t("widgetWhere")}
+            </span>
           </button>
         </div>
 
         <div>
-          <p className="text-caption font-medium text-gray-500 dark:text-gray-400">
+          <p className="text-[13px] font-medium text-gray-600 dark:text-gray-400">
             {t("console.fuelLabel")}
           </p>
-          <div className="mt-1.5 grid grid-cols-3 gap-2">
+          {/* Сегмент-контрол: «бегунок» перетекает к новому выбору. */}
+          <div className="mt-2 grid grid-cols-3 gap-1 rounded-full bg-mist-100 p-1 dark:bg-white/[0.06]">
             {FUELS.map((f) => (
               <button
                 key={f}
                 type="button"
                 onClick={() => setFuel(f)}
                 aria-pressed={fuel === f}
-                className={`h-11 rounded-control text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 ${
+                className={`relative h-10 rounded-full text-[15px] font-medium transition-[color,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 active:scale-[0.97] motion-reduce:active:scale-100 ${
                   fuel === f
-                    ? "bg-primary-500 text-primary-950 dark:bg-primary-500"
-                    : "border border-paper-300 bg-white text-gray-700 hover:border-sky-400 hover:text-navy dark:border-navy-700 dark:bg-navy-800 dark:text-gray-200 dark:hover:border-sky-400 dark:hover:text-white"
+                    ? "text-navy dark:text-white"
+                    : "text-gray-600 hover:text-navy dark:text-gray-400 dark:hover:text-white"
                 }`}
               >
-                {FUEL_LABEL[f]}
+                {fuel === f && (
+                  <motion.span
+                    layoutId="order-fuel-chip"
+                    className="absolute inset-0 rounded-full bg-white shadow-[0_1px_3px_rgba(7,24,21,0.14),0_1px_1px_rgba(7,24,21,0.06)] dark:bg-white/[0.16] dark:shadow-none"
+                    transition={spring.chip}
+                    aria-hidden
+                  />
+                )}
+                <span className="relative">{FUEL_LABEL[f]}</span>
               </button>
             ))}
           </div>
@@ -133,14 +160,14 @@ export function OrderPanel({ locale }: { locale: string }) {
         <div>
           <div className="flex items-baseline justify-between">
             <label
-              className="text-caption font-medium text-gray-500 dark:text-gray-400"
+              className="text-[13px] font-medium text-gray-600 dark:text-gray-400"
               htmlFor="order-liters"
             >
               {t("console.volumeLabel")}
             </label>
             <output
               htmlFor="order-liters"
-              className="font-display text-lg font-bold tabular-nums text-gold-500 dark:text-gold-300"
+              className="text-[17px] font-semibold tabular-nums text-navy dark:text-white"
             >
               {t("console.liters", { n: liters })}
             </output>
@@ -153,50 +180,53 @@ export function OrderPanel({ locale }: { locale: string }) {
             step={5}
             value={liters}
             onChange={(e) => setLiters(Number(e.target.value))}
-            className="benzeen-range mt-2.5 w-full"
+            className="benzeen-range mt-3 w-full"
             style={{
               ["--range-fill" as string]: `${Math.round(fillRatio * 100)}%`,
             }}
           />
-          <div className="mt-1 flex justify-between text-caption text-gray-400 dark:text-gray-500">
+          <div className="mt-1 flex justify-between text-[12px] text-gray-500 dark:text-gray-400">
             <span>{t("console.liters", { n: B2C_MIN_ORDER_LITERS })}</span>
             <span>{t("console.liters", { n: MAX_LITERS })}</span>
           </div>
         </div>
 
-        <dl className="space-y-2 border-t border-paper-200 pt-4 dark:border-navy-700">
+        <dl className="space-y-2 pt-2">
           <div className="flex items-baseline justify-between gap-3">
-            <dt className="text-sm text-gray-600 dark:text-gray-400">
+            <dt className="text-[15px] text-gray-600 dark:text-gray-400">
               {t("console.costLabel")}
             </dt>
-            <dd className="font-display text-[26px] font-bold leading-none tabular-nums tracking-[-0.02em] text-navy dark:text-white">
-              {total === null
-                ? "—"
-                : t("console.money", { n: formatMoney(total, locale) })}
+            <dd className="text-[30px] font-semibold leading-none tabular-nums tracking-[-0.03em] text-navy dark:text-white">
+              {total === null ? (
+                "—"
+              ) : (
+                <Ticker value={total} format={formatTotal} />
+              )}
             </dd>
           </div>
           <div className="flex items-baseline justify-between gap-3">
-            <dt className="text-sm text-gray-600 dark:text-gray-400">
+            <dt className="text-[15px] text-gray-600 dark:text-gray-400">
               {t("console.etaLabel")}
             </dt>
-            <dd className="text-sm font-semibold text-sky-600 dark:text-sky-300">
+            <dd className="text-[15px] font-medium text-navy dark:text-white">
               {t("console.etaValue")}
             </dd>
           </div>
         </dl>
       </div>
 
-      <p className="mt-5 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+      <Magnetic className="mt-7">
+        <Button
+          size="lg"
+          className="h-14 w-full rounded-full text-[17px] font-medium"
+          onClick={() => startOrder("console_cta")}
+        >
+          {t("console.cta")}
+        </Button>
+      </Magnetic>
+      <p className="mt-4 text-center text-[12px] leading-relaxed text-gray-500 dark:text-gray-400">
         {t("console.orderNote")}
       </p>
-      <Button
-        size="lg"
-        className="mt-3 w-full"
-        onClick={() => startOrder("console_cta")}
-      >
-        {t("console.cta")}
-        <ArrowRight className="h-4 w-4" aria-hidden />
-      </Button>
     </section>
   );
 }

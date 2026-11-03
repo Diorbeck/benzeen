@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { Map as MlMap, Marker } from "maplibre-gl";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Crosshair,
-  Gauge,
   MapPin,
   Navigation,
   RefreshCw,
@@ -22,6 +22,8 @@ import {
 } from "@/components/map/provider";
 import { useHtmlDark } from "@/components/map/use-html-dark";
 import { formatMoney } from "@/lib/format";
+import { duration, easeOut } from "@/lib/motion";
+import { Ticker } from "@/components/motion/ticker";
 import { STATION_FUELING_WEB_ENABLED } from "@/lib/features";
 import {
   DEFAULT_RADIUS_KM,
@@ -48,8 +50,17 @@ export function HomeStationsMap({
 }) {
   const t = useTranslations("homeMap");
   const tStations = useTranslations("stations");
-  const { visible, stations, state, reload, center, expanded, expand, locate } =
-    data;
+  const {
+    visible,
+    stations,
+    state,
+    reload,
+    center,
+    located,
+    expanded,
+    expand,
+    locate,
+  } = data;
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selected = useMemo(
@@ -57,22 +68,35 @@ export function HomeStationsMap({
     [stations, selectedId],
   );
   const online = visible.filter((s) => s.online).length;
+  // Адрес известен (геолокация) — рисуем маршрут курьера от ближайшей АЗС на
+  // связи до машины клиента: на ней курьер заправляется перед выездом.
+  // Зависимости — примитивы: фоновое обновление остатков раз в 30 с не должно
+  // перерисовывать маршрут заново.
+  const routeFrom = located ? (visible.find((s) => s.online) ?? null) : null;
+  const fromLat = routeFrom?.lat;
+  const fromLng = routeFrom?.lng;
+  const route = useMemo(
+    () =>
+      fromLat !== undefined && fromLng !== undefined
+        ? {
+            from: { lat: fromLat, lng: fromLng },
+            to: { lat: center.lat, lng: center.lng },
+          }
+        : null,
+    [fromLat, fromLng, center.lat, center.lng],
+  );
 
   return (
     <section
       id="map"
-      className="flex scroll-mt-24 flex-col overflow-hidden rounded-card border border-paper-300 bg-white dark:border-navy-700 dark:bg-navy-900"
+      className="flex scroll-mt-20 flex-col overflow-hidden rounded-[28px] bg-white dark:bg-navy-800"
     >
-      <div className="flex flex-wrap items-start justify-between gap-3 p-5 pb-4 sm:p-6 sm:pb-4">
+      <div className="flex flex-wrap items-start justify-between gap-4 p-6 pb-5 sm:p-8 sm:pb-6">
         <div className="min-w-0">
-          <p className="flex items-center gap-1.5 text-caption font-semibold uppercase tracking-[0.2em] text-gold-600 dark:text-gold-300">
-            <Gauge className="h-3.5 w-3.5" aria-hidden />
-            {t("badge")}
-          </p>
-          <h2 className="mt-2.5 font-editorial text-[24px] font-semibold leading-[1.1] tracking-[-0.01em] text-navy dark:text-white sm:text-[28px]">
+          <h2 className="max-w-[20ch] font-sans text-[26px] font-semibold leading-tight tracking-[-0.025em] text-navy dark:text-white sm:text-[30px]">
             {t("title")}
           </h2>
-          <p className="mt-1.5 max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+          <p className="mt-2 max-w-md text-[15px] leading-relaxed text-gray-600 dark:text-gray-400">
             {t("subtitle")}
           </p>
         </div>
@@ -80,13 +104,13 @@ export function HomeStationsMap({
           <button
             type="button"
             onClick={locate}
-            className="inline-flex items-center gap-1.5 rounded-control border border-paper-300 bg-white px-3 py-1.5 text-caption font-medium text-navy transition-colors hover:border-sky-400 hover:text-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 dark:border-navy-700 dark:bg-navy-800 dark:text-white dark:hover:border-sky-400 dark:hover:text-sky-200"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-mist-100 px-4 text-[13px] font-medium text-navy transition-[background-color,transform] duration-150 hover:bg-mist-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600/60 active:scale-[0.97] dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
           >
             <Crosshair className="h-3.5 w-3.5" aria-hidden />
             {t("myLocation")}
           </button>
           {state === "ready" && (
-            <p className="text-right text-caption text-gray-500 dark:text-gray-400">
+            <p className="text-right text-[12px] text-gray-500 dark:text-gray-400">
               {t("counter", { online, total: visible.length })}
               <span className="mx-1.5 text-gray-300 dark:text-gray-600">·</span>
               {expanded
@@ -106,8 +130,8 @@ export function HomeStationsMap({
         </div>
       </div>
 
-      <div className="relative flex-1 border-t border-paper-200 bg-sky-50 dark:border-navy-700 dark:bg-navy-950">
-        <div className="h-[320px] sm:h-[380px] lg:h-[430px]">
+      <div className="relative flex-1 bg-mist-100 dark:bg-navy-950">
+        <div className="h-[340px] sm:h-[400px] lg:h-[460px]">
           <StationsMapCanvas
             stations={visible}
             selectedId={selectedId}
@@ -116,6 +140,7 @@ export function HomeStationsMap({
             radiusKm={DEFAULT_RADIUS_KM}
             showRadius={!expanded}
             onUserMove={expand}
+            route={route}
           />
         </div>
 
@@ -142,7 +167,7 @@ export function HomeStationsMap({
         )}
 
         {!selected && state === "ready" && (
-          <p className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-control bg-white/90 px-3 py-1.5 text-caption font-medium text-navy shadow-sm backdrop-blur dark:bg-navy-900/90 dark:text-white">
+          <p className="pointer-events-none absolute bottom-4 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-full bg-white/75 px-4 py-2 text-[13px] font-medium text-navy shadow-[0_2px_12px_rgba(7,24,21,0.12)] backdrop-blur-xl backdrop-saturate-150 dark:bg-navy-900/75 dark:text-white">
             {t("hint")}
           </p>
         )}
@@ -162,9 +187,10 @@ function StationCard({
 }) {
   const t = useTranslations("homeMap");
   const tStations = useTranslations("stations");
+  const reduce = useReducedMotion();
 
   return (
-    <div className="rounded-card border border-paper-300 bg-white p-4 shadow-xl dark:border-navy-700 dark:bg-navy-900">
+    <div className="rounded-3xl bg-white/90 p-5 shadow-[0_12px_40px_-8px_rgba(7,24,21,0.28)] backdrop-blur-xl backdrop-saturate-150 dark:bg-navy-900/90">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -213,7 +239,7 @@ function StationCard({
           return (
             <li
               key={s.fuelType}
-              className="rounded-control bg-gray-50 px-3 py-2.5 dark:bg-white/5"
+              className="rounded-control bg-mist-50 px-3 py-2.5 dark:bg-white/5"
             >
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-sm font-medium text-navy dark:text-white">
@@ -232,17 +258,21 @@ function StationCard({
                     <span className="text-caption font-medium text-gray-500 dark:text-gray-400">
                       {tStations("tankLabel")}
                     </span>
-                    <span className="text-sm font-semibold tabular-nums text-navy dark:text-white">
-                      {tStations("tankPercent", { n: fill })}
-                    </span>
+                    <Ticker
+                      value={fill}
+                      format={(n) => tStations("tankPercent", { n })}
+                      className="text-sm font-semibold tabular-nums text-navy dark:text-white"
+                    />
                   </div>
                   <div
-                    className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10"
+                    className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-mist-200 dark:bg-white/10"
                     role="presentation"
                   >
-                    <div
-                      className="h-full rounded-full bg-primary-500 dark:bg-primary-500"
-                      style={{ width: `${fill}%` }}
+                    <motion.div
+                      className="h-full origin-left bg-primary-500"
+                      initial={reduce ? false : { scaleX: 0 }}
+                      animate={{ scaleX: fill / 100 }}
+                      transition={{ duration: duration.ticker, ease: easeOut }}
                     />
                   </div>
                 </>
@@ -293,6 +323,7 @@ function StationsMapCanvas({
   radiusKm,
   showRadius,
   onUserMove,
+  route,
 }: {
   stations: readonly Station[];
   selectedId: string | null;
@@ -301,6 +332,7 @@ function StationsMapCanvas({
   radiusKm: number;
   showRadius: boolean;
   onUserMove: () => void;
+  route: Route | null;
 }) {
   // Тему читаем прямо с <html>: next-themes ставит класс до первой отрисовки,
   // а resolvedTheme на клиенте может отстать на один кадр — карта не должна
@@ -308,7 +340,14 @@ function StationsMapCanvas({
   const dark = useHtmlDark();
   const ref = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MlMap | null>(null);
-  const markersRef = useRef<Marker[]>([]);
+  const markersRef = useRef<Map<string, Marker>>(new Map());
+  const carRef = useRef<Marker | null>(null);
+  const routeRef = useRef(route);
+  routeRef.current = route;
+  const reduceRef = useRef(false);
+  reduceRef.current = useReducedMotion() ?? false;
+  const routeAnim = useRef<number | null>(null);
+  const [ready, setReady] = useState(false);
   const selectRef = useRef(onSelect);
   selectRef.current = onSelect;
   const moveRef = useRef(onUserMove);
@@ -347,6 +386,7 @@ function StationsMapCanvas({
       map.on("load", () => {
         localizeMapLabels(map!, document.documentElement.lang || "ru");
         drawRadius(map!, centerRef.current, radiusRef.current);
+        setReady(true);
       });
       // Ручной жест пользователя (перетаскивание, зум, скролл) снимает
       // ограничение радиусом — дальше он смотрит карту сам.
@@ -358,11 +398,15 @@ function StationsMapCanvas({
       mapRef.current = map;
     })();
 
+    const markers = markersRef.current;
     return () => {
       cancelled = true;
       ro?.disconnect();
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current = [];
+      markers.forEach((m) => m.remove());
+      markers.clear();
+      carRef.current?.remove();
+      carRef.current = null;
+      if (routeAnim.current !== null) cancelAnimationFrame(routeAnim.current);
       map?.remove();
       mapRef.current = null;
     };
@@ -409,11 +453,14 @@ function StationsMapCanvas({
     map.once("styledata", () => {
       if (showRadiusRef.current)
         drawRadius(map, centerRef.current, radiusRef.current);
+      // Маршрут после смены темы возвращается сразу целиком, без прорисовки.
+      if (routeRef.current) drawRoute(map, routeRef.current, 1, true);
     });
   }, [dark]);
 
-  // Маркеры перерисовываются при обновлении остатков: точка «на связи» зелёная,
-  // потерявшая связь — серая, чтобы по карте было видно, куда ехать бессмысленно.
+  // Маркеры живут, пока АЗС в списке: при фоновом обновлении остатков и при
+  // выборе точки меняются только data-атрибуты и --fill, поэтому мини-шкала
+  // «наливается» CSS-переходом, а дыхание точки не сбрасывается.
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -421,31 +468,105 @@ function StationsMapCanvas({
       const map = mapRef.current;
       if (cancelled || !map) return;
 
-      markersRef.current.forEach((m) => m.remove());
-      markersRef.current = stations.map((s) => {
-        const el = document.createElement("button");
-        el.type = "button";
-        el.setAttribute("aria-label", s.name);
-        el.className = "benzeen-pin";
-        el.dataset.online = String(s.online);
-        el.dataset.active = String(s.id === selectedId);
-        el.addEventListener("click", (event) => {
-          event.stopPropagation();
-          selectRef.current(s.id);
-        });
-        const marker = new maplibregl.Marker({ element: el })
-          .setLngLat([s.lng, s.lat])
-          .addTo(map);
+      const markers = markersRef.current;
+      const ids = new Set(stations.map((s) => s.id));
+      markers.forEach((m, id) => {
+        if (!ids.has(id)) {
+          m.remove();
+          markers.delete(id);
+        }
+      });
+      stations.forEach((s, i) => {
+        let marker = markers.get(s.id);
+        if (!marker) {
+          const el = document.createElement("button");
+          el.type = "button";
+          el.className = "benzeen-pin";
+          el.innerHTML =
+            '<span class="benzeen-pin-dot"></span><span class="benzeen-pin-gauge"></span>';
+          // Своя фаза дыхания у каждой точки — карта не мигает в такт.
+          el.style.setProperty("--pulse-delay", `${-((i * 0.83) % 2.6)}s`);
+          el.addEventListener("click", (event) => {
+            event.stopPropagation();
+            selectRef.current(s.id);
+          });
+          marker = new maplibregl.Marker({ element: el })
+            .setLngLat([s.lng, s.lat])
+            .addTo(map);
+          markers.set(s.id, marker);
+        } else {
+          marker.setLngLat([s.lng, s.lat]);
+        }
+        const el = marker.getElement();
         // MapLibre ставит на элемент свой aria-label — возвращаем название АЗС,
-        // иначе скринридер читает три одинаковых «Map marker».
-        marker.getElement().setAttribute("aria-label", s.name);
-        return marker;
+        // иначе скринридер читает одинаковые «Map marker».
+        el.setAttribute("aria-label", s.name);
+        el.dataset.online = String(s.online);
+        const main = s.stocks[0];
+        const fill = main && main.dataFresh && s.online ? fillPercent(main) : null;
+        const gauge = el.querySelector<HTMLElement>(".benzeen-pin-gauge");
+        if (gauge) gauge.hidden = fill === null;
+        el.style.setProperty("--fill", String((fill ?? 0) / 100));
       });
     })();
     return () => {
       cancelled = true;
     };
-  }, [stations, selectedId]);
+  }, [stations, ready]);
+
+  useEffect(() => {
+    markersRef.current.forEach((m, id) => {
+      m.getElement().dataset.active = String(id === selectedId);
+    });
+  }, [selectedId, stations, ready]);
+
+  // Линия маршрута до машины: прорисовывается от АЗС к клиенту за ~0.9 с
+  // (градиент по line-progress — это canvas карты, не DOM-лейаут). При
+  // reduced-motion — сразу целиком.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    if (routeAnim.current !== null) cancelAnimationFrame(routeAnim.current);
+    routeAnim.current = null;
+    if (!route) {
+      clearRoute(map);
+      carRef.current?.remove();
+      carRef.current = null;
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const maplibregl = await loadMapLibre();
+      if (cancelled) return;
+      if (!carRef.current) {
+        const el = document.createElement("div");
+        el.className = "benzeen-car";
+        el.setAttribute("aria-hidden", "true");
+        carRef.current = new maplibregl.Marker({ element: el })
+          .setLngLat([route.to.lng, route.to.lat])
+          .addTo(map);
+      } else {
+        carRef.current.setLngLat([route.to.lng, route.to.lat]);
+      }
+      if (reduceRef.current) {
+        drawRoute(map, route, 1, true);
+        return;
+      }
+      drawRoute(map, route, 0, true);
+      const start = performance.now();
+      const total = duration.route * 1000;
+      const tick = (now: number) => {
+        const t = Math.min(1, (now - start) / total);
+        // ease-out cubic: линия «выстреливает» и мягко доходит до машины.
+        drawRoute(map, route, 1 - Math.pow(1 - t, 3));
+        routeAnim.current = t < 1 ? requestAnimationFrame(tick) : null;
+      };
+      routeAnim.current = requestAnimationFrame(tick);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [route, ready]);
 
   // На растровом фолбэке (локально, без ключа MapTiler) тёмного стиля нет,
   // поэтому подложка приглушается фильтром — иначе в тёмной теме карта светит.
@@ -538,6 +659,110 @@ function clearRadius(map: MlMap): void {
     if (m.getLayer(RADIUS_LINE)) map.removeLayer(RADIUS_LINE);
     if (m.getLayer(RADIUS_FILL)) map.removeLayer(RADIUS_FILL);
     if (m.getSource(RADIUS_SOURCE)) map.removeSource(RADIUS_SOURCE);
+  } catch {
+    /* нечего убирать */
+  }
+}
+
+type Route = { from: LatLng; to: LatLng };
+
+const ROUTE_SOURCE = "benzeen-route";
+const ROUTE_LINE = "benzeen-route-line";
+const ROUTE_COLOR = "#0ABAB5";
+
+/** Дуга между АЗС и машиной: прямая читается как «линейка», дуга — как путь. */
+function routeArc(route: Route, steps = 48): number[][] {
+  const { from, to } = route;
+  const dx = to.lng - from.lng;
+  const dy = to.lat - from.lat;
+  // Контрольная точка смещена перпендикулярно на 18% длины.
+  const cx = (from.lng + to.lng) / 2 - dy * 0.18;
+  const cy = (from.lat + to.lat) / 2 + dx * 0.18;
+  const pts: number[][] = [];
+  for (let i = 0; i <= steps; i += 1) {
+    const t = i / steps;
+    const a = (1 - t) * (1 - t);
+    const b = 2 * (1 - t) * t;
+    const c = t * t;
+    pts.push([
+      a * from.lng + b * cx + c * to.lng,
+      a * from.lat + b * cy + c * to.lat,
+    ]);
+  }
+  return pts;
+}
+
+function routeGradient(progress: number): unknown[] {
+  const p = Math.max(0.001, Math.min(1, progress));
+  // Стопы interpolate должны строго возрастать: у самого конца рисуем целиком.
+  if (p >= 0.999) {
+    return ["interpolate", ["linear"], ["line-progress"], 0, ROUTE_COLOR, 1, ROUTE_COLOR];
+  }
+  return [
+    "interpolate",
+    ["linear"],
+    ["line-progress"],
+    0,
+    ROUTE_COLOR,
+    p,
+    ROUTE_COLOR,
+    p + 0.0001,
+    "rgba(10,186,181,0)",
+    1,
+    "rgba(10,186,181,0)",
+  ];
+}
+
+/**
+ * Рисует маршрут: progress 0..1 — какая часть линии уже прорисована.
+ * withGeometry — заново выставить геометрию (новый маршрут или новый стиль).
+ */
+function drawRoute(
+  map: MlMap,
+  route: Route,
+  progress: number,
+  withGeometry = false,
+): void {
+  const m = map as RadiusMap;
+  const data = {
+    type: "Feature" as const,
+    properties: {},
+    geometry: { type: "LineString" as const, coordinates: routeArc(route) },
+  };
+  try {
+    const source = m.getSource(ROUTE_SOURCE) as
+      | { setData?: (d: unknown) => void }
+      | undefined;
+    if (!source) {
+      map.addSource(ROUTE_SOURCE, { type: "geojson", lineMetrics: true, data });
+      map.addLayer({
+        id: ROUTE_LINE,
+        type: "line",
+        source: ROUTE_SOURCE,
+        layout: { "line-cap": "round", "line-join": "round" },
+        paint: {
+          "line-width": 4,
+          "line-gradient": routeGradient(progress) as never,
+        },
+      });
+      return;
+    }
+    if (withGeometry) source.setData?.(data);
+    map.setPaintProperty(
+      ROUTE_LINE,
+      "line-gradient",
+      routeGradient(progress) as never,
+    );
+  } catch {
+    /* стиль ещё не готов или уже уничтожен — маршрут не критичен */
+  }
+}
+
+function clearRoute(map: MlMap): void {
+  const m = map as RadiusMap;
+  try {
+    if (m.getLayer(ROUTE_LINE)) map.removeLayer(ROUTE_LINE);
+    if (m.getSource(ROUTE_SOURCE)) map.removeSource(ROUTE_SOURCE);
   } catch {
     /* нечего убирать */
   }

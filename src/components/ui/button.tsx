@@ -4,11 +4,11 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control text-button transition-colors duration-150 active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus-visible:ring-white/60',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-control text-button transition-[color,background-color,border-color,transform] duration-150 active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy/60 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 dark:focus-visible:ring-white/60',
   {
     variants: {
       variant: {
-        // Главное действие — кобальтовый блок (единственный кобальт на экране).
+        // Главное действие — тиффани-блок (единственный тиффани-фокус на экране).
         primary:
           'bg-primary-500 text-primary-950 hover:bg-primary-600 active:bg-primary-700',
         // Uber-чёрный блок; в тёмной теме инвертируется в белый.

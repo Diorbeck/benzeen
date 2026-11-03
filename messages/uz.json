@@ -821,6 +821,7 @@
       "orderTitle": "Yoqilgʻini qayerga keltiramiz",
       "couriersOnline": "kuryerlar onlayn",
       "addressLabel": "Qayerga yetkazamiz",
+      "addressHere": "Joylashuvingiz — keyingi qadamda aniqlaymiz",
       "fuelLabel": "Yoqilg‘i turi",
       "volumeLabel": "Hajmi",
       "liters": "{n} l",
